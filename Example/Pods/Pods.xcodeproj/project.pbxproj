@@ -42,7 +42,7 @@
 		21BE3F41E14E59C9C198D6D7D7AFB60E /* Pods-BluxClient_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BluxClient_Example-acknowledgements.plist"; sourceTree = "<group>"; };
 		2B06337F3BD65F8346BB34F07604AB46 /* Pods-BluxClient_Tests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-BluxClient_Tests"; path = Pods_BluxClient_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D7CBC5D42F804E40E46F75406EF92F8 /* BluxClient-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "BluxClient-dummy.m"; sourceTree = "<group>"; };
-		3B84B7D2043225E248802C24B86699CD /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		3B84B7D2043225E248802C24B86699CD /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		3DD848E46E31F820BE260664140BA643 /* BluxClient.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = BluxClient.modulemap; sourceTree = "<group>"; };
 		40BE53517C1025497A1C239F0FADB567 /* Pods-BluxClient_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-BluxClient_Tests.modulemap"; sourceTree = "<group>"; };
 		40DB5285A60B1BF3CBD38BDE27E3B324 /* Pods-BluxClient_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BluxClient_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -57,10 +57,10 @@
 		926F369C0A96DB084DE844F15202232A /* Pods-BluxClient_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-BluxClient_Example.modulemap"; sourceTree = "<group>"; };
 		947AECD3BAEFA3D7B91F7BA16CAEB348 /* ReplaceMe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ReplaceMe.swift; path = BluxClient/Classes/ReplaceMe.swift; sourceTree = "<group>"; };
 		9B38E5C5AD7EE0334E44B61C43481ABE /* Pods-BluxClient_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-BluxClient_Tests-umbrella.h"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		9DE4A323891F10E74C4C2337E60FCBA3 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9DE4A323891F10E74C4C2337E60FCBA3 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9EEE00E27AE645BB6882D252398920D0 /* Pods-BluxClient_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-BluxClient_Example-frameworks.sh"; sourceTree = "<group>"; };
-		ABD7C8AB76C6DA73F21E89F8FBDC59C3 /* BluxClient.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = BluxClient.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		ABD7C8AB76C6DA73F21E89F8FBDC59C3 /* BluxClient.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = BluxClient.podspec; sourceTree = "<group>"; tabWidth = 2; };
 		B00EC9BD2D2AAA8C3BA3796C53EAB3AB /* BluxClient.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = BluxClient.debug.xcconfig; sourceTree = "<group>"; };
 		B278D8A5640A6756EA929402B0D3E6FC /* Pods-BluxClient_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BluxClient_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		B27A63965E2F91E7B60B989527AD027B /* BluxClient.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = BluxClient.release.xcconfig; sourceTree = "<group>"; };
@@ -624,8 +624,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};

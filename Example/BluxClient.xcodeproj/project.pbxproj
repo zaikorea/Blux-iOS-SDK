@@ -28,7 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0FACEEF88C0AE07F453B4E7B /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		0FACEEF88C0AE07F453B4E7B /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		32D180272869F46F92B1DB5B /* Pods-BluxClient_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluxClient_Tests.debug.xcconfig"; path = "Target Support Files/Pods-BluxClient_Tests/Pods-BluxClient_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		409E50EB8AB75F3F77E5B194 /* Pods_BluxClient_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BluxClient_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EC5C0EBB38CF1B3C8947650 /* Pods_BluxClient_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BluxClient_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -45,8 +45,8 @@
 		8412B5031A0DFB2BBAE2EA93 /* Pods-BluxClient_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluxClient_Example.debug.xcconfig"; path = "Target Support Files/Pods-BluxClient_Example/Pods-BluxClient_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		CC2E8140A0984BE400CB01DC /* Pods-BluxClient_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluxClient_Tests.release.xcconfig"; path = "Target Support Files/Pods-BluxClient_Tests/Pods-BluxClient_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		E358ED639F6E93DFCF8CC6B6 /* Pods-BluxClient_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluxClient_Example.release.xcconfig"; path = "Target Support Files/Pods-BluxClient_Example/Pods-BluxClient_Example.release.xcconfig"; sourceTree = "<group>"; };
-		E3C06284814146EA3C0DCEE0 /* BluxClient.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = BluxClient.podspec; path = ../BluxClient.podspec; sourceTree = "<group>"; };
-		F92D5B1B30F4198189F6FEE7 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		E3C06284814146EA3C0DCEE0 /* BluxClient.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = BluxClient.podspec; path = ../BluxClient.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		F92D5B1B30F4198189F6FEE7 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,7 +156,6 @@
 				32D180272869F46F92B1DB5B /* Pods-BluxClient_Tests.debug.xcconfig */,
 				CC2E8140A0984BE400CB01DC /* Pods-BluxClient_Tests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -227,6 +226,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
