@@ -1,0 +1,16 @@
+PODS:
+  - BluxClient (0.1.0)
+
+DEPENDENCIES:
+  - BluxClient (from `../`)
+
+EXTERNAL SOURCES:
+  BluxClient:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  BluxClient: 53fbab936ee077880a9c1a134efd29ae5f691b7d
+
+PODFILE CHECKSUM: e36d877f054f9bf0cebdb1668bfe28edd11df88f
+
+COCOAPODS: 1.15.2

@@ -1,0 +1,22 @@
+{
+  "name": "BluxClient",
+  "version": "0.1.0",
+  "summary": "A short description of BluxClient.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/dongjoocha/BluxClient",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "dongjoocha": "tech@blux.ai"
+  },
+  "source": {
+    "git": "https://github.com/dongjoocha/BluxClient.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source_files": "BluxClient/Classes/**/*"
+}
