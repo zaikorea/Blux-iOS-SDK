@@ -22,7 +22,7 @@ pod 'BluxClient'
 
 ## Author
 
-dongjoocha, tech@blux.ai
+Blux, tech@blux.ai
 
 ## License
 
