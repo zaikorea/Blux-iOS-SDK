@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.author           = { 'Blux' => 'tech@blux.ai' }
   s.source           = { :git => 'https://github.com/zaikorea/Blux-iOS-SDK.git', :tag => s.version.to_s }
 
-  s.ios.deployment_target = '12.0'
+  s.ios.deployment_target = '13.0'
 
   s.source_files = 'BluxClient/Classes/**/*'
 

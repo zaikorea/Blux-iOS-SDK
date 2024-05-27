@@ -1,22 +1,21 @@
 {
   "name": "BluxClient",
   "version": "0.1.0",
-  "summary": "A short description of BluxClient.",
-  "description": "TODO: Add long description of the pod here.",
-  "homepage": "https://github.com/dongjoocha/BluxClient",
+  "summary": "Blux iOS SDK.",
+  "homepage": "https://github.com/zaikorea/Blux-iOS-SDK.git",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
   },
   "authors": {
-    "dongjoocha": "tech@blux.ai"
+    "Blux": "tech@blux.ai"
   },
   "source": {
-    "git": "https://github.com/dongjoocha/BluxClient.git",
+    "git": "https://github.com/zaikorea/Blux-iOS-SDK.git",
     "tag": "0.1.0"
   },
   "platforms": {
-    "ios": "10.0"
+    "ios": "13.0"
   },
   "source_files": "BluxClient/Classes/**/*"
 }
