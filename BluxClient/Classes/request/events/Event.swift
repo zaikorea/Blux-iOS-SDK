@@ -110,7 +110,6 @@ extension Event: CustomStringConvertible {
             }
         }
         if let userId = userId {
-            properties.append("userId: \(userId)")
             if (userId != "null") {
                 properties.append("userId: \(userId)")
             }
@@ -168,7 +167,7 @@ extension Event: CustomStringConvertible {
 public class EventResponse: Codable {
     
     public var message: String
-    public var failureCount: Int
+    public var failureCount: Int?
     public var timestamp: Double
     public var processedEvents: [Event]?
     public var unprocessedEvents: [Event]?
@@ -188,9 +187,11 @@ extension EventResponse: CustomStringConvertible {
         var properties: [String] = []
         
         properties.append("message: \(message)")
-        properties.append("failureCount: \(failureCount)")
         properties.append("timestamp: \(timestamp)")
-
+        
+        if let failureCount = failureCount {
+            properties.append("failureCount: \(failureCount)")
+        }
         if let processedEvents = processedEvents {
             properties.append("processedEvents: \(processedEvents)")
         }

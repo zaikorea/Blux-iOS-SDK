@@ -14,9 +14,9 @@ public enum SdkType: String {
 }
 
 final class SdkConfig {
-    static var sdkVersion = "0.1.0"
+    static var sdkVersion = "0.2.0"
     static var sdkType: SdkType = .native
-    static var bluxSecretKey: String? = nil
+    static var bluxSuiteName = "group.ai.blux.app"
     
     static let hmacScheme: String = "Blux"
     static let bluxSdkInfoHeader: String = "X-BLUX-SDK-INFO"
@@ -26,18 +26,21 @@ final class SdkConfig {
     
     static let batchRequestCap: Int = 50
     static let epsilon: Double = 1e-4
-    
     static let timeout: Double = 60
+    
+    static var logLevel: LogLevel = .verbose
+    static var requestPermissionOnLaunch: Bool = false
+    static var isSwizzled: Bool = false
     
     /// Save bluxId in user defaults (local storage)
     private static var bluxIdKey = "bluxId"
     static var bluxIdInUserDefaults: String? {
         set {
-            UserDefaults.standard.set(newValue, forKey: bluxIdKey)
+            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: bluxIdKey)
         }
         
         get {
-            UserDefaults.standard.string(forKey: bluxIdKey)
+            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: bluxIdKey)
         }
     }
     
@@ -45,11 +48,11 @@ final class SdkConfig {
     private static var deviceIdKey = "bluxDeviceId"
     static var deviceIdInUserDefaults: String? {
         set {
-            UserDefaults.standard.set(newValue, forKey: deviceIdKey)
+            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: deviceIdKey)
         }
         
         get {
-            UserDefaults.standard.string(forKey: deviceIdKey)
+            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: deviceIdKey)
         }
     }
     
@@ -57,11 +60,11 @@ final class SdkConfig {
     private static var userIdKey = "bluxUserId"
     static var userIdInUserDefaults: String? {
         set {
-            UserDefaults.standard.set(newValue, forKey: userIdKey)
+            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: userIdKey)
         }
         
         get {
-            UserDefaults.standard.string(forKey: userIdKey)
+            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: userIdKey)
         }
     }
     
@@ -69,26 +72,46 @@ final class SdkConfig {
     private static var clientIdKey = "bluxClientId"
     static var clientIdInUserDefaults: String? {
         set {
-            UserDefaults.standard.set(newValue, forKey: clientIdKey)
+            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: clientIdKey)
         }
         
         get {
-            UserDefaults.standard.string(forKey: clientIdKey)
+            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: clientIdKey)
         }
     }
     
-    /// Save clientId in user defaults (local storage)
+    private static var secretKey = "bluxSecretKey"
+    static var secretKeyInUserDefaults: String? {
+        set {
+            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: secretKey)
+        }
+        
+        get {
+            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: secretKey)
+        }
+    }
+    
+    /// Save APNs push token in user defaults (local storage)
+    private static var pushTokenKey = "bluxPushTokenInUserDefaults"
+    static var pushTokenInUserDefaults: String? {
+        set {
+            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: pushTokenKey)
+        }
+        
+        get {
+            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: pushTokenKey)
+        }
+    }
+    
+    /// Save isSubscribed in user defaults (local storage)
     private static var isSubscribedKey = "bluxIsSubscribed"
     static var isSubscribedInUserDefaults: Bool? {
         set {
-            UserDefaults.standard.set(newValue, forKey: isSubscribedKey)
+            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: isSubscribedKey)
         }
         
         get {
-            UserDefaults.standard.bool(forKey: isSubscribedKey)
+            UserDefaults(suiteName: bluxSuiteName)?.bool(forKey: isSubscribedKey)
         }
     }
-    
-    /// Current logLevel
-    static var logLevel: LogLevel = .verbose
 }

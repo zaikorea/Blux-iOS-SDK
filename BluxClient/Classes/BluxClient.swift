@@ -1,4 +1,3 @@
-
 //
 //  BluxClient.swift
 //  BluxClient
@@ -11,47 +10,52 @@ import UIKit
 @available(iOSApplicationExtension, unavailable)
 @objc open class BluxClient: NSObject {
     private static var isActivated: Bool = false
+    static private var appDelegate = BluxAppDelegate()
+    static private let swizzlingEnabledKey = "BluxSwizzlingEnabled"
+    
+    // MARK: - Public Methods
     
     /// Initialize Blux SDK
-    /// - Parameters:
-    ///   - launchOptions: AppDelegate didFinishLaunchingWithOptions
-    @objc public static func initialize(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?, bluxClientId: String, bluxSecretKey: String) {
+    @objc public static func initialize(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?, bluxClientId: String, bluxSecretKey: String, requestPermissionOnLaunch: Bool = true) {
+        SdkConfig.requestPermissionOnLaunch = requestPermissionOnLaunch
         
-        Logger.verbose("Initialize BluxClient with ClientID: \(bluxClientId).")
-        SdkConfig.bluxSecretKey = bluxSecretKey
+        Logger.verbose("Initialize BluxClient with Client ID: \(bluxClientId).")
+        SdkConfig.secretKeyInUserDefaults = bluxSecretKey
         
-        // If clientId is nil or different, reset device id to nil
+        // If saved clientId is nil or different, reset deviceId to nil
         let savedClientId = SdkConfig.clientIdInUserDefaults
         if savedClientId == nil || savedClientId != bluxClientId {
             SdkConfig.clientIdInUserDefaults = bluxClientId
             SdkConfig.deviceIdInUserDefaults = nil
+            SdkConfig.isSubscribedInUserDefaults = nil
         }
         
-        deviceRegisterOrActivate()
+        // Check UserDefaults availability
+        guard SdkConfig.clientIdInUserDefaults == bluxClientId else {
+            Logger.verbose("UserDefaults unavailable.")
+            return
+        }
+        
+        ColdStartNotificationManager.setColdStartNotification(launchOptions: launchOptions)
+        
+        let swizzlingEnabled = Bundle.main.object(forInfoDictionaryKey: swizzlingEnabledKey) as? Bool
+        if swizzlingEnabled != false {
+            UNUserNotificationCenter.current().delegate = BluxNotificationCenter.shared
+            appDelegate.swizzle()
+        }
+        
+        ColdStartNotificationManager.process()
+        
+        deviceCreateOrActivate(requestPermissionOnLaunch)
     }
     
-    // MARK: - Public Methods
-    
-    /// Set level to logging
-    /// - Parameter level: LogLevel, Default is verbose
+    /// Set log level.
     @objc public static func setLogLevel(level: LogLevel) {
         Logger.verbose("Set log level to \(level).")
         SdkConfig.logLevel = level
     }
     
-    /// Set SDK info
-    /// - Parameters:
-    ///   - sdkType: Platform in which the SDK runs
-    ///   - sdkVersion: Version of SDK by Platform
-    /// Must called before initialize
-    public static func setSdkInfo(sdkType: SdkType, sdkVersion: String) {
-        Logger.verbose("Set SDK info as \(sdkType), \(sdkVersion).")
-        SdkConfig.sdkType = sdkType
-        SdkConfig.sdkVersion = sdkVersion
-    }
-    
-    /// Set userId of device
-    /// - Parameter userId: userId
+    /// Set userId of the device
     @objc public static func setUserId(userId: String?) {
         guard SdkConfig.bluxIdInUserDefaults != nil else {
             return
@@ -67,8 +71,6 @@ import UIKit
     }
     
     /// Send Request
-    /// - Parameters:
-    ///   - request: event data
     public static func sendRequest(_ request: EventRequest) {
         guard let deviceId = SdkConfig.deviceIdInUserDefaults else {
             return
@@ -87,17 +89,135 @@ import UIKit
         EventService.sendRequest(requestData)
     }
     
-    public static func deviceRegisterOrActivate() {
+    public static func deviceCreateOrActivate(_ requestPermissionOnLaunch: Bool) {
         if isActivated { return }
         isActivated = true
         
-        // 저장되어 있는 deviceId 가져오기
         if let savedDeviceId = SdkConfig.deviceIdInUserDefaults {
-            Logger.verbose("savedDeviceId exists: \(savedDeviceId).")
-            DeviceService.activate()
+            Logger.verbose("Blux Device ID exists: \(savedDeviceId).")
+            DeviceService.activate() {
+                if requestPermissionOnLaunch {
+                    requestPermissionForNotifications()
+                }
+            }
         } else {
-            Logger.verbose("savedDeviceId does not exist, newly register.")
-            DeviceService.register()
+            Logger.verbose("Blux Device ID does not exist, create new one.")
+            DeviceService.create() {
+                if requestPermissionOnLaunch {
+                    requestPermissionForNotifications()
+                }
+            }
+        }
+    }
+    
+    /// Set the handler when notification is clicked
+    @objc public static func setNotificationClickedHandler(callback: @escaping (BluxNotification) -> Void) {
+        EventHandlers.notificationClicked = callback
+        Logger.verbose("NotificationClickedHandler has been registered.")
+        
+        if let unhandledNotification = EventHandlers.unhandledNotification {
+            Logger.verbose("Found unhandledNotification and execute handler.")
+            callback(unhandledNotification)
+            EventHandlers.unhandledNotification = nil
+        }
+    }
+    
+    /// Set the handler when notification foreground received
+    @objc public static func setNotificationForegroundReceivedHandler(callback: @escaping (NotificationReceivedEvent) -> Void) {
+        EventHandlers.notificationForegroundReceived = callback
+        Logger.verbose("NotificationForegroundReceivedHandler has been registered.")
+    }
+    
+    static func hasPermissionForNotifications(completion: @escaping (Bool) -> Void) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            if settings.authorizationStatus == .notDetermined || settings.authorizationStatus == .denied {
+                completion(false)
+            } else {
+                completion(true)
+            }
+        }
+    }
+    
+    /// Request a permission and subscribe for notifications
+    @objc public static func subscribe(fallbackToSettings: Bool = true, completion: ((Bool) -> Void)? = nil) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            if settings.authorizationStatus == .notDetermined {
+                self.requestPermissionForNotifications(completion: completion)
+            } else if settings.authorizationStatus == .denied {
+                if fallbackToSettings { // Open Notification Settings
+                    DispatchQueue.main.async {
+                        if #available(iOS 16.0, *) {
+                            if let url = URL(string: UIApplication.openNotificationSettingsURLString) {
+                                UIApplication.shared.open(url)
+                            }
+                        } else if #available(iOS 15.4, *) {
+                            if let url = URL(string: UIApplicationOpenNotificationSettingsURLString) {
+                                UIApplication.shared.open(url)
+                            }
+                        } else {
+                            if let url = URL(string: "App-Prefs:root=NOTIFICATIONS_ID") {
+                                UIApplication.shared.open(url)
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Synchronize as much as possible to prevent cases where the token is absent in the DB
+                self.requestPermissionForNotifications()
+                self.setIsSubscribed(isSubscribed: true) { isSubscribed in
+                    DispatchQueue.main.async {
+                        completion?(isSubscribed)
+                    }
+                }
+            }
+        }
+    }
+    
+    /// Unsubscribe for notifications
+    @objc public static func unsubscribe(completion: ((Bool) -> Void)? = nil) {
+        self.setIsSubscribed(isSubscribed: false) { isSubscribed in
+            DispatchQueue.main.async {
+                completion?(isSubscribed)
+            }
+        }
+    }
+    
+    // MARK: Private Methods
+    
+    private static func requestPermissionForNotifications(completion: ((Bool) -> Void)? = nil) {
+        let options: UNAuthorizationOptions = [.badge, .alert, .sound]
+        
+        // Execute completion if already authorized
+        UNUserNotificationCenter.current().requestAuthorization(options: options) { (granted, error) in
+            DispatchQueue.main.async {
+                if granted {
+                    UIApplication.shared.registerForRemoteNotifications()
+                    completion?(true)
+                } else {
+                    completion?(false)
+                }
+            }
+        }
+    }
+    
+    /// Update isSubscribed of the device
+    private static func setIsSubscribed(isSubscribed: Bool, completion: ((Bool) -> Void)? = nil) {
+        guard SdkConfig.deviceIdInUserDefaults != nil else {
+            return
+        }
+        
+        let body = DeviceService.getBluxDeviceInfo()
+        body.isSubscribed = isSubscribed
+        
+        if isSubscribed == true {
+            body.pushToken = SdkConfig.pushTokenInUserDefaults
+        }
+        
+        DeviceService.update(body: body) { bluxDevice in
+            DispatchQueue.main.sync {
+                completion?(bluxDevice.isSubscribed)
+            }
         }
     }
 }
+

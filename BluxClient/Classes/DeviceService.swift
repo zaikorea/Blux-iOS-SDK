@@ -25,40 +25,13 @@ final class DeviceService {
         )
     }
     
-    /// Register device information to Blux
-    /// - Parameters:
-    static func register(completion: @escaping (() -> Void) = {}) {
-        Logger.verbose("Start create device request.")
-        
-        let body = getBluxDeviceInfo()
-        
-        create(body: body) { (bluxDeviceResponse) in
-            completion()
-        }
-    }
-    
-    /// Update device information to the latest
-    static func activate(completion: @escaping (() -> Void) = {}) {
-        guard SdkConfig.bluxIdInUserDefaults != nil else {
-            return
-        }
-        guard SdkConfig.deviceIdInUserDefaults != nil else {
-            return
-        }
-        
-        Logger.verbose("Start update device request.")
-        
-        let body = getBluxDeviceInfo()
-        
-        update(body: body) { (bluxDeviceResponse) in
-            completion()
-        }
-    }
-    
     /// Create device data
     /// - Parameters:
     ///   - body: Data key & value
-    static func create<T: Codable>(body: T, completion: ((BluxDeviceResponse)->())? = nil) {
+    static func create(completion: @escaping (() -> Void) = {}) {
+        Logger.verbose("Start create device request.")
+        
+        let body = getBluxDeviceInfo()
         
         HTTPClient.shared.post(path: "/devices", body: body) { (response: BluxDeviceResponse?, error) in
             if let error = error {
@@ -71,8 +44,26 @@ final class DeviceService {
                 Logger.verbose("Create device request success.")
                 Logger.verbose("Blux ID: \(bluxDeviceResponse.bluxId).")
                 Logger.verbose("Device ID: \(bluxDeviceResponse.deviceId).")
-                completion?(bluxDeviceResponse)
+                completion()
             }
+        }
+    }
+    
+    /// Update device information to the latest
+    static func activate(completion: @escaping (() -> Void) = {}) {
+        guard SdkConfig.bluxIdInUserDefaults != nil else {
+            return
+        }
+        guard SdkConfig.deviceIdInUserDefaults != nil else {
+            return
+        }
+        
+        Logger.verbose("Start activate device request.")
+        
+        let body = getBluxDeviceInfo()
+        
+        update(body: body) { (bluxDeviceResponse) in
+            completion()
         }
     }
     
@@ -87,9 +78,9 @@ final class DeviceService {
             return
         }
         
-        HTTPClient.shared.patch(path: "/devices", body: body) { (response: BluxDeviceResponse?, error) in
-            if error != nil {
-                Logger.error("Failed to update request.")
+        HTTPClient.shared.put(path: "/devices", body: body) { (response: BluxDeviceResponse?, error) in
+            if let error = error  {
+                Logger.error("Failed to request update device. - \(error)")
                 return
             }
             
@@ -103,6 +94,8 @@ final class DeviceService {
             
         }
     }
+    
+    // static func updateUser<T: Codable>(body: T, completion: ((BluxDeviceResponse)->())? = nil) {}
     
     // Save data to the local storage.
     private static func saveData<T: Codable>(data: T) {

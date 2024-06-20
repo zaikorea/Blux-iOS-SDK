@@ -89,6 +89,31 @@ open class BluxDeviceInfo: Codable {
         self.countryCode = countryCode
         self.sdkType = sdkType
     }
+    
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(bluxId, forKey: .bluxId)
+        try container.encode(deviceId, forKey: .deviceId)
+        
+        if let userId = userId {
+            try container.encode(userId, forKey: .userId)
+        }
+        else {
+            try container.encodeNil(forKey: .userId) // "null" on server
+        }
+
+        try container.encode(pushToken, forKey: .pushToken)
+        try container.encode(isSubscribed, forKey: .isSubscribed)
+
+        try container.encode(platform, forKey: .platform)
+        try container.encode(deviceModel, forKey: .deviceModel)
+        try container.encode(osVersion, forKey: .osVersion)
+        try container.encode(sdkVersion, forKey: .sdkVersion)
+        try container.encode(timezone, forKey: .timezone)
+        try container.encode(languageCode, forKey: .languageCode)
+        try container.encode(countryCode, forKey: .countryCode)
+        try container.encode(sdkType, forKey: .sdkType)
+    }
 }
 
 extension BluxDeviceInfo: CustomStringConvertible {

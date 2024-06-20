@@ -1,7 +1,11 @@
 use_frameworks!
 
-platform :ios, '13.0'
+platform :ios, '14.0'
 
 target 'BluxClient_Example' do
+  pod 'BluxClient', :path => '../'
+end
+
+target 'BluxNotificationServiceExtenstion' do
   pod 'BluxClient', :path => '../'
 end
