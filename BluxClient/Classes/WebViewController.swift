@@ -33,7 +33,7 @@ final class WebViewController: UIViewController, WKNavigationDelegate {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    if #available(iOS 13.0, *) {
+    if #available(iOS 14.0, *) {
       navigationItem.leftBarButtonItem = .init(image: UIImage(systemName: "xmark"), style: .done, target: self, action: #selector(closeWebView))
       let appearance = UINavigationBarAppearance()
       appearance.configureWithOpaqueBackground()
