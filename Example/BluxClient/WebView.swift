@@ -9,7 +9,7 @@ import SwiftUI
 import WebKit
 
 struct WebView: UIViewRepresentable {
-    var url = "https://www.musinsa.com/app/goods/4069411"
+    var url = ""
     
     func makeUIView(context: Context) -> WKWebView {
         guard let url = URL(string: url) else {

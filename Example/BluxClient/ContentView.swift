@@ -153,7 +153,7 @@ struct ContentView: View {
         }
         .onChange(of: appState.selectedProductId) { productId in
             if let productId = productId {
-                webViewURL = "https://www.musinsa.com/app/goods/\(productId)"
+                webViewURL = "https://data.zaikorea.org/ai-demo/app_big_banner.jpeg"
                 isWebViewPresented = true
                 appState.selectedProductId = nil
             }
