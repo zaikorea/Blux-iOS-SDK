@@ -38,55 +38,55 @@ public class Event: Codable {
     }
     
     @discardableResult
-    func setItemId(_ itemId: String?) throws -> Event {
+    public func setItemId(_ itemId: String?) throws -> Event {
         self.itemId = try Validator.validateString(itemId, min: 1, max: 500, varName: "itemId")
         return self
     }
     
     @discardableResult
-    func setTimestamp(_ timestamp: Double) throws -> Event {
+    public func setTimestamp(_ timestamp: Double) throws -> Event {
         self.timestamp = try Validator.validateNumber(timestamp, min: 1648871097, varName: "timestamp")
         return self
     }
     
     @discardableResult
-    func setEventValue(_ eventValue: String?) throws -> Event {
+    public func setEventValue(_ eventValue: String?) throws -> Event {
         self.eventValue = try Validator.validateString(eventValue, min: 0, max: 500, varName: "eventValue")
         return self
     }
     
     @discardableResult
-    func setFrom(_ from: String?) throws -> Event {
+    public func setFrom(_ from: String?) throws -> Event {
         self.from = try Validator.validateString(from, min: 1, max: 500, varName: "from")
         return self
     }
     
     @discardableResult
-    func setUrl(_ url: String?) throws -> Event {
+    public func setUrl(_ url: String?) throws -> Event {
         self.url = try Validator.validateString(url, min: 1, varName: "url")
         return self
     }
     
     @discardableResult
-    func setRef(_ ref: String?) throws -> Event {
+    public func setRef(_ ref: String?) throws -> Event {
         self.ref = try Validator.validateString(ref, min: 1, varName: "ref")
         return self
     }
     
     @discardableResult
-    func setRecommendationId(_ recommendationId: String?) throws -> Event {
+    public func setRecommendationId(_ recommendationId: String?) throws -> Event {
         self.recommendationId = try Validator.validateString(recommendationId, min: 1, varName: "recommendationId")
         return self
     }
     
     @discardableResult
-    func setEventProperties(_ eventProperties: [String: String]?) -> Event {
+   public func setEventProperties(_ eventProperties: [String: String]?) -> Event {
         self.eventProperties = eventProperties
         return self
     }
     
     @discardableResult
-    func setUserProperties(_ userProperties: [String: String]?) -> Event {
+    public func setUserProperties(_ userProperties: [String: String]?) -> Event {
         self.userProperties = userProperties
         return self
     }
