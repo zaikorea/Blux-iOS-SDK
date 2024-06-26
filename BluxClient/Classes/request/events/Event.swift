@@ -33,7 +33,7 @@ public class Event: Codable {
         case userProperties = "user_properties"
     }
     
-    init(eventType: String) throws {
+    public init(eventType: String) throws {
         self.eventType = try Validator.validateString(eventType, min: 1, max: 500, varName: "eventType")
     }
     
