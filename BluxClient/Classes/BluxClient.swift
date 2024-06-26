@@ -88,8 +88,8 @@ import UIKit
         
         EventService.sendRequest(requestData)
     }
-    
-    public static func deviceCreateOrActivate(_ requestPermissionOnLaunch: Bool) {
+
+    private static func deviceCreateOrActivate(_ requestPermissionOnLaunch: Bool) {
         if isActivated { return }
         isActivated = true
         
