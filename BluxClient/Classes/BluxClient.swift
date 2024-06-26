@@ -69,9 +69,8 @@ import UIKit
         
         DeviceService.update(body: body)
     }
-    
-    /// Send Request
-    public static func sendRequest(_ request: EventRequest) {
+
+    public static func sendRequestData(_ data: [Event]) {
         guard let deviceId = SdkConfig.deviceIdInUserDefaults else {
             return
         }
@@ -79,14 +78,20 @@ import UIKit
             return
         }
         
-        let requestData = request.getPayload()
-        requestData.forEach { event in
+        data.forEach { event in
             event.bluxId = bluxId
             event.deviceId = deviceId
             event.userId = SdkConfig.userIdInUserDefaults
         }
         
-        EventService.sendRequest(requestData)
+        EventService.sendRequest(data)
+    }
+    
+    
+    /// Send Request
+    public static func sendRequest(_ request: EventRequest) {
+        let requestData = request.getPayload()
+        self.sendRequestData(requestData)
     }
 
     private static func deviceCreateOrActivate(_ requestPermissionOnLaunch: Bool) {
