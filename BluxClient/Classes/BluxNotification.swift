@@ -98,4 +98,21 @@ import Foundation
         
         return bluxNotification
     }
+
+    public func toDictionary() -> [String: Optional<Any>] {
+        let dict: [String: Optional<Any>] = [
+            "id": id,
+            "customerEngagementType": customerEngagementType,
+            "customerEngagementId": customerEngagementId,
+            "customerEngagementTaskId": customerEngagementTaskId,
+            "body": body,
+            "title": title,
+            "url": url,
+            "imageUrl": imageUrl,
+            "data": data
+        ]
+    
+        return dict
+  }
+
 }
