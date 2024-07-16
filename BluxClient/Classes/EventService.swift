@@ -72,7 +72,7 @@ class EventService {
             customerEngagementTaskId: notification.customerEngagementTaskId
         )
         
-        HTTPClient.shared.post(path: "/api/v1/events", body: data, toCRM: true) { (response: EventResponse?, error) in
+        HTTPClient.shared.post(path: "/api/v1/events", body: data, apiType: "CRM") { (response: EventResponse?, error) in
             
             if let error = error {
                 Logger.error("Failed to send request.")

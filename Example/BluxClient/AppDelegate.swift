@@ -17,12 +17,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var appState = AppState()
     
     let clientId = "CLIENT ID"
-    let secretKey = "SECRET KEY"
+    let apiKey = "SECRET KEY"
     
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        BluxClient.initialize(launchOptions, bluxClientId: clientId, bluxSecretKey: secretKey)
+        BluxClient.initialize(launchOptions, bluxClientId: clientId, bluxAPIKey: apiKey)
         
         /// Swizzling Disabled
         // UNUserNotificationCenter.current().delegate = self

@@ -18,10 +18,10 @@ final class SdkConfig {
     static var sdkType: SdkType = .native
     static var bluxSuiteName = "group.ai.blux.app"
     
-    static let hmacScheme: String = "Blux"
     static let bluxSdkInfoHeader: String = "X-BLUX-SDK-INFO"
     static let bluxClientIdHeader: String = "X-BLUX-CLIENT-ID"
-    static let bluxAuthorizationHeader: String = "X-BLUX-AUTHORIZATION"
+    static let bluxAuthorizationHeader: String = "Authorization"
+    static let bluxApiKeyHeader: String = "X-BLUX-API-KEY"
     static let bluxUnixTimestampHeader: String = "X-BLUX-TIMESTAMP"
     
     static let batchRequestCap: Int = 50
@@ -80,38 +80,14 @@ final class SdkConfig {
         }
     }
     
-    private static var secretKey = "bluxSecretKey"
-    static var secretKeyInUserDefaults: String? {
+    private static var apiKey = "bluxAPIKey"
+    static var apiKeyInUserDefaults: String? {
         set {
-            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: secretKey)
+            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: apiKey)
         }
         
         get {
-            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: secretKey)
-        }
-    }
-    
-    /// Save APNs push token in user defaults (local storage)
-    private static var pushTokenKey = "bluxPushTokenInUserDefaults"
-    static var pushTokenInUserDefaults: String? {
-        set {
-            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: pushTokenKey)
-        }
-        
-        get {
-            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: pushTokenKey)
-        }
-    }
-    
-    /// Save isSubscribed in user defaults (local storage)
-    private static var isSubscribedKey = "bluxIsSubscribed"
-    static var isSubscribedInUserDefaults: Bool? {
-        set {
-            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: isSubscribedKey)
-        }
-        
-        get {
-            UserDefaults(suiteName: bluxSuiteName)?.bool(forKey: isSubscribedKey)
+            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: apiKey)
         }
     }
 }

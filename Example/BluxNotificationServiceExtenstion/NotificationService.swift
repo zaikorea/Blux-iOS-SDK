@@ -8,7 +8,6 @@
 
 import BluxClient
 
-/// Swizzling Disabled
 class NotificationService: BluxNotificationServiceExtension {}
 
 /// Swizzling Disabled

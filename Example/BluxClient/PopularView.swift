@@ -13,7 +13,3 @@ struct PopularView: View {
         Text("인기 화면")
     }
 }
-
-#Preview {
-    PopularView()
-}

@@ -8,8 +8,8 @@
 import Foundation
 
 public enum CRMEventType: String {
-    case clicked = "notification_clicked"
-    case delivered = "notification_delivered"
+    case clicked = "open"
+    case delivered = "send"
 }
 
 public enum NotificationReceivedFrom: String {

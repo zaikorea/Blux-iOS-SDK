@@ -10,8 +10,9 @@ import Foundation
 final class HTTPClient {
     static let shared: HTTPClient = HTTPClient()
     
-    private static let COLLECTOR_BASE_URL = "https://collector-api.blux.ai"
+    private static let COLLECTOR_BASE_URL = "https://collector-api-web.blux.ai"
     private static let CRM_COLLECTOR_BASE_URL = "https://crm-collector-api.blux.ai";
+    private static let IDENTIFIER_BASE_URL = "https://api.blux.ai/dev";
     
     enum HTTPMethodWithBody: String {
         case POST
@@ -40,21 +41,35 @@ final class HTTPClient {
         
         request.setValue("\(SdkConfig.sdkType)-\(SdkConfig.sdkVersion)", forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader)
         request.setValue(clientId, forHTTPHeaderField: SdkConfig.bluxClientIdHeader)
-        request.setValue("\(SdkConfig.hmacScheme) \(Utils.generateBluxToken(secret: SdkConfig.secretKeyInUserDefaults, path: path, timestamp: requestTimestamp))", forHTTPHeaderField: SdkConfig.bluxAuthorizationHeader)
+        request.setValue(SdkConfig.apiKeyInUserDefaults, forHTTPHeaderField: SdkConfig.bluxApiKeyHeader)
+        request.setValue(SdkConfig.apiKeyInUserDefaults, forHTTPHeaderField: SdkConfig.bluxAuthorizationHeader)
         request.setValue(requestTimestamp, forHTTPHeaderField: SdkConfig.bluxUnixTimestampHeader)
         
         return request
     }
     
-    func createRequestWithBody<T: Codable>(method: HTTPMethodWithBody, path: String, body: T, toCRM: Bool = false) -> URLRequest? {
+    func createRequestWithBody<T: Codable>(method: HTTPMethodWithBody, path: String, body: T, apiType: String? = nil) -> URLRequest? {
         guard let clientId = SdkConfig.clientIdInUserDefaults else {
             Logger.error("No Client ID.")
             return nil
         }
-        guard let url = URL(string: "\(toCRM ? HTTPClient.CRM_COLLECTOR_BASE_URL : HTTPClient.COLLECTOR_BASE_URL)\(path)") else {
+
+        let baseUrl: String
+        
+        switch apiType {
+            case "IDENTIFIER":
+                baseUrl = HTTPClient.IDENTIFIER_BASE_URL
+            case "CRM":
+                baseUrl = HTTPClient.CRM_COLLECTOR_BASE_URL
+            default:
+                baseUrl = HTTPClient.COLLECTOR_BASE_URL
+        }
+        
+        guard let url = URL(string: "\(baseUrl)\(path)") else {
             return nil
         }
         
+
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.httpBody = try? JSONEncoder().encode(body)
@@ -65,7 +80,8 @@ final class HTTPClient {
         
         request.setValue("\(SdkConfig.sdkType)-\(SdkConfig.sdkVersion)", forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader)
         request.setValue(clientId, forHTTPHeaderField: SdkConfig.bluxClientIdHeader)
-        request.setValue("\(SdkConfig.hmacScheme) \(Utils.generateBluxToken(secret: SdkConfig.secretKeyInUserDefaults, path: path, timestamp: requestTimestamp))", forHTTPHeaderField: SdkConfig.bluxAuthorizationHeader)
+        request.setValue(SdkConfig.apiKeyInUserDefaults, forHTTPHeaderField: SdkConfig.bluxApiKeyHeader)
+        request.setValue(SdkConfig.apiKeyInUserDefaults, forHTTPHeaderField: SdkConfig.bluxAuthorizationHeader)
         request.setValue(requestTimestamp, forHTTPHeaderField: SdkConfig.bluxUnixTimestampHeader)
         
         return request
@@ -119,8 +135,8 @@ final class HTTPClient {
         task.resume()
     }
     
-    func post<T: Codable, V: Codable>(path: String, body: T, toCRM: Bool = false, completion: @escaping (V?, Error?) -> Void) {
-        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.POST, path: path, body: body, toCRM: toCRM) else {
+    func post<T: Codable, V: Codable>(path: String, body: T, apiType: String? = nil, completion: @escaping (V?, Error?) -> Void) {
+        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.POST, path: path, body: body, apiType: apiType) else {
             return
         }
         
@@ -131,8 +147,8 @@ final class HTTPClient {
         task.resume()
     }
     
-    func put<T: Codable, V: Codable>(path: String, body: T, completion: @escaping (V?, Error?) -> Void) {
-        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.PUT, path: path, body: body) else {
+    func put<T: Codable, V: Codable>(path: String, body: T, apiType: String? = nil, completion: @escaping (V?, Error?) -> Void) {
+        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.PUT, path: path, body: body, apiType: apiType) else {
             return
         }
         
@@ -143,8 +159,8 @@ final class HTTPClient {
         task.resume()
     }
     
-    func patch<T: Codable, V: Codable>(path: String, body: T, completion: @escaping (V?, Error?) -> Void) {
-        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.PATCH, path: path, body: body) else {
+    func patch<T: Codable, V: Codable>(path: String, body: T, apiType: String? = nil, completion: @escaping (V?, Error?) -> Void) {
+        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.PATCH, path: path, body: body, apiType: apiType) else {
             return
         }
         

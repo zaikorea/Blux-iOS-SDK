@@ -40,7 +40,7 @@ struct ContentView: View {
                         
                         Button {
                             /// Set User ID
-                            BluxClient.setUserId(userId: userId.count > 0 ? userId : nil)
+                            BluxClient.setUserId(userId: userId)
                         } label: {
                             Text("Set User ID")
                                 .foregroundColor(Color.white)
@@ -52,36 +52,6 @@ struct ContentView: View {
                         }
                     }
                     .padding(.top, 40)
-                    .padding(.horizontal)
-                    
-                    HStack(spacing: 30) {
-                        Button {
-                            BluxClient.subscribe()
-                        } label: {
-                            Text("Subscribe")
-                                .foregroundColor(Color.white)
-                                .font(.system(size: 20))
-                                .frame(width: 130)
-                                .padding()
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10)
-                                )
-                        }
-                        
-                        Button {
-                            BluxClient.unsubscribe()
-                        } label: {
-                            Text("Unsubscribe")
-                                .foregroundColor(Color.white)
-                                .font(.system(size: 20))
-                                .frame(width: 130)
-                                .padding()
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10)
-                                )
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
                     .padding(.horizontal)
                     
                     HStack(spacing: 30) {
@@ -196,8 +166,4 @@ func resetUserDefaults() {
     let defaults = UserDefaults.standard
     defaults.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
     defaults.synchronize()
-}
-
-#Preview {
-    ContentView()
 }

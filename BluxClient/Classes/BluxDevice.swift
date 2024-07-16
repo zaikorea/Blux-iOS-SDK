@@ -9,23 +9,17 @@ import Foundation
 
 open class BluxDeviceResponse: Codable {
     public var bluxId: String
-    public var deviceId: String
-    public var userId: String?
-    public var isSubscribed: Bool
+    public var deviceId: String?
     
     enum CodingKeys: String,
                      CodingKey {
-        case bluxId = "blux_id"
+        case bluxId = "blux_user_id"
         case deviceId = "device_id"
-        case userId = "user_id"
-        case isSubscribed = "is_subscribed"
     }
     
-    public init(bluxId: String, deviceId: String, userId: String?, isSubscribed: Bool) {
+    public init(bluxId: String, deviceId: String?) {
         self.bluxId = bluxId
         self.deviceId = deviceId
-        self.userId = userId
-        self.isSubscribed = isSubscribed
     }
 }
 
@@ -35,7 +29,6 @@ open class BluxDeviceInfo: Codable {
     public var deviceId: String? = SdkConfig.deviceIdInUserDefaults
     public var userId: String? = SdkConfig.userIdInUserDefaults
     public var pushToken: String?
-    public var isSubscribed: Bool?
     
     // Create & Update
     public var platform: String
@@ -46,7 +39,6 @@ open class BluxDeviceInfo: Codable {
     public var languageCode: String?
     public var countryCode: String?
     public var sdkType: String
-    public var lastActiveAt: String? = Utils.getISO8601DateString()
     
     enum CodingKeys: String,
                      CodingKey {
@@ -54,7 +46,6 @@ open class BluxDeviceInfo: Codable {
         case deviceId = "device_id"
         case userId = "user_id"
         case pushToken = "push_token"
-        case isSubscribed = "is_subscribed"
         case platform = "platform"
         case deviceModel = "device_model"
         case osVersion = "os_version"
@@ -63,12 +54,10 @@ open class BluxDeviceInfo: Codable {
         case languageCode = "language_code"
         case countryCode = "country_code"
         case sdkType = "sdk_type"
-        case lastActiveAt = "last_active_at"
     }
     
     public init(
         pushToken: String? = nil,
-        isSubscribed: Bool? = nil,
         platform: String,
         deviceModel: String,
         osVersion: String,
@@ -79,7 +68,6 @@ open class BluxDeviceInfo: Codable {
         sdkType: String
     ) {
         self.pushToken = pushToken
-        self.isSubscribed = isSubscribed
         self.platform = platform
         self.deviceModel = deviceModel
         self.osVersion = osVersion
@@ -93,7 +81,9 @@ open class BluxDeviceInfo: Codable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(bluxId, forKey: .bluxId)
-        try container.encode(deviceId, forKey: .deviceId)
+        if let deviceId = deviceId {
+            try container.encode(deviceId, forKey: .deviceId)
+        }
         
         if let userId = userId {
             try container.encode(userId, forKey: .userId)
@@ -103,7 +93,6 @@ open class BluxDeviceInfo: Codable {
         }
 
         try container.encode(pushToken, forKey: .pushToken)
-        try container.encode(isSubscribed, forKey: .isSubscribed)
 
         try container.encode(platform, forKey: .platform)
         try container.encode(deviceModel, forKey: .deviceModel)
@@ -133,9 +122,6 @@ extension BluxDeviceInfo: CustomStringConvertible {
         if let pushToken = pushToken {
             properties.append("pushToken: \(pushToken)")
         }
-        if let isSubscribed = isSubscribed {
-            properties.append("isSubscribed: \(isSubscribed)")
-        }
         
         properties.append("platform: \(platform)")
         properties.append("deviceModel: \(deviceModel)")
@@ -151,10 +137,6 @@ extension BluxDeviceInfo: CustomStringConvertible {
         }
         
         properties.append("sdkType: \(sdkType)")
-        
-        if let lastActiveAt = lastActiveAt {
-            properties.append("lastActiveAt: \(lastActiveAt)")
-        }
         
         return "\n\t\(properties.joined(separator: "\n\t"))\n"
     }
