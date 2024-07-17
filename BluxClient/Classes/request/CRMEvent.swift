@@ -12,11 +12,6 @@ public enum CRMEventType: String {
     case delivered = "send"
 }
 
-public enum NotificationReceivedFrom: String {
-    case foreground
-    case background
-}
-
 public enum CustomerEngagementType: String {
     case campaign
     case flow
@@ -56,7 +51,6 @@ open class CRMEvent: Codable {
     public init(
         eventType: CRMEventType,
         itemId: String? = nil,
-        eventValue: NotificationReceivedFrom? = nil,
         customerEngagementType: CustomerEngagementType.RawValue,
         customerEngagementId: String,
         customerEngagementTaskId: String,
@@ -64,7 +58,6 @@ open class CRMEvent: Codable {
     ) {
         self.eventType = eventType.rawValue
         self.itemId = itemId
-        self.eventValue = eventValue?.rawValue
         self.customerEngagementType = customerEngagementType
         self.customerEngagementId = customerEngagementId
         self.customerEngagementTaskId = customerEngagementTaskId

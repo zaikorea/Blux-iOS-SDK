@@ -28,19 +28,26 @@ final class DeviceService {
     /// Create device data
     /// - Parameters:
     ///   - body: Data key & value
-    static func create(completion: @escaping (() -> Void) = {}) {
-        Logger.verbose("Start create device request.")
-        
+    
+    static func initializeDevice(deviceId: String?, completion: @escaping (() -> Void) = {}) {
         let body = getBluxDeviceInfo()
+        body.deviceId = deviceId
         
-        HTTPClient.shared.post(path: "/devices", body: body) { (response: BluxDeviceResponse?, error) in
+        guard let clientId = SdkConfig.clientIdInUserDefaults else {
+            return
+        }
+        
+        HTTPClient.shared.post(path: "/organizations/" + clientId + "/blux-users/initialize", body: body, apiType: "IDENTIFIER") { (response: BluxDeviceResponse?, error) in
             if let error = error {
                 Logger.error("Failed to request create device. - \(error)")
                 return
             }
             
             if let bluxDeviceResponse = response {
-                self.saveData(data: bluxDeviceResponse)
+                SdkConfig.bluxIdInUserDefaults = bluxDeviceResponse.bluxId
+                SdkConfig.deviceIdInUserDefaults = bluxDeviceResponse.deviceId
+                SdkConfig.userIdInUserDefaults = nil
+                
                 Logger.verbose("Create device request success.")
                 Logger.verbose("Blux ID: \(bluxDeviceResponse.bluxId).")
                 Logger.verbose("Device ID: \(bluxDeviceResponse.deviceId).")
@@ -49,61 +56,33 @@ final class DeviceService {
         }
     }
     
-    /// Update device information to the latest
-    static func activate(completion: @escaping (() -> Void) = {}) {
-        guard SdkConfig.bluxIdInUserDefaults != nil else {
-            return
-        }
-        guard SdkConfig.deviceIdInUserDefaults != nil else {
-            return
-        }
-        
-        Logger.verbose("Start activate device request.")
-        
-        let body = getBluxDeviceInfo()
-        
-        update(body: body) { (bluxDeviceResponse) in
-            completion()
-        }
-    }
-    
     /// Update device data such as key and value pair
     /// - Parameters:
     ///   - body: Data key & value
-    static func update<T: Codable>(body: T, completion: ((BluxDeviceResponse)->())? = nil) {
-        guard SdkConfig.bluxIdInUserDefaults != nil else {
+    static func updatePushToken<T: Codable>(body: T, completion: ((BluxDeviceResponse)->())? = nil) {
+        guard let clientId = SdkConfig.clientIdInUserDefaults else {
             return
         }
-        guard SdkConfig.deviceIdInUserDefaults != nil else {
+        guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
+            return
+        }
+        guard let deviceId = SdkConfig.deviceIdInUserDefaults else {
             return
         }
         
-        HTTPClient.shared.put(path: "/devices", body: body) { (response: BluxDeviceResponse?, error) in
+        HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/devices/" + deviceId, body: body, apiType: "IDENTIFIER") { (response: BluxDeviceResponse?, error) in
             if let error = error  {
                 Logger.error("Failed to request update device. - \(error)")
                 return
             }
             
             if let bluxDeviceResponse = response {
-                self.saveData(data: bluxDeviceResponse)
                 Logger.verbose("Update device request success.")
                 Logger.verbose("Blux ID: \(bluxDeviceResponse.bluxId).")
-                Logger.verbose("User ID: \(bluxDeviceResponse.userId ?? "nil").")
                 completion?(bluxDeviceResponse)
             }
-            
         }
     }
     
     // static func updateUser<T: Codable>(body: T, completion: ((BluxDeviceResponse)->())? = nil) {}
-    
-    // Save data to the local storage.
-    private static func saveData<T: Codable>(data: T) {
-        if let bluxDeviceResponse = data as? BluxDeviceResponse {
-            SdkConfig.bluxIdInUserDefaults = bluxDeviceResponse.bluxId
-            SdkConfig.deviceIdInUserDefaults = bluxDeviceResponse.deviceId
-            SdkConfig.userIdInUserDefaults = bluxDeviceResponse.userId
-            SdkConfig.isSubscribedInUserDefaults = bluxDeviceResponse.isSubscribed
-        }
-    }
 }

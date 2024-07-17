@@ -12,7 +12,7 @@ final class HTTPClient {
     
     private static let COLLECTOR_BASE_URL = "https://collector-api-web.blux.ai"
     private static let CRM_COLLECTOR_BASE_URL = "https://crm-collector-api.blux.ai";
-    private static let IDENTIFIER_BASE_URL = "https://api.blux.ai/dev";
+    private static let IDENTIFIER_BASE_URL = "https://api.blux.ai/prod";
     
     enum HTTPMethodWithBody: String {
         case POST

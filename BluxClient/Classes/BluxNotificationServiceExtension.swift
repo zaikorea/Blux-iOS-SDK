@@ -38,13 +38,6 @@ open class BluxNotificationServiceExtension: UNNotificationServiceExtension {
                 return
             }
             
-            // Check application state via UserDefaults and createBackgroundReceived if needed
-            if let userDefaults = UserDefaults(suiteName: SdkConfig.bluxSuiteName) {
-                if userDefaults.bool(forKey: "isAppInForeground") == false {
-                    EventService.createBackgroundReceived(notification: bluxNotification)
-                }
-            }
-            
             guard let imageUrl = bluxNotification.imageUrl,
                   let attachmentUrl = URL(string: imageUrl) else {
                 contentHandler(bestAttemptContent)

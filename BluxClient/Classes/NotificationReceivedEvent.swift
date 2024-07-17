@@ -22,11 +22,6 @@ import Foundation
         Logger.verbose("Notification received: \(self.notification)")
         completionHandler([.alert, .sound])
         
-        if application.applicationState == .active {
-            EventService.createForegroundReceived(notification: self.notification)
-        } else { // TODO: Cannot access
-            Logger.verbose("applicationState: \(application.applicationState)")
-            EventService.createBackgroundReceived(notification: self.notification)
-        }
+        EventService.createReceived(notification: self.notification)
     }
 }

@@ -197,30 +197,12 @@ import UIKit
             DispatchQueue.main.async {
                 if granted {
                     UIApplication.shared.registerForRemoteNotifications()
-                    completion?(true)
                 } else {
-                    completion?(false)
+                    let body = DeviceService.getBluxDeviceInfo()
+                    body.pushToken = nil
+                    
+                    DeviceService.updatePushToken(body: body)
                 }
-            }
-        }
-    }
-    
-    /// Update isSubscribed of the device
-    private static func setIsSubscribed(isSubscribed: Bool, completion: ((Bool) -> Void)? = nil) {
-        guard SdkConfig.deviceIdInUserDefaults != nil else {
-            return
-        }
-        
-        let body = DeviceService.getBluxDeviceInfo()
-        body.isSubscribed = isSubscribed
-        
-        if isSubscribed == true {
-            body.pushToken = SdkConfig.pushTokenInUserDefaults
-        }
-        
-        DeviceService.update(body: body) { bluxDevice in
-            DispatchQueue.main.sync {
-                completion?(bluxDevice.isSubscribed)
             }
         }
     }

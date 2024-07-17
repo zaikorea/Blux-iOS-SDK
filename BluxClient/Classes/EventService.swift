@@ -55,18 +55,13 @@ class EventService {
         clickedHandler(notification)
     }
     
-    static func createBackgroundReceived(notification: BluxNotification) {
-        EventService.createNotificationEvent(eventType: .delivered, eventValue: .background, notification: notification)
+    static func createReceived(notification: BluxNotification) {
+        EventService.createNotificationEvent(eventType: .delivered, notification: notification)
     }
     
-    static func createForegroundReceived(notification: BluxNotification) {
-        EventService.createNotificationEvent(eventType: .delivered, eventValue: .foreground, notification: notification)
-    }
-    
-    static func createNotificationEvent(eventType: CRMEventType, eventValue: NotificationReceivedFrom? = nil, notification: BluxNotification) {
+    static func createNotificationEvent(eventType: CRMEventType, notification: BluxNotification) {
         let data = CRMEvent(
             eventType: eventType,
-            eventValue: eventValue,
             customerEngagementType: notification.customerEngagementType,
             customerEngagementId: notification.customerEngagementId,
             customerEngagementTaskId: notification.customerEngagementTaskId

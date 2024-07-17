@@ -77,7 +77,7 @@
 		23BBAA94AA93D458BEDADCFE759C8E3A /* NotificationReceivedEvent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NotificationReceivedEvent.swift; path = BluxClient/Classes/NotificationReceivedEvent.swift; sourceTree = "<group>"; };
 		24B50D3334A181D252B7256020E3DF9E /* WebViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebViewController.swift; path = BluxClient/Classes/WebViewController.swift; sourceTree = "<group>"; };
 		322AF1D7D5914BBAB9D1C6738162EBDC /* BluxClient.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = BluxClient.modulemap; sourceTree = "<group>"; };
-		3B6EF85CD7524E1356FE520422BD8001 /* BluxClient.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = BluxClient.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		3B6EF85CD7524E1356FE520422BD8001 /* BluxClient.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = BluxClient.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		3D11F7F927838D8CDBFCE0BABF34E9D7 /* Utils.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Utils.swift; path = BluxClient/Classes/Utils.swift; sourceTree = "<group>"; };
 		4A35B7D704AC6369BBF18CA795EDC866 /* AddCustomEvent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddCustomEvent.swift; sourceTree = "<group>"; };
 		4C47964D417E54C634C8C3DC179787E8 /* BluxNotificationServiceExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BluxNotificationServiceExtension.swift; path = BluxClient/Classes/BluxNotificationServiceExtension.swift; sourceTree = "<group>"; };
@@ -101,7 +101,7 @@
 		88A3909FB093ECEE979A2606BBA84008 /* HTTPClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HTTPClient.swift; path = BluxClient/Classes/HTTPClient.swift; sourceTree = "<group>"; };
 		97D14D2556664BCD47EAAFBD7F26C9A8 /* DeviceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeviceService.swift; path = BluxClient/Classes/DeviceService.swift; sourceTree = "<group>"; };
 		996347F758406144BD1D9ED20DE607D4 /* BluxDevice.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BluxDevice.swift; path = BluxClient/Classes/BluxDevice.swift; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9F7DFEF76AD16D53FE2694FA72786E96 /* BluxNotificationCenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BluxNotificationCenter.swift; path = BluxClient/Classes/BluxNotificationCenter.swift; sourceTree = "<group>"; };
 		A8F461A41FC5F5415917599E798A333A /* Pods-BluxClient_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-BluxClient_Example-frameworks.sh"; sourceTree = "<group>"; };
 		BCEEF30B36956A121FAE161744736D4D /* Pods-BluxClient_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-BluxClient_Example-dummy.m"; sourceTree = "<group>"; };
@@ -114,7 +114,7 @@
 		CE45DF83C2071E984EC64A5207C73283 /* AddRecommendationViewEvent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddRecommendationViewEvent.swift; sourceTree = "<group>"; };
 		D178BD2444312129F83C37E21C52880D /* BluxClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BluxClient.swift; path = BluxClient/Classes/BluxClient.swift; sourceTree = "<group>"; };
 		D2E9431DDC9CEEE5E3BB8640E29DA8C6 /* Pods-BluxNotificationServiceExtenstion.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BluxNotificationServiceExtenstion.debug.xcconfig"; sourceTree = "<group>"; };
-		D54967A0A083CD1E49AA21C87F0F300B /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		D54967A0A083CD1E49AA21C87F0F300B /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D79F8B51D6C497A74783A12A974CB023 /* CRMEvent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CRMEvent.swift; sourceTree = "<group>"; };
 		DDDFDA7BABDABFC1E203FA2D38387976 /* Pods-BluxNotificationServiceExtenstion-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BluxNotificationServiceExtenstion-acknowledgements.plist"; sourceTree = "<group>"; };
 		DFEA959C42939C6BE0CB08A43F12FF0C /* BluxClient-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "BluxClient-prefix.pch"; sourceTree = "<group>"; };
@@ -125,7 +125,7 @@
 		E697AFD60CEF4A4480B5D0813A4579E2 /* AddRateEvent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddRateEvent.swift; sourceTree = "<group>"; };
 		EC3D0675AC3E82EFAF4AF1AF16E434EE /* Pods-BluxNotificationServiceExtenstion-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-BluxNotificationServiceExtenstion-dummy.m"; sourceTree = "<group>"; };
 		F6A6B12F0E043CCC8FE68875143C34CA /* Pods-BluxNotificationServiceExtenstion */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-BluxNotificationServiceExtenstion"; path = Pods_BluxNotificationServiceExtenstion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA689F5B45AAA7CBFE9E4D94206F1586 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		FA689F5B45AAA7CBFE9E4D94206F1586 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		FCF604E5BB559FA6D79BBE1AE30C4319 /* Event.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		FDBDC43D486D0F0E1F206D69CB13EF26 /* BluxClient.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = BluxClient.debug.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -217,7 +217,6 @@
 				FCF604E5BB559FA6D79BBE1AE30C4319 /* Event.swift */,
 				6D4BEBDF3EF53167EB03A5B8D8F72E73 /* EventRequest.swift */,
 			);
-			name = events;
 			path = events;
 			sourceTree = "<group>";
 		};
@@ -431,6 +430,11 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					DE72E8C9D55A45155960F8ACD5BAC589 = {
+						LastSwiftMigration = "";
+					};
+				};
 			};
 			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -735,8 +739,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};

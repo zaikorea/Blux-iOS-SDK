@@ -40,9 +40,22 @@ struct ContentView: View {
                         
                         Button {
                             /// Set User ID
-                            BluxClient.setUserId(userId: userId)
+                            BluxClient.signIn(userId: userId)
                         } label: {
                             Text("Set User ID")
+                                .foregroundColor(Color.white)
+                                .font(.system(size: 20))
+                                .padding()
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                )
+                        }
+                        
+                        Button {
+                            /// Signout
+                            BluxClient.signOut()
+                        } label: {
+                            Text("Signout")
                                 .foregroundColor(Color.white)
                                 .font(.system(size: 20))
                                 .padding()

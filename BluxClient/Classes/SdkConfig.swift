@@ -16,7 +16,6 @@ public enum SdkType: String {
 final class SdkConfig {
     static var sdkVersion = "0.2.3"
     static var sdkType: SdkType = .native
-    static var bluxSuiteName = "group.ai.blux.app"
     
     static let bluxSdkInfoHeader: String = "X-BLUX-SDK-INFO"
     static let bluxClientIdHeader: String = "X-BLUX-CLIENT-ID"
@@ -36,11 +35,11 @@ final class SdkConfig {
     private static var bluxIdKey = "bluxId"
     static var bluxIdInUserDefaults: String? {
         set {
-            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: bluxIdKey)
+            UserDefaults.standard.set(newValue, forKey: bluxIdKey)
         }
         
         get {
-            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: bluxIdKey)
+            UserDefaults.standard.string(forKey: bluxIdKey)
         }
     }
     
@@ -48,11 +47,11 @@ final class SdkConfig {
     private static var deviceIdKey = "bluxDeviceId"
     static var deviceIdInUserDefaults: String? {
         set {
-            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: deviceIdKey)
+            UserDefaults.standard.set(newValue, forKey: deviceIdKey)
         }
         
         get {
-            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: deviceIdKey)
+            UserDefaults.standard.string(forKey: deviceIdKey)
         }
     }
     
@@ -60,11 +59,11 @@ final class SdkConfig {
     private static var userIdKey = "bluxUserId"
     static var userIdInUserDefaults: String? {
         set {
-            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: userIdKey)
+            UserDefaults.standard.set(newValue, forKey: userIdKey)
         }
         
         get {
-            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: userIdKey)
+            UserDefaults.standard.string(forKey: userIdKey)
         }
     }
     
@@ -72,22 +71,22 @@ final class SdkConfig {
     private static var clientIdKey = "bluxClientId"
     static var clientIdInUserDefaults: String? {
         set {
-            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: clientIdKey)
+            UserDefaults.standard.set(newValue, forKey: clientIdKey)
         }
         
         get {
-            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: clientIdKey)
+            UserDefaults.standard.string(forKey: clientIdKey)
         }
     }
     
     private static var apiKey = "bluxAPIKey"
     static var apiKeyInUserDefaults: String? {
         set {
-            UserDefaults(suiteName: bluxSuiteName)?.set(newValue, forKey: apiKey)
+            UserDefaults.standard.set(newValue, forKey: apiKey)
         }
         
         get {
-            UserDefaults(suiteName: bluxSuiteName)?.string(forKey: apiKey)
+            UserDefaults.standard.string(forKey: apiKey)
         }
     }
 }

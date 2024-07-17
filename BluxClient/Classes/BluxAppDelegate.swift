@@ -25,16 +25,6 @@ import UIKit
             swizzledSelector: #selector(self.application(_:didRegisterForRemoteNotificationsWithDeviceToken:)),
             in: UIApplication.shared.delegate
         )
-        swizzleMethod(
-            originalSelector: #selector(UIApplicationDelegate.applicationDidBecomeActive(_:)),
-            swizzledSelector: #selector(self.applicationDidBecomeActive(_:)),
-            in: UIApplication.shared.delegate
-        )
-        swizzleMethod(
-            originalSelector: #selector(UIApplicationDelegate.applicationWillResignActive(_:)),
-            swizzledSelector: #selector(self.applicationWillResignActive(_:)),
-            in: UIApplication.shared.delegate
-        )
         SdkConfig.isSwizzled = true
         Logger.verbose("Swizzling success.")
     }
@@ -78,32 +68,14 @@ import UIKit
                 return
             }
             
-            // Convert token to string
-            let prevPushToken = SdkConfig.pushTokenInUserDefaults
             let pushToken = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
-            Logger.verbose("APNs device token: \(pushToken)")
             
-            // It is divided into activate and register depending on the presence of deviceId
-            if let _ = SdkConfig.deviceIdInUserDefaults, pushToken != prevPushToken {
+            if let _ = SdkConfig.deviceIdInUserDefaults {
                 let body = DeviceService.getBluxDeviceInfo()
                 body.pushToken = pushToken
                 
-                DeviceService.update(body: body) { _ in
-                    SdkConfig.pushTokenInUserDefaults = pushToken
-                }
+                DeviceService.updatePushToken(body: body)
             }
-        }
-    }
-    
-    @objc public func applicationDidBecomeActive(_ application: UIApplication) {
-        if let userDefaults = UserDefaults(suiteName: SdkConfig.bluxSuiteName) {
-            userDefaults.set(true, forKey: "isAppInForeground")
-        }
-    }
-    
-    @objc public func applicationWillResignActive(_ application: UIApplication) {
-        if let userDefaults = UserDefaults(suiteName: SdkConfig.bluxSuiteName) {
-            userDefaults.set(false, forKey: "isAppInForeground")
         }
     }
 }
