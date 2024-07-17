@@ -16,18 +16,17 @@ import UIKit
     // MARK: - Public Methods
     
     /// Initialize Blux SDK
-    @objc public static func initialize(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?, bluxClientId: String, bluxSecretKey: String, requestPermissionOnLaunch: Bool = true) {
+    @objc public static func initialize(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?, bluxClientId: String, bluxAPIKey: String, requestPermissionOnLaunch: Bool = true) {
         SdkConfig.requestPermissionOnLaunch = requestPermissionOnLaunch
         
         Logger.verbose("Initialize BluxClient with Client ID: \(bluxClientId).")
-        SdkConfig.secretKeyInUserDefaults = bluxSecretKey
+        SdkConfig.apiKeyInUserDefaults = bluxAPIKey
         
         // If saved clientId is nil or different, reset deviceId to nil
         let savedClientId = SdkConfig.clientIdInUserDefaults
         if savedClientId == nil || savedClientId != bluxClientId {
             SdkConfig.clientIdInUserDefaults = bluxClientId
             SdkConfig.deviceIdInUserDefaults = nil
-            SdkConfig.isSubscribedInUserDefaults = nil
         }
         
         // Check UserDefaults availability
@@ -56,19 +55,62 @@ import UIKit
     }
     
     /// Set userId of the device
-    @objc public static func setUserId(userId: String?) {
-        guard SdkConfig.bluxIdInUserDefaults != nil else {
+    @objc public static func signIn(userId: String) {
+        guard let clientId = SdkConfig.clientIdInUserDefaults else {
             return
         }
-        guard SdkConfig.deviceIdInUserDefaults != nil else {
+        guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
             return
         }
         
         let body = DeviceService.getBluxDeviceInfo()
         body.userId = userId
         
-        DeviceService.update(body: body)
+        HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/sign-in", body: body, apiType: "IDENTIFIER") { (response: BluxDeviceResponse?, error) in
+            if let error = error  {
+                Logger.error("Failed to request sign-in. - \(error)")
+                return
+            }
+            
+            if let bluxDeviceResponse = response {
+                SdkConfig.bluxIdInUserDefaults = bluxDeviceResponse.bluxId
+                SdkConfig.userIdInUserDefaults = userId
+                Logger.verbose("Signin request success.")
+                Logger.verbose("Blux ID: \(bluxDeviceResponse.bluxId).")
+            }
+        }
     }
+    
+    /// Signout from the device
+    @objc public static func signOut() {
+        guard let clientId = SdkConfig.clientIdInUserDefaults else {
+            return
+        }
+        guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
+            return
+        }
+        guard let deviceId = SdkConfig.deviceIdInUserDefaults else {
+            return
+        }
+        
+        let body = DeviceService.getBluxDeviceInfo()
+        body.deviceId = deviceId
+        
+        HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/sign-out", body: body, apiType: "IDENTIFIER") { (response: BluxDeviceResponse?, error) in
+            if let error = error  {
+                Logger.error("Failed to request sign-out. - \(error)")
+                return
+            }
+            
+            if let bluxDeviceResponse = response {
+                SdkConfig.bluxIdInUserDefaults = bluxDeviceResponse.bluxId
+                SdkConfig.userIdInUserDefaults = nil
+                Logger.verbose("Signout request success.")
+                Logger.verbose("Blux ID: \(bluxDeviceResponse.bluxId).")
+            }
+        }
+    }
+
 
     public static func sendRequestData(_ data: [Event]) {
         guard let deviceId = SdkConfig.deviceIdInUserDefaults else {
@@ -87,7 +129,6 @@ import UIKit
         EventService.sendRequest(data)
     }
     
-    
     /// Send Request
     public static func sendRequest(_ request: EventRequest) {
         let requestData = request.getPayload()
@@ -98,19 +139,13 @@ import UIKit
         if isActivated { return }
         isActivated = true
         
-        if let savedDeviceId = SdkConfig.deviceIdInUserDefaults {
-            Logger.verbose("Blux Device ID exists: \(savedDeviceId).")
-            DeviceService.activate() {
-                if requestPermissionOnLaunch {
-                    requestPermissionForNotifications()
-                }
-            }
-        } else {
-            Logger.verbose("Blux Device ID does not exist, create new one.")
-            DeviceService.create() {
-                if requestPermissionOnLaunch {
-                    requestPermissionForNotifications()
-                }
+        let savedDeviceId = SdkConfig.deviceIdInUserDefaults
+
+        Logger.verbose(savedDeviceId != nil ? "Blux Device ID exists: \(savedDeviceId!)." : "Blux Device ID does not exist, create new one.")
+
+        DeviceService.initializeDevice(deviceId: savedDeviceId) {
+            if requestPermissionOnLaunch {
+                requestPermissionForNotifications()
             }
         }
     }
@@ -143,56 +178,12 @@ import UIKit
         }
     }
     
-    /// Request a permission and subscribe for notifications
-    @objc public static func subscribe(fallbackToSettings: Bool = true, completion: ((Bool) -> Void)? = nil) {
-        UNUserNotificationCenter.current().getNotificationSettings { settings in
-            if settings.authorizationStatus == .notDetermined {
-                self.requestPermissionForNotifications(completion: completion)
-            } else if settings.authorizationStatus == .denied {
-                if fallbackToSettings { // Open Notification Settings
-                    DispatchQueue.main.async {
-                        if #available(iOS 16.0, *) {
-                            if let url = URL(string: UIApplication.openNotificationSettingsURLString) {
-                                UIApplication.shared.open(url)
-                            }
-                        } else if #available(iOS 15.4, *) {
-                            if let url = URL(string: UIApplicationOpenNotificationSettingsURLString) {
-                                UIApplication.shared.open(url)
-                            }
-                        } else {
-                            if let url = URL(string: "App-Prefs:root=NOTIFICATIONS_ID") {
-                                UIApplication.shared.open(url)
-                            }
-                        }
-                    }
-                }
-            } else {
-                // Synchronize as much as possible to prevent cases where the token is absent in the DB
-                self.requestPermissionForNotifications()
-                self.setIsSubscribed(isSubscribed: true) { isSubscribed in
-                    DispatchQueue.main.async {
-                        completion?(isSubscribed)
-                    }
-                }
-            }
-        }
-    }
-    
-    /// Unsubscribe for notifications
-    @objc public static func unsubscribe(completion: ((Bool) -> Void)? = nil) {
-        self.setIsSubscribed(isSubscribed: false) { isSubscribed in
-            DispatchQueue.main.async {
-                completion?(isSubscribed)
-            }
-        }
-    }
-    
     // MARK: Private Methods
     
-    private static func requestPermissionForNotifications(completion: ((Bool) -> Void)? = nil) {
+    private static func requestPermissionForNotifications() {
         let options: UNAuthorizationOptions = [.badge, .alert, .sound]
         
-        // Execute completion if already authorized
+        // 이미 사용자가 푸시 알림 권한을 부여한 상태라면, 권한 요청 팝업은 다시 나타나지 않습니다. 대신, requestAuthorization 메서드는 즉시 현재 권한 상태를 반환합니다.
         UNUserNotificationCenter.current().requestAuthorization(options: options) { (granted, error) in
             DispatchQueue.main.async {
                 if granted {
