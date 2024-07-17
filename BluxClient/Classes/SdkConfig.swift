@@ -14,7 +14,7 @@ public enum SdkType: String {
 }
 
 final class SdkConfig {
-    static var sdkVersion = "0.2.5"
+    static var sdkVersion = "0.2.6"
     static var sdkType: SdkType = .native
     
     static let bluxSdkInfoHeader: String = "X-BLUX-SDK-INFO"
