@@ -16,7 +16,7 @@ import UIKit
     // MARK: - Public Methods
     
     /// Initialize Blux SDK
-    @objc public static func initialize(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?, bluxClientId: String, bluxAPIKey: String, requestPermissionOnLaunch: Bool = true) {
+    @objc public static func initialize(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?, bluxClientId: String, bluxAPIKey: String, requestPermissionOnLaunch: Bool = true, completion: @escaping (() -> Void) = {}) {
         SdkConfig.requestPermissionOnLaunch = requestPermissionOnLaunch
         
         Logger.verbose("Initialize BluxClient with Client ID: \(bluxClientId).")
@@ -45,7 +45,19 @@ import UIKit
         
         ColdStartNotificationManager.process()
         
-        deviceCreateOrActivate(requestPermissionOnLaunch)
+        if isActivated { return }
+        isActivated = true
+        
+        let savedDeviceId = SdkConfig.deviceIdInUserDefaults
+
+        Logger.verbose(savedDeviceId != nil ? "Blux Device ID exists: \(savedDeviceId!)." : "Blux Device ID does not exist, create new one.")
+
+        DeviceService.initializeDevice(deviceId: savedDeviceId) {
+            completion()
+            if requestPermissionOnLaunch {
+                requestPermissionForNotifications()
+            }
+        }
     }
     
     /// Set log level.
@@ -135,21 +147,6 @@ import UIKit
         self.sendRequestData(requestData)
     }
 
-    private static func deviceCreateOrActivate(_ requestPermissionOnLaunch: Bool) {
-        if isActivated { return }
-        isActivated = true
-        
-        let savedDeviceId = SdkConfig.deviceIdInUserDefaults
-
-        Logger.verbose(savedDeviceId != nil ? "Blux Device ID exists: \(savedDeviceId!)." : "Blux Device ID does not exist, create new one.")
-
-        DeviceService.initializeDevice(deviceId: savedDeviceId) {
-            if requestPermissionOnLaunch {
-                requestPermissionForNotifications()
-            }
-        }
-    }
-    
     /// Set the handler when notification is clicked
     @objc public static func setNotificationClickedHandler(callback: @escaping (BluxNotification) -> Void) {
         EventHandlers.notificationClicked = callback
