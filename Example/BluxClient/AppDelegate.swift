@@ -7,14 +7,12 @@
 //
 
 import UIKit
-import SwiftUI
 import BluxClient
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
-    var appState = AppState()
     
     let clientId = "CLIENT ID"
     let apiKey = "SECRET KEY"
@@ -22,19 +20,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        BluxClient.initialize(launchOptions, bluxClientId: clientId, bluxAPIKey: apiKey)
+        BluxClient.initialize(launchOptions, bluxClientId: clientId, bluxAPIKey: apiKey) {
+            BluxClient.signIn(userId: "wendy333")
+        }
         
         /// Swizzling Disabled
         // UNUserNotificationCenter.current().delegate = self
-        
-        let contentView = ContentView().environmentObject(appState)
-        
-        // Create the SwiftUI view that provides the window contents.
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = UIHostingController(rootView: contentView)
-        self.window = window
-        window.makeKeyAndVisible()
-        
+    
         return true
     }
     
