@@ -87,19 +87,7 @@ import UserNotifications
         topViewController.present(navigationController, animated: true, completion: nil)
     }
     
-    private func getTopViewController() -> UIViewController? {
-        guard let windowScene = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first,
-              let rootViewController = windowScene.windows
-            .filter({ $0.isKeyWindow }).first?.rootViewController else {
-            return nil
-        }
-        return getTopViewController(rootViewController)
-    }
-    
-    
-    private func getTopViewController(_ baseViewController: UIViewController?) -> UIViewController? {
+    private func getTopViewController(_ baseViewController: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
         if let navigationController = baseViewController as? UINavigationController {
             return getTopViewController(navigationController.visibleViewController)
         }

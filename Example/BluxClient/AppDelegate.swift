@@ -39,25 +39,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     // Example Deeplink configuration
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        
-        let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        let host = urlComponents?.host
-        let path = urlComponents?.path
-        
-        if host == "product", let productId = path?.components(separatedBy: "/").last {
-            appState.selectedTab = .home
-            appState.selectedProductId = productId
-        } else if host == "tab", let tabIndexString = path?.components(separatedBy: "/").last, let tabIndex = Int(tabIndexString) {
-            if let tab = AppState.Tab(rawValue: tabIndex) {
-                appState.selectedTab = tab
-            }
-        } else {
-            return false
-        }
-        
-        return true
-    }
+//    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+//
+//        let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+//        let host = urlComponents?.host
+//        let path = urlComponents?.path
+//
+//        if host == "product", let productId = path?.components(separatedBy: "/").last {
+//            appState.selectedTab = .home
+//            appState.selectedProductId = productId
+//        } else if host == "tab", let tabIndexString = path?.components(separatedBy: "/").last, let tabIndex = Int(tabIndexString) {
+//            if let tab = AppState.Tab(rawValue: tabIndex) {
+//                appState.selectedTab = tab
+//            }
+//        } else {
+//            return false
+//        }
+//
+//        return true
+//    }
     
     func applicationDidBecomeActive(_ application: UIApplication) {}
     /// Swizzling Disabled
