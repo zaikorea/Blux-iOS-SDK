@@ -78,7 +78,7 @@ import UIKit
         let body = DeviceService.getBluxDeviceInfo()
         body.userId = userId
         
-        HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/sign-in", body: body, apiType: "IDENTIFIER") { (response: BluxDeviceResponse?, error) in
+        HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/sign-in", body: body) { (response: BluxDeviceResponse?, error) in
             if let error = error  {
                 Logger.error("Failed to request sign-in. - \(error)")
                 return
@@ -108,7 +108,7 @@ import UIKit
         let body = DeviceService.getBluxDeviceInfo()
         body.deviceId = deviceId
         
-        HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/sign-out", body: body, apiType: "IDENTIFIER") { (response: BluxDeviceResponse?, error) in
+        HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/sign-out", body: body) { (response: BluxDeviceResponse?, error) in
             if let error = error  {
                 Logger.error("Failed to request sign-out. - \(error)")
                 return
@@ -122,7 +122,129 @@ import UIKit
             }
         }
     }
+    
+    // Used in setUserProperties, setCustomUserProperties
+    struct PropertiesWrapper<T: Codable>: Codable {
+        var properties: T
+    }
+    
+    public static func setUserProperties(userProperties: UserProperties) {
+        guard let clientId = SdkConfig.clientIdInUserDefaults else {
+            return
+        }
+        guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
+            return
+        }
+        
+        // Input으로 받은 userProperties 객체를 한번 더 감싼 형태
 
+        let propertiesWrapper = PropertiesWrapper(properties: userProperties)
+        
+        HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/update-user-properties", body: propertiesWrapper) { (response: BluxDeviceResponse?, error) in
+            
+            if let error = error {
+                Logger.error("Failed to send request.")
+                Logger.error("Error: \(error)")
+                return
+            }
+            
+            if let bluxDeviceResponse = response {
+                Logger.verbose("SetUserProperties request success.")
+                Logger.verbose("Blux ID: \(bluxDeviceResponse.bluxId).")
+            }
+        }
+    }
+    
+    // Used to convert customUserProperties to Codable
+    enum CustomValue: Codable {
+        case string(String)
+        case int(Int)
+        case double(Double)
+        case bool(Bool)
+        case null
+        case stringArray([String])
+        
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let value = try? container.decode(String.self) {
+                self = .string(value)
+            } else if let value = try? container.decode(Int.self) {
+                self = .int(value)
+            } else if let value = try? container.decode(Double.self) {
+                self = .double(value)
+            } else if let value = try? container.decode(Bool.self) {
+                self = .bool(value)
+            } else if let value = try? container.decode([String].self) {
+                self = .stringArray(value)
+            } else if container.decodeNil() {
+                self = .null
+            } else {
+                throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unsupported type")
+            }
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            switch self {
+            case .string(let value):
+                try container.encode(value)
+            case .int(let value):
+                try container.encode(value)
+            case .double(let value):
+                try container.encode(value)
+            case .bool(let value):
+                try container.encode(value)
+            case .stringArray(let value):
+                try container.encode(value)
+            case .null:
+                try container.encodeNil()
+            }
+        }
+    }
+
+    public static func setCustomUserProperties(customUserProperties: [String: Any?]) throws {
+        guard let clientId = SdkConfig.clientIdInUserDefaults else {
+            return
+        }
+        guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
+            return
+        }
+        
+        var processedCustomProperties: [String: CustomValue] = [:]
+        
+        for (key, value) in customUserProperties {
+            if let stringValue = value as? String {
+                processedCustomProperties[key] = .string(stringValue)
+            } else if let intValue = value as? Int {
+                processedCustomProperties[key] = .int(intValue)
+            } else if let doubleValue = value as? Double {
+                processedCustomProperties[key] = .double(doubleValue)
+            } else if let boolValue = value as? Bool {
+                processedCustomProperties[key] = .bool(boolValue)
+            } else if let stringArrayValue = value as? [String] {
+                processedCustomProperties[key] = .stringArray(stringArrayValue)
+            } else {
+                throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unsupported type"])
+            }
+        }
+        
+        let propertiesWrapper = PropertiesWrapper(properties: processedCustomProperties)
+
+        HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/update-custom-user-properties", body: propertiesWrapper) { (response: BluxDeviceResponse?, error) in
+            
+            if let error = error {
+                Logger.error("Failed to send request.")
+                Logger.error("Error: \(error)")
+                return
+            }
+            
+            if let bluxDeviceResponse = response {
+                Logger.verbose("SetCustomUserProperties request success.")
+                Logger.verbose("Blux ID: \(bluxDeviceResponse.bluxId).")
+            }
+        }
+    }
+    
 
     public static func sendRequestData(_ data: [Event]) {
         guard let deviceId = SdkConfig.deviceIdInUserDefaults else {

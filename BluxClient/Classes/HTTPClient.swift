@@ -11,8 +11,7 @@ final class HTTPClient {
     static let shared: HTTPClient = HTTPClient()
     
     private static let COLLECTOR_BASE_URL = "https://collector-api-web.blux.ai"
-    private static let CRM_COLLECTOR_BASE_URL = "https://crm-collector-api.blux.ai";
-    private static let IDENTIFIER_BASE_URL = "https://api.blux.ai/prod";
+    private static let SERVERLESS_BASE_URL = "https://api.blux.ai/stg";
     
     enum HTTPMethodWithBody: String {
         case POST
@@ -57,12 +56,10 @@ final class HTTPClient {
         let baseUrl: String
         
         switch apiType {
-            case "IDENTIFIER":
-                baseUrl = HTTPClient.IDENTIFIER_BASE_URL
-            case "CRM":
-                baseUrl = HTTPClient.CRM_COLLECTOR_BASE_URL
-            default:
+            case "LEGACY":
                 baseUrl = HTTPClient.COLLECTOR_BASE_URL
+            default:
+                baseUrl = HTTPClient.SERVERLESS_BASE_URL
         }
         
         guard let url = URL(string: "\(baseUrl)\(path)") else {
@@ -79,10 +76,10 @@ final class HTTPClient {
         let requestTimestamp = "\(Utils.getCurrentUnixTimestamp())"
         
         request.setValue("\(SdkConfig.sdkType)-\(SdkConfig.sdkVersion)", forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader)
-        request.setValue(clientId, forHTTPHeaderField: SdkConfig.bluxClientIdHeader)
-        request.setValue(SdkConfig.apiKeyInUserDefaults, forHTTPHeaderField: SdkConfig.bluxApiKeyHeader)
-        request.setValue(SdkConfig.apiKeyInUserDefaults, forHTTPHeaderField: SdkConfig.bluxAuthorizationHeader)
-        request.setValue(requestTimestamp, forHTTPHeaderField: SdkConfig.bluxUnixTimestampHeader)
+        request.setValue(clientId, forHTTPHeaderField: "X-BLUX-CLIENT-ID")
+        request.setValue(UserDefaults(suiteName: "group.ai.blux.app")?.string(forKey: "bluxAPIKey"), forHTTPHeaderField: "X-BLUX-API-KEY")
+        request.setValue(UserDefaults(suiteName: "group.ai.blux.app")?.string(forKey: "bluxAPIKey"), forHTTPHeaderField: "Authorization")
+        request.setValue(requestTimestamp, forHTTPHeaderField: "X-BLUX-TIMESTAMP")
         
         return request
     }

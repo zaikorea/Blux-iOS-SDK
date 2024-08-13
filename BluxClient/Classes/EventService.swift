@@ -13,7 +13,7 @@ class EventService {
     ///   - data: event data
     static func sendRequest<T: Codable>(_ data: [T]) {
         
-        HTTPClient.shared.post(path: "/events", body: data) { (response: EventResponse?, error) in
+        HTTPClient.shared.post(path: "/events", body: data, apiType: "LEGACY") { (response: EventResponse?, error) in
             if let error = error {
                 Logger.error("Failed to send event request.")
                 Logger.error("Error: \(error)")
@@ -28,21 +28,36 @@ class EventService {
     
     /// Processed when notification is clicked
     /// - Parameter notification: Received notification
-    static func createClicked(notification: BluxNotification) {
-        guard SdkConfig.clientIdInUserDefaults != nil else {
-            Logger.error("No Client ID.")
-            return
-        }
-        guard SdkConfig.bluxIdInUserDefaults != nil else {
-            Logger.error("No Blux ID.")
-            return
-        }
-        guard SdkConfig.deviceIdInUserDefaults != nil else {
-            Logger.error("No Device ID.")
+    static func createPushOpened(notification: BluxNotification) {
+        guard let clientId = SdkConfig.clientIdInUserDefaults else {
             return
         }
         
-        EventService.createNotificationEvent(eventType: .clicked, notification: notification)
+        // Define the Codable struct with custom encoding for the Date field
+        struct CRMEventsBody: Codable {
+            let notification_id: String
+            let crm_event_type: String
+            let captured_at: String
+        }
+        
+        // 현재 날짜와 시간을 나타내는 Date 객체
+        let capturedAt = Date()
+
+        // DateFormatter 생성
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ" // 원하는 날짜 형식 설정 (ISO 8601 형식 예시)
+        let capturedAtString = dateFormatter.string(from: capturedAt)
+        struct EmptyResponse: Codable {}
+
+        HTTPClient.shared.post(path: "/organizations/" + clientId + "/crm-events", body: CRMEventsBody(notification_id: notification.id, crm_event_type: "push_opened", captured_at: capturedAtString)) { (response: EmptyResponse?, error) in
+            
+            if let error = error {
+                Logger.error("Failed to send request.")
+                Logger.error("Error: \(error)")
+                return
+            }
+        }
+        
         
         guard let clickedHandler = EventHandlers.notificationClicked else {
             Logger.verbose("UnhandledNotification saved.")
@@ -55,19 +70,25 @@ class EventService {
         clickedHandler(notification)
     }
     
-    static func createReceived(notification: BluxNotification) {
-        EventService.createNotificationEvent(eventType: .delivered, notification: notification)
+    open class BluxNotificationResponse: Codable {
+        public var id: String
+        
+        public init(id: String) {
+            self.id = id
+        }
     }
     
-    static func createNotificationEvent(eventType: CRMEventType, notification: BluxNotification) {
-        let data = CRMEvent(
-            eventType: eventType,
-            customerEngagementType: notification.customerEngagementType,
-            customerEngagementId: notification.customerEngagementId,
-            customerEngagementTaskId: notification.customerEngagementTaskId
-        )
+    static func createReceived(notification: BluxNotification) {
+        guard let clientId = UserDefaults(suiteName: "group.ai.blux.app")?.string(forKey: "bluxClientId") else {
+            return
+        }
+
+        struct StatusBody: Codable {
+            let status: String
+        }
         
-        HTTPClient.shared.post(path: "/api/v1/events", body: data, apiType: "CRM") { (response: EventResponse?, error) in
+
+        HTTPClient.shared.post(path: "/organizations/" + clientId + "/notifications/" + notification.id, body: StatusBody(status: "received")) { (response: BluxNotificationResponse?, error) in
             
             if let error = error {
                 Logger.error("Failed to send request.")
@@ -75,8 +96,9 @@ class EventService {
                 return
             }
             
-            if let eventResponse = response {
-                Logger.verbose("\(eventResponse)")
+            if let notificationResponse = response {
+                Logger.verbose("SetCustomUserProperties request success.")
+                Logger.verbose("Notification ID: " + notificationResponse.id)
             }
         }
     }

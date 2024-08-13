@@ -29,7 +29,7 @@ import UserNotifications
                 Logger.verbose("ColdStartNotification exists. Skip didReceive.")
             } else {
                 Logger.verbose("Notification clicked.")
-                EventService.createClicked(notification: notification)
+                EventService.createPushOpened(notification: notification)
             }
             
             if let bluxDismissLaunchUrl = Bundle.main.object(forInfoDictionaryKey: "blux_dismiss_launch_url") as? Bool, bluxDismissLaunchUrl == true {

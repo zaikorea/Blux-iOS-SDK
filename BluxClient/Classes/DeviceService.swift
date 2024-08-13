@@ -37,7 +37,7 @@ final class DeviceService {
             return
         }
         
-        HTTPClient.shared.post(path: "/organizations/" + clientId + "/blux-users/initialize", body: body, apiType: "IDENTIFIER") { (response: BluxDeviceResponse?, error) in
+        HTTPClient.shared.post(path: "/organizations/" + clientId + "/blux-users/initialize", body: body) { (response: BluxDeviceResponse?, error) in
             if let error = error {
                 Logger.error("Failed to request create device. - \(error)")
                 return
@@ -70,7 +70,7 @@ final class DeviceService {
             return
         }
         
-        HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/devices/" + deviceId, body: body, apiType: "IDENTIFIER") { (response: BluxDeviceResponse?, error) in
+        HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/devices/" + deviceId, body: body) { (response: BluxDeviceResponse?, error) in
             if let error = error  {
                 Logger.error("Failed to request update device. - \(error)")
                 return

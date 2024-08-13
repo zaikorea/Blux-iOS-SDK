@@ -38,6 +38,8 @@ open class BluxNotificationServiceExtension: UNNotificationServiceExtension {
                 return
             }
             
+            EventService.createReceived(notification: bluxNotification)
+
             guard let imageUrl = bluxNotification.imageUrl,
                   let attachmentUrl = URL(string: imageUrl) else {
                 contentHandler(bestAttemptContent)

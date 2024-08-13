@@ -7,7 +7,7 @@ import UIKit
 import BluxClient
 
 class ViewController: UIViewController {
-  let userId = "myuser@blux.ai"
+  let userId = "luna"
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -19,6 +19,27 @@ class ViewController: UIViewController {
 
     @IBAction func SignOut(_ sender: Any) {
         BluxClient.signOut()
+    }
+    
+    @IBAction func SetUserProperties(_ sender: Any) {
+        BluxClient.setUserProperties(userProperties: UserProperties(phoneNumber: "01089200854", emailAddress: "luna@blux.ai"))
+    }
+    
+    @IBAction func SetCustomUserProperties(_ sender: Any) {
+            do {
+                let customProperties: [String: Any] = [
+                        "phone_number": "01089200854",
+                        "email_address": "luna@blux.ai",
+                        "age": 30,
+                        "is_active": true,
+                        "height": 5.9,
+                        "hobbies": ["reading", "gaming"]
+                    ]
+                try BluxClient.setCustomUserProperties(customUserProperties: customProperties)
+            } catch let error {
+                print(error.localizedDescription)
+            }
+            
     }
     
     
