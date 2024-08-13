@@ -14,18 +14,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
-    let clientId = "CLIENT ID"
-    let apiKey = "SECRET KEY"
+//    let clientId = "CLIENT ID"
+//    let apiKey = "SECRET KEY"
+  
+    let clientId = "637a1627"
+    let apiKey = "0QwVM7OdHcP1JlUm34acWQLTXnLLpInEncy3PT2QvtE"
     
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         BluxClient.initialize(launchOptions, bluxClientId: clientId, bluxAPIKey: apiKey) {
-            BluxClient.signIn(userId: "wendy333")
+            BluxClient.signIn(userId: "luna")
         }
         
-        /// Swizzling Disabled
-        // UNUserNotificationCenter.current().delegate = self
+        // Swizzling Disabled
+         UNUserNotificationCenter.current().delegate = self
     
         return true
     }
@@ -51,30 +54,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        return true
 //    }
     
-    func applicationDidBecomeActive(_ application: UIApplication) {}
-    /// Swizzling Disabled
-    // func applicationDidBecomeActive(_ application: UIApplication) {
-    //     BluxAppDelegate.shared.applicationDidBecomeActive(application)
-    // }
-    
-    func applicationWillResignActive(_ application: UIApplication) {}
-    /// Swizzling Disabled
-    // func applicationWillResignActive(_ application: UIApplication) {
-    //     BluxAppDelegate.shared.applicationWillResignActive(application)
-    // }
-    
-    /// Swizzling Disabled
-    // func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-    //     BluxAppDelegate.shared.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
-    // }
+    // Swizzling Disabled
+     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+         BluxAppDelegate.shared.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
+     }
 }
 
-/// Swizzling Disabled
-// extension AppDelegate: UNUserNotificationCenterDelegate {
-//   func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-//       BluxNotificationCenter.shared.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
-//   }
-//   func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-//       BluxNotificationCenter.shared.userNotificationCenter(center, willPresent: notification, withCompletionHandler: completionHandler)
-//   }
-// }
+// Swizzling Disabled
+ extension AppDelegate: UNUserNotificationCenterDelegate {
+   func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+       BluxNotificationCenter.shared.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
+   }
+   func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+       BluxNotificationCenter.shared.userNotificationCenter(center, willPresent: notification, withCompletionHandler: completionHandler)
+   }
+ }
