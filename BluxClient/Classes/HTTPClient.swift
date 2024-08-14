@@ -11,7 +11,7 @@ final class HTTPClient {
     static let shared: HTTPClient = HTTPClient()
     
     private static let COLLECTOR_BASE_URL = "https://collector-api-web.blux.ai"
-    private static let SERVERLESS_BASE_URL = "https://api.blux.ai/stg";
+    private static let SERVERLESS_BASE_URL = "https://api.blux.ai/prod";
     
     enum HTTPMethodWithBody: String {
         case POST
