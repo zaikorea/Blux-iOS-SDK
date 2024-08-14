@@ -77,8 +77,8 @@ final class HTTPClient {
         
         request.setValue("\(SdkConfig.sdkType)-\(SdkConfig.sdkVersion)", forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader)
         request.setValue(clientId, forHTTPHeaderField: "X-BLUX-CLIENT-ID")
-        request.setValue(UserDefaults(suiteName: "group.ai.blux.app")?.string(forKey: "bluxAPIKey"), forHTTPHeaderField: "X-BLUX-API-KEY")
-        request.setValue(UserDefaults(suiteName: "group.ai.blux.app")?.string(forKey: "bluxAPIKey"), forHTTPHeaderField: "Authorization")
+        request.setValue(UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.string(forKey: "bluxAPIKey"), forHTTPHeaderField: "X-BLUX-API-KEY")
+        request.setValue(UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.string(forKey: "bluxAPIKey"), forHTTPHeaderField: "Authorization")
         request.setValue(requestTimestamp, forHTTPHeaderField: "X-BLUX-TIMESTAMP")
         
         return request

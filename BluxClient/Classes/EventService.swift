@@ -79,7 +79,8 @@ class EventService {
     }
     
     static func createReceived(notification: BluxNotification) {
-        guard let clientId = UserDefaults(suiteName: "group.ai.blux.app")?.string(forKey: "bluxClientId") else {
+        Logger.error(SdkConfig.bluxSuiteName)
+        guard let clientId = UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.string(forKey: "bluxClientId") else {
             return
         }
 
@@ -97,7 +98,7 @@ class EventService {
             }
             
             if let notificationResponse = response {
-                Logger.verbose("SetCustomUserProperties request success.")
+                Logger.verbose("Create Received request success.")
                 Logger.verbose("Notification ID: " + notificationResponse.id)
             }
         }

@@ -17,7 +17,9 @@ final class SdkConfig {
     static var sdkVersion = "0.2.9"
     static var sdkType: SdkType = .native
     
-    static var bluxSuiteName = "group.ai.blux.app"
+    static var bluxAppGroupNameKey = "BluxAppGroupName"
+    static var bluxSuiteName = Bundle.main.object(forInfoDictionaryKey: bluxAppGroupNameKey) as? String
+    
     static let bluxSdkInfoHeader: String = "X-BLUX-SDK-INFO"
     static let bluxClientIdHeader: String = "X-BLUX-CLIENT-ID"
     static let bluxAuthorizationHeader: String = "Authorization"
