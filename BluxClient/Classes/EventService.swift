@@ -7,13 +7,29 @@
 
 import Foundation
 
+class EventWrapper: Codable {
+    let events: [Event]
+
+    public init(events: [Event]) {
+        self.events = events
+    }
+}
+
 class EventService {
     /// Send request
     /// - Parameters:
     ///   - data: event data
-    static func sendRequest<T: Codable>(_ data: [T]) {
+    static func sendRequest(_ data: [Event]) {
         
-        HTTPClient.shared.post(path: "/events", body: data, apiType: "LEGACY") { (response: EventResponse?, error) in
+        guard let clientId = SdkConfig.clientIdInUserDefaults else {
+            return
+        }
+        
+        guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
+            return
+        }
+        
+        HTTPClient.shared.post(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/collect-events", body: EventWrapper(events:data)) { (response: EventResponse?, error) in
             if let error = error {
                 Logger.error("Failed to send event request.")
                 Logger.error("Error: \(error)")
