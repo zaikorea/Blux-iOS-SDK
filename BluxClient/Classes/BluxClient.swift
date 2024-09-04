@@ -77,9 +77,13 @@ import UIKit
         guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
             return
         }
+        guard let deviceId = SdkConfig.deviceIdInUserDefaults else {
+            return
+        }
         
         let body = DeviceService.getBluxDeviceInfo()
         body.userId = userId
+        body.deviceId = deviceId
         
         HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/sign-in", body: body) { (response: BluxDeviceResponse?, error) in
             if let error = error  {
