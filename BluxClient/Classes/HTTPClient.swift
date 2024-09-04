@@ -10,7 +10,6 @@ import Foundation
 final class HTTPClient {
     static let shared: HTTPClient = HTTPClient()
     
-    private static let COLLECTOR_BASE_URL = "https://collector-api-web.blux.ai"
     private static let SERVERLESS_BASE_URL = "https://api.blux.ai/prod";
     
     enum HTTPMethodWithBody: String {
@@ -29,40 +28,28 @@ final class HTTPClient {
         guard let clientId = SdkConfig.clientIdInUserDefaults else {
             return nil
         }
-        guard let url = URL(string: "\(HTTPClient.COLLECTOR_BASE_URL)\(path)") else {
+        guard let url = URL(string: "\(HTTPClient.SERVERLESS_BASE_URL)\(path)") else {
             return nil
         }
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         
-        let requestTimestamp = "\(Utils.getCurrentUnixTimestamp())"
-        
         request.setValue("\(SdkConfig.sdkType)-\(SdkConfig.sdkVersion)", forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader)
         request.setValue(clientId, forHTTPHeaderField: SdkConfig.bluxClientIdHeader)
         request.setValue(SdkConfig.apiKeyInUserDefaults, forHTTPHeaderField: SdkConfig.bluxApiKeyHeader)
         request.setValue(SdkConfig.apiKeyInUserDefaults, forHTTPHeaderField: SdkConfig.bluxAuthorizationHeader)
-        request.setValue(requestTimestamp, forHTTPHeaderField: SdkConfig.bluxUnixTimestampHeader)
         
         return request
     }
     
-    func createRequestWithBody<T: Codable>(method: HTTPMethodWithBody, path: String, body: T, apiType: String? = nil) -> URLRequest? {
+    func createRequestWithBody<T: Codable>(method: HTTPMethodWithBody, path: String, body: T) -> URLRequest? {
         guard let clientId = SdkConfig.clientIdInUserDefaults else {
             Logger.error("No Client ID.")
             return nil
         }
-
-        let baseUrl: String
         
-        switch apiType {
-            case "LEGACY":
-                baseUrl = HTTPClient.COLLECTOR_BASE_URL
-            default:
-                baseUrl = HTTPClient.SERVERLESS_BASE_URL
-        }
-        
-        guard let url = URL(string: "\(baseUrl)\(path)") else {
+        guard let url = URL(string: "\(HTTPClient.SERVERLESS_BASE_URL)\(path)") else {
             return nil
         }
         
@@ -73,13 +60,10 @@ final class HTTPClient {
         request.addValue("application/json; charset=UTF-8", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         
-        let requestTimestamp = "\(Utils.getCurrentUnixTimestamp())"
-        
         request.setValue("\(SdkConfig.sdkType)-\(SdkConfig.sdkVersion)", forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader)
         request.setValue(clientId, forHTTPHeaderField: "X-BLUX-CLIENT-ID")
         request.setValue(UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.string(forKey: "bluxAPIKey"), forHTTPHeaderField: "X-BLUX-API-KEY")
         request.setValue(UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.string(forKey: "bluxAPIKey"), forHTTPHeaderField: "Authorization")
-        request.setValue(requestTimestamp, forHTTPHeaderField: "X-BLUX-TIMESTAMP")
         
         return request
     }
@@ -132,8 +116,8 @@ final class HTTPClient {
         task.resume()
     }
     
-    func post<T: Codable, V: Codable>(path: String, body: T, apiType: String? = nil, completion: @escaping (V?, Error?) -> Void) {
-        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.POST, path: path, body: body, apiType: apiType) else {
+    func post<T: Codable, V: Codable>(path: String, body: T, completion: @escaping (V?, Error?) -> Void) {
+        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.POST, path: path, body: body) else {
             return
         }
         
@@ -144,8 +128,8 @@ final class HTTPClient {
         task.resume()
     }
     
-    func put<T: Codable, V: Codable>(path: String, body: T, apiType: String? = nil, completion: @escaping (V?, Error?) -> Void) {
-        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.PUT, path: path, body: body, apiType: apiType) else {
+    func put<T: Codable, V: Codable>(path: String, body: T, completion: @escaping (V?, Error?) -> Void) {
+        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.PUT, path: path, body: body) else {
             return
         }
         
@@ -156,8 +140,8 @@ final class HTTPClient {
         task.resume()
     }
     
-    func patch<T: Codable, V: Codable>(path: String, body: T, apiType: String? = nil, completion: @escaping (V?, Error?) -> Void) {
-        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.PATCH, path: path, body: body, apiType: apiType) else {
+    func patch<T: Codable, V: Codable>(path: String, body: T, completion: @escaping (V?, Error?) -> Void) {
+        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.PATCH, path: path, body: body) else {
             return
         }
         
