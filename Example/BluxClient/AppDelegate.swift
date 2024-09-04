@@ -17,14 +17,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //    let clientId = "CLIENT ID"
 //    let apiKey = "SECRET KEY"
   
-    let clientId = "637a1627"
+    let clientId = "66a38b6a233aab065644296f"
     let apiKey = "0QwVM7OdHcP1JlUm34acWQLTXnLLpInEncy3PT2QvtE"
     
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         BluxClient.initialize(launchOptions, bluxClientId: clientId, bluxAPIKey: apiKey) {
-            BluxClient.signIn(userId: "luna")
+            BluxClient.signIn(userId: "neo")
         }
         
         // Swizzling Disabled

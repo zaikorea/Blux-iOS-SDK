@@ -10,7 +10,7 @@ import Foundation
 final class HTTPClient {
     static let shared: HTTPClient = HTTPClient()
     
-    private static let SERVERLESS_BASE_URL = "https://api.blux.ai/prod";
+    private static let SERVERLESS_BASE_URL = "https://api.blux.ai/stg";
     
     enum HTTPMethodWithBody: String {
         case POST
