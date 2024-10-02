@@ -52,7 +52,10 @@ import UIKit
 
         Logger.verbose(savedDeviceId != nil ? "Blux Device ID exists: \(savedDeviceId!)." : "Blux Device ID does not exist, create new one.")
 
-        DeviceService.initializeDevice(deviceId: savedDeviceId) {
+        DeviceService.initializeDevice(deviceId: savedDeviceId)  {
+            let eventRequest = EventRequest();
+            eventRequest.events.append(Event(eventType:"visit"))
+            self.sendRequest(eventRequest)
             completion()
             if requestPermissionOnLaunch {
                 requestPermissionForNotifications()
@@ -74,9 +77,13 @@ import UIKit
         guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
             return
         }
+        guard let deviceId = SdkConfig.deviceIdInUserDefaults else {
+            return
+        }
         
         let body = DeviceService.getBluxDeviceInfo()
         body.userId = userId
+        body.deviceId = deviceId
         
         HTTPClient.shared.put(path: "/organizations/" + clientId + "/blux-users/" + bluxId + "/sign-in", body: body) { (response: BluxDeviceResponse?, error) in
             if let error = error  {
@@ -247,19 +254,7 @@ import UIKit
     
 
     public static func sendRequestData(_ data: [Event]) {
-        guard let deviceId = SdkConfig.deviceIdInUserDefaults else {
-            return
-        }
-        guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
-            return
-        }
-        
-        data.forEach { event in
-            event.bluxId = bluxId
-            event.deviceId = deviceId
-            event.userId = SdkConfig.userIdInUserDefaults
-        }
-        
+
         EventService.sendRequest(data)
     }
     
