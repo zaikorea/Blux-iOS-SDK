@@ -50,7 +50,7 @@ final class DeviceService {
                 
                 Logger.verbose("Create device request success.")
                 Logger.verbose("Blux ID: \(bluxDeviceResponse.bluxId).")
-                Logger.verbose("Device ID: \(bluxDeviceResponse.deviceId).")
+                Logger.verbose("Device ID: \(String(describing: bluxDeviceResponse.deviceId)).")
                 completion()
             }
         }
