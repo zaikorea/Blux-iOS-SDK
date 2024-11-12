@@ -6,11 +6,9 @@
 //
 import Foundation
 
-import Foundation
-
 class EventQueue {
     static let shared = EventQueue()
-    
+
     private var eventsQueue: [() -> Void] = []
     private var isProcessing = false
     private let queue = DispatchQueue(label: "eventQueue")
@@ -26,12 +24,14 @@ class EventQueue {
 
     private func processNext() {
         queue.async { [weak self] in
-            guard let self = self, !self.isProcessing, let nextTask = self.eventsQueue.first else { return }
-            
+            guard let self = self, !self.isProcessing,
+                let nextTask = self.eventsQueue.first
+            else { return }
+
             self.isProcessing = true
-            
+
             nextTask()
-            
+
             self.queue.async {
                 self.eventsQueue.removeFirst()
                 self.isProcessing = false

@@ -7,6 +7,11 @@
 
 import UIKit
 
+// Used in setUserProperties, setCustomUserProperties
+struct PropertiesWrapper<T: Codable>: Codable {
+    var properties: T
+}
+
 @available(iOSApplicationExtension, unavailable)
 @objc open class BluxClient: NSObject {
     private static var isActivated: Bool = false
@@ -148,11 +153,6 @@ import UIKit
         }
     }
 
-    // Used in setUserProperties, setCustomUserProperties
-    struct PropertiesWrapper<T: Codable>: Codable {
-        var properties: T
-    }
-
     public static func setUserProperties(userProperties: UserProperties) {
         guard let clientId = SdkConfig.clientIdInUserDefaults else {
             return
@@ -283,7 +283,18 @@ import UIKit
     }
 
     public static func sendRequestData(_ data: [Event]) {
-        EventService.sendRequest(data)
+        EventService.sendRequest(
+            data,
+            { event, error in
+                // TODO implement
+                if let error = error {
+                    Logger.error("Failed to send event request: \(error)")
+                    return
+                }
+                if let event = event {
+                    Logger.verbose("Event request success: \(event)")
+                }
+            })
     }
 
     /// Send Request

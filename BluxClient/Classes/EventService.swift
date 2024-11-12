@@ -27,7 +27,10 @@ class EventService {
     /// Send request
     /// - Parameters:
     ///   - data: event data
-    static func sendRequest(_ data: [Event]) {
+    static func sendRequest(
+        _ data: [Event],
+        _ completionHandler: @escaping (Event?, Error?) -> Void
+    ) {
         let eventTask = {
             guard let clientId = SdkConfig.clientIdInUserDefaults,
                 let bluxId = SdkConfig.bluxIdInUserDefaults
@@ -45,11 +48,13 @@ class EventService {
                     return
                 }
                 if let eventResponse = response {
+                    data.forEach { event in
+                        completionHandler(event, error)
+                    }
                     Logger.verbose("\(eventResponse)")
                 }
             }
         }
-
         EventQueue.shared.addEvent(eventTask)
     }
 
@@ -74,9 +79,9 @@ class EventService {
                 body: CRMEventsBody(
                     notification_id: notification.id,
                     crm_event_type: "push_opened",
-                    captured_at: capturedAtString)
+                    captured_at: capturedAtString
+                )
             ) { (response: EmptyResponse?, error) in
-
                 if let error = error {
                     Logger.error("Failed to send request.")
                     Logger.error("Error: \(error)")
