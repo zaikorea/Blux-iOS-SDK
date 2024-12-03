@@ -5,10 +5,10 @@
 //  Created by Tommy on 6/4/24.
 //
 
-import UserNotifications
-import MobileCoreServices
 import Intents
+import MobileCoreServices
 import UIKit
+import UserNotifications
 
 open class BluxNotificationServiceExtension: UNNotificationServiceExtension {
     override open func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
@@ -19,7 +19,6 @@ open class BluxNotificationServiceExtension: UNNotificationServiceExtension {
         BluxNotificationServiceExtensionHelper.shared.serviceExtensionTimeWillExpire()
     }
 }
-
 
 @objc public class BluxNotificationServiceExtensionHelper: NSObject {
     @objc public static let shared = BluxNotificationServiceExtensionHelper()
@@ -38,16 +37,17 @@ open class BluxNotificationServiceExtension: UNNotificationServiceExtension {
                 return
             }
             
-            EventService.createReceived(notification: bluxNotification)
+            EventService.createReceived(bluxNotification.id)
 
             guard let imageUrl = bluxNotification.imageUrl,
-                  let attachmentUrl = URL(string: imageUrl) else {
+                  let attachmentUrl = URL(string: imageUrl)
+            else {
                 contentHandler(bestAttemptContent)
                 return
             }
             
             // Download image from imageUrl and attach to the notification
-            let task = URLSession.shared.downloadTask(with: attachmentUrl) { (downloadedUrl, response, error) in
+            let task = URLSession.shared.downloadTask(with: attachmentUrl) { downloadedUrl, _, error in
                 if let _ = error {
                     contentHandler(bestAttemptContent)
                     return
@@ -66,7 +66,7 @@ open class BluxNotificationServiceExtension: UNNotificationServiceExtension {
     
     // Called just before when the extension is terminated by the system
     @objc public func serviceExtensionTimeWillExpire() {
-        if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
+        if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
             contentHandler(bestAttemptContent)
         }
     }

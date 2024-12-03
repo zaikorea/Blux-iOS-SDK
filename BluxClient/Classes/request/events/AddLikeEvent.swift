@@ -8,27 +8,21 @@ public class AddLikeEvent: EventRequest {
         self.events.append(
             try Event(eventType: builder.eventType)
                 .setItemId(builder.itemId)
-                .setEventValue(builder.eventValue)
-                .setEventProperties(builder.eventProperties)
+                .setCustomEventProperties(builder.customEventProperties)
         )
     }
     
     public class Builder {
         var itemId: String
         var eventType: String = AddLikeEvent.DEFAULT_EVENT_TYPE
-        var eventValue: String? = nil
-        var eventProperties: [String: String]? = nil
+        var customEventProperties: [String: String]? = nil
         
         public init(itemId: String) {
             self.itemId = itemId
         }
         
-        public func eventValue(_ eventValue: String) -> Builder {
-            self.eventValue = eventValue
-            return self
-        }
-        public func eventProperties(_ eventProperties: [String: String]) -> Builder {
-            self.eventProperties = eventProperties
+        public func customEventProperties(_ customEventProperties: [String: String]) -> Builder {
+            self.customEventProperties = customEventProperties
             return self
         }
         

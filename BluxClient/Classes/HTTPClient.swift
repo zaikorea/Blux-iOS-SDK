@@ -7,148 +7,217 @@
 
 import Foundation
 
+enum Environment: String {
+    case local = "http://localhost:9000/local"
+    case dev = "https://api.blux.ai/dev"
+    case stg = "https://api.blux.ai/stg"
+    case prod = "https://api.blux.ai/prod"
+}
+
+enum Configuration {
+    static let apiBaseUrl: String = {
+        guard let bundle = Bundle(identifier: "org.cocoapods.BluxClient"),
+              let url = bundle.object(forInfoDictionaryKey: "API_BASE_URL")
+              as? String
+        else {
+            return Environment.local.rawValue
+        }
+        return url
+    }()
+}
+
 final class HTTPClient {
-    static let shared: HTTPClient = HTTPClient()
-    
-    private static let SERVERLESS_BASE_URL = "https://api.blux.ai/prod";
-    
+    static let shared: HTTPClient = .init()
+
+    private static let API_BASE_URL: URL = .init(
+        string: Configuration.apiBaseUrl)!
+
+    init() {
+        Logger.verbose(HTTPClient.API_BASE_URL)
+    }
+
     enum HTTPMethodWithBody: String {
         case POST
         case PUT
         case PATCH
         case DELETE
     }
-    
+
     enum HTTPError: Error {
         case transportError(Error)
         case serverSideError(Int)
     }
-    
+
     func createRequest(path: String) -> URLRequest? {
         guard let clientId = SdkConfig.clientIdInUserDefaults else {
             return nil
         }
-        guard let url = URL(string: "\(HTTPClient.SERVERLESS_BASE_URL)\(path)") else {
+        guard let url = URL(string: "\(HTTPClient.API_BASE_URL)\(path)")
+        else {
             return nil
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        
-        request.setValue("\(SdkConfig.sdkType)-\(SdkConfig.sdkVersion)", forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader)
-        request.setValue(clientId, forHTTPHeaderField: SdkConfig.bluxClientIdHeader)
-        request.setValue(SdkConfig.apiKeyInUserDefaults, forHTTPHeaderField: SdkConfig.bluxApiKeyHeader)
-        request.setValue(SdkConfig.apiKeyInUserDefaults, forHTTPHeaderField: SdkConfig.bluxAuthorizationHeader)
-        
+
+        request.setValue(
+            "\(SdkConfig.sdkType)-\(SdkConfig.sdkVersion)",
+            forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader)
+        request.setValue(
+            clientId, forHTTPHeaderField: SdkConfig.bluxClientIdHeader)
+        request.setValue(
+            SdkConfig.apiKeyInUserDefaults,
+            forHTTPHeaderField: SdkConfig.bluxApiKeyHeader)
+        request.setValue(
+            SdkConfig.apiKeyInUserDefaults,
+            forHTTPHeaderField: SdkConfig.bluxAuthorizationHeader)
+
         return request
     }
-    
-    func createRequestWithBody<T: Codable>(method: HTTPMethodWithBody, path: String, body: T) -> URLRequest? {
+
+    func createRequestWithBody<T: Codable>(
+        method: HTTPMethodWithBody, path: String, body: T
+    ) -> URLRequest? {
         guard let clientId = SdkConfig.clientIdInUserDefaults else {
             Logger.error("No Client ID.")
             return nil
         }
-        
-        guard let url = URL(string: "\(HTTPClient.SERVERLESS_BASE_URL)\(path)") else {
+
+        guard let url = URL(string: "\(HTTPClient.API_BASE_URL)\(path)")
+        else {
             return nil
         }
-        
 
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.httpBody = try? JSONEncoder().encode(body)
-        request.addValue("application/json; charset=UTF-8", forHTTPHeaderField: "Content-Type")
+        request.addValue(
+            "application/json; charset=UTF-8",
+            forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
-        
-        request.setValue("\(SdkConfig.sdkType)-\(SdkConfig.sdkVersion)", forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader)
+
+        request.setValue(
+            "\(SdkConfig.sdkType)-\(SdkConfig.sdkVersion)",
+            forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader)
         request.setValue(clientId, forHTTPHeaderField: "X-BLUX-CLIENT-ID")
-        request.setValue(UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.string(forKey: "bluxAPIKey"), forHTTPHeaderField: "X-BLUX-API-KEY")
-        request.setValue(UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.string(forKey: "bluxAPIKey"), forHTTPHeaderField: "Authorization")
-        
+        request.setValue(
+            UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.string(
+                forKey: "bluxAPIKey"), forHTTPHeaderField: "X-BLUX-API-KEY")
+        request.setValue(
+            UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.string(
+                forKey: "bluxAPIKey"), forHTTPHeaderField: "Authorization")
+
         return request
     }
-    
-    func createAsyncTask<V: Codable>(request: URLRequest, completion: @escaping (V?, Error?) -> Void) -> URLSessionDataTask {
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+
+    func createAsyncTask<V: Codable>(
+        request: URLRequest, completion: @escaping (V?, Error?) -> Void
+    ) -> URLSessionDataTask {
+        let task = URLSession.shared.dataTask(with: request) {
+            data, response, error in
             guard let data = data,
                   let response = response as? HTTPURLResponse,
-                  error == nil else {
+                  error == nil
+            else {
                 completion(nil, error)
                 return
             }
-            
+
             guard (200 ..< 300) ~= response.statusCode else {
-                Logger.error(String(data: data, encoding: .utf8) ?? "\(request.httpMethod!) error")
+                Logger.error(
+                    String(data: data, encoding: .utf8)
+                        ?? "\(request.httpMethod!) error")
                 completion(nil, HTTPError.serverSideError(response.statusCode))
                 return
             }
-            
+
             // Check is data empty
-            if let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
-               let jsonDict = jsonObject as? [String: Any],
-               jsonDict.isEmpty {
+            if let jsonObject = try? JSONSerialization.jsonObject(
+                with: data, options: []),
+                let jsonDict = jsonObject as? [String: Any],
+                jsonDict.isEmpty
+            {
                 completion(nil, nil)
                 return
             }
-            
+
             do {
-                let responseObject = try JSONDecoder().decode(V.self, from: data)
+                let responseObject = try JSONDecoder().decode(
+                    V.self, from: data)
                 completion(responseObject, nil)
-            } catch let error {
+            } catch {
                 completion(nil, error)
             }
         }
-        
+
         return task
     }
-    
+
     // MARK: - Methods
-    
-    func get<T: Codable>(path: String, completion: @escaping (T?, Error?) -> Void) {
-        guard let request = self.createRequest(path: path) else {
+
+    func get<T: Codable>(
+        path: String, completion: @escaping (T?, Error?) -> Void
+    ) {
+        guard let request = createRequest(path: path) else {
             return
         }
-        
+
         Logger.verbose("GET Request - path:\(path)")
-        
-        let task = self.createAsyncTask(request: request, completion: completion)
-        
+
+        let task = createAsyncTask(
+            request: request, completion: completion)
+
         task.resume()
     }
-    
-    func post<T: Codable, V: Codable>(path: String, body: T, completion: @escaping (V?, Error?) -> Void) {
-        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.POST, path: path, body: body) else {
+
+    func post<T: Codable, V: Codable>(
+        path: String, body: T, completion: @escaping (V?, Error?) -> Void
+    ) {
+        guard
+            let request = createRequestWithBody(
+                method: HTTPMethodWithBody.POST, path: path, body: body)
+        else {
             return
         }
-        
+
         Logger.verbose("POST Request - path:\(path) body:\(body)")
-        
+
         let task = createAsyncTask(request: request, completion: completion)
-        
+
         task.resume()
     }
-    
-    func put<T: Codable, V: Codable>(path: String, body: T, completion: @escaping (V?, Error?) -> Void) {
-        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.PUT, path: path, body: body) else {
+
+    func put<T: Codable, V: Codable>(
+        path: String, body: T, completion: @escaping (V?, Error?) -> Void
+    ) {
+        guard
+            let request = createRequestWithBody(
+                method: HTTPMethodWithBody.PUT, path: path, body: body)
+        else {
             return
         }
-        
+
         Logger.verbose("PUT Request - path:\(path) body:\(body)")
-        
+
         let task = createAsyncTask(request: request, completion: completion)
-        
+
         task.resume()
     }
-    
-    func patch<T: Codable, V: Codable>(path: String, body: T, completion: @escaping (V?, Error?) -> Void) {
-        guard let request = self.createRequestWithBody(method: HTTPMethodWithBody.PATCH, path: path, body: body) else {
+
+    func patch<T: Codable, V: Codable>(
+        path: String, body: T, completion: @escaping (V?, Error?) -> Void
+    ) {
+        guard
+            let request = createRequestWithBody(
+                method: HTTPMethodWithBody.PATCH, path: path, body: body)
+        else {
             return
         }
-        
+
         Logger.verbose("PATCH Request - path:\(path) body:\(body)")
-        
+
         let task = createAsyncTask(request: request, completion: completion)
-        
+
         task.resume()
     }
 }

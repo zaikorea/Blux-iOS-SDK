@@ -7,32 +7,23 @@ public class AddPageViewEvent: EventRequest {
         super.init()
         self.events.append(
             try Event(eventType: builder.eventType)
-                    .setItemId(builder.itemId)
-                    .setEventValue(builder.eventValue)
-                    .setEventProperties(builder.eventProperties)
+                    .setPage(builder.page)
+                    .setCustomEventProperties(builder.customEventProperties)
         )
     }
     
     public class Builder {
-        var itemId: String? = nil
         var eventType: String = AddPageViewEvent.DEFAULT_EVENT_TYPE
-        var eventValue: String? = nil
-        var eventProperties: [String: String]? = nil
+        var page: String
+        var customEventProperties: [String: String]? = nil
         
-        public init() {
+        public init(page: String) {
+            self.page = page
         }
         
-        public func itemId(_ itemId: String) -> Builder {
-            self.itemId = itemId
-            return self
-        }
-        
-        public func eventValue(_ eventValue: String) -> Builder {
-            self.eventValue = eventValue
-            return self
-        }
-        public func eventProperties(_ eventProperties: [String: String]) -> Builder {
-            self.eventProperties = eventProperties
+
+        public func customEventProperties(_ customEventProperties: [String: String]) -> Builder {
+            self.customEventProperties = customEventProperties
             return self
         }
         

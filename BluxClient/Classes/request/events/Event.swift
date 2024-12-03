@@ -1,51 +1,96 @@
 import Foundation
 
+public class EventProperties: Codable {
+    public var itemId: String?
+    public var price: Double?
+    public var rating: Double?
+    public var page: String?
+
+    enum CodingKeys: String,
+        CodingKey
+    {
+        case itemId = "item_id"
+        case price
+        case rating
+        case page
+    }
+}
 
 public class Event: Codable {
-    
     public var bluxId: String? = SdkConfig.bluxIdInUserDefaults
     public var deviceId: String? = SdkConfig.deviceIdInUserDefaults
     public var userId: String? = SdkConfig.userIdInUserDefaults
-    public var itemId: String? = nil
     public var capturedAt: String
     public var eventType: String
-    public var eventValue: String? = nil
-    public var eventProperties: [String: String]? = nil
-    
+    public var eventProperties: EventProperties
+    public var customEventProperties: [String: String]? = nil
+
     enum CodingKeys: String,
-                     CodingKey {
+        CodingKey
+    {
         case bluxId = "blux_id"
         case deviceId = "device_id"
         case userId = "user_id"
-        case itemId = "item_id"
         case capturedAt = "captured_at"
         case eventType = "event_type"
-        case eventValue = "event_value"
         case eventProperties = "event_properties"
+        case customEventProperties = "custom_event_properties"
     }
-    
-   public init(eventType: String) {
-       let dateFormatter = DateFormatter();
-       dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-       self.capturedAt = dateFormatter.string(from: Date())
-       self.eventType = eventType
+
+    public init(eventType: String) {
+        let dateFormatter = ISO8601DateFormatter()
+        self.capturedAt = dateFormatter.string(from: Date())
+        self.eventType = eventType
+        self.eventProperties = EventProperties()
     }
-    
+
     @discardableResult
-    public func setItemId(_ itemId: String?) throws -> Event {
-        self.itemId = try Validator.validateString(itemId, min: 1, max: 500, varName: "itemId")
+    public func setItemId(_ itemId: String) throws -> Event {
+        var validatedItemId = try Validator.validateString(
+            itemId, min: 1, max: 500, varName: "itemId")
+
+        eventProperties.itemId = validatedItemId
         return self
     }
-    
+
     @discardableResult
-    public func setEventValue(_ eventValue: String?) throws -> Event {
-        self.eventValue = try Validator.validateString(eventValue, min: 0, max: 500, varName: "eventValue")
+    public func setPage(_ page: String) throws -> Event {
+        var validatedPage = try Validator.validateString(
+            page, min: 1, max: 500, varName: "page")
+
+        eventProperties.page = validatedPage
         return self
     }
-    
+
     @discardableResult
-   public func setEventProperties(_ eventProperties: [String: String]?) -> Event {
-        self.eventProperties = eventProperties
+    public func setPrice(_ price: Double) throws -> Event {
+        var validatedPrice = try Validator.validateNumber(
+            price,
+            min: 0,
+            varName: "price")
+
+        eventProperties.price = validatedPrice
+        return self
+    }
+
+    @discardableResult
+    public func setRating(_ rating: Double) throws -> Event {
+        var validatedRating = try Validator.validateNumber(
+            rating,
+            min: 0,
+            varName: "rating")
+
+        eventProperties.rating = validatedRating
+        return self
+    }
+
+    @discardableResult
+    public func setCustomEventProperties(
+        _ customEventProperties: [String: String]?
+    )
+        -> Event
+    {
+        self.customEventProperties = customEventProperties
         return self
     }
 }
@@ -53,61 +98,54 @@ public class Event: Codable {
 extension Event: CustomStringConvertible {
     public var description: String {
         var properties: [String] = []
-        
+
         properties.append("capturedAt: \(capturedAt)")
         properties.append("eventType: \(eventType)")
 
         if let bluxId = bluxId {
-            if (bluxId != "null") {
+            if bluxId != "null" {
                 properties.append("bluxId: \(bluxId)")
             }
         }
         if let deviceId = deviceId {
-            if (deviceId != "null") {
+            if deviceId != "null" {
                 properties.append("deviceId: \(deviceId)")
             }
         }
         if let userId = userId {
-            if (userId != "null") {
+            if userId != "null" {
                 properties.append("userId: \(userId)")
             }
         }
-        if let itemId = itemId {
-            if (itemId != "null") {
-                properties.append("itemId: \(itemId)")
+
+        if let customEventProperties = customEventProperties {
+            if customEventProperties.count > 0 {
+                let customEventPropertiesDescription = customEventProperties.map {
+                    "\($0.key): \($0.value)"
+                }.joined(separator: ", ")
+                properties.append(
+                    "customEventProperties: [\(customEventPropertiesDescription)]"
+                )
             }
         }
-        if let eventValue = eventValue {
-            if (eventValue != "null") {
-                properties.append("eventValue: \(eventValue)")
-            }
-        }
-        
-        if let eventProperties = eventProperties {
-            if eventProperties.count > 0 {
-                let eventPropertiesDescription = eventProperties.map { "\($0.key): \($0.value)" }.joined(separator: ", ")
-                properties.append("eventProperties: [\(eventPropertiesDescription)]")
-            }
-        }
-        
+
         return "\n\t\(properties.joined(separator: "\n\t"))\n"
     }
 }
 
-
 public class EventResponse: Codable {
-    
     public var message: String
     public var failureCount: Int?
     public var capturedAt: String
     public var processedEvents: [Event]?
     public var unprocessedEvents: [Event]?
-    
+
     enum CodingKeys: String,
-                     CodingKey {
-        case message = "message"
+        CodingKey
+    {
+        case message
         case failureCount = "failure_count"
-        case capturedAt = "capturedAt"
+        case capturedAt
         case processedEvents = "processed_events"
         case unprocessedEvents = "unprocessed_events"
     }
@@ -116,10 +154,10 @@ public class EventResponse: Codable {
 extension EventResponse: CustomStringConvertible {
     public var description: String {
         var properties: [String] = []
-        
+
         properties.append("message: \(message)")
         properties.append("capturedAt: \(capturedAt)")
-        
+
         if let failureCount = failureCount {
             properties.append("failureCount: \(failureCount)")
         }
@@ -129,7 +167,7 @@ extension EventResponse: CustomStringConvertible {
         if let unprocessedEvents = unprocessedEvents {
             properties.append("unprocessedEvents: \(unprocessedEvents)")
         }
-        
+
         return "\n\(properties.joined(separator: "\n"))"
     }
 }
