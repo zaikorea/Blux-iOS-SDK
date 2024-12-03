@@ -8,24 +8,24 @@ public class AddRateEvent: EventRequest {
         self.events.append(
             try Event(eventType: builder.eventType)
                     .setItemId(builder.itemId)
-                    .setEventValue(builder.eventValue)
-                    .setEventProperties(builder.eventProperties)
+                    .setRating(builder.rating)
+                    .setCustomEventProperties(builder.customEventProperties)
         )
     }
     
     public class Builder {
         var itemId: String
         var eventType: String = AddRateEvent.DEFAULT_EVENT_TYPE
-        var eventValue: String
-        var eventProperties: [String: String]? = nil
+        var rating: Double
+        var customEventProperties: [String: String]? = nil
         
         public init(itemId: String, rating: Double) {
             self.itemId = itemId
-            self.eventValue = "\(rating)"
+            self.rating = rating
         }
         
-        public func eventProperties(_ eventProperties: [String: String]) -> Builder {
-            self.eventProperties = eventProperties
+        public func customEventProperties(_ customEventProperties: [String: String]) -> Builder {
+            self.customEventProperties = customEventProperties
             return self
         }
         

@@ -11,17 +11,17 @@ import Foundation
     @objc public var notification: BluxNotification
     private var application: UIApplication
     private var completionHandler: (UNNotificationPresentationOptions) -> Void
-    
+
     init(_ application: UIApplication, notification: BluxNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         self.application = application
         self.notification = notification
         self.completionHandler = completionHandler
     }
-    
+
     @objc public func display() {
         Logger.verbose("Notification received: \(self.notification)")
-        completionHandler([.alert, .sound])
-        
-        EventService.createReceived(notification: self.notification)
+        self.completionHandler([.alert, .sound])
+
+        EventService.createReceived(self.notification.id)
     }
 }
