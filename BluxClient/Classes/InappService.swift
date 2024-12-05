@@ -156,18 +156,7 @@ class InappService {
                   {
                      switch scheme {
                      case "http", "https":
-                        guard
-                           let topViewController =
-                           UIViewController.getTopViewController()
-                        else {
-                           Logger.verbose(
-                              "INAPP: Failed to get top view controller.")
-                           dismissWebView(webviewController)
-                           return
-                        }
-
                         EventService.createInappOpened(notificationId)
-
                         // 기존 웹뷰 닫기
                         dismissWebView(webviewController) {
                            DispatchQueue.main.async {
@@ -219,27 +208,19 @@ class InappService {
 @available(iOSApplicationExtension, unavailable)
 extension UIViewController {
    static func getTopViewController(
-      _ baseViewController: UIViewController? = UIApplication.shared
-         .keyWindow?.rootViewController
+      _ baseViewController: UIViewController? = UIApplication.shared.keyWindow?.rootViewController
    ) -> UIViewController? {
-      if let navigationController = baseViewController
-         as? UINavigationController
-      {
-         return getTopViewController(
-            navigationController.visibleViewController)
+      if let navigationController = baseViewController as? UINavigationController {
+         return getTopViewController(navigationController.visibleViewController)
       }
 
-      if let tabBarController = baseViewController as? UITabBarController {
-         if let selectedViewController = tabBarController
-            .selectedViewController
-         {
-            return getTopViewController(selectedViewController)
-         }
+      if let tabBarController = baseViewController as? UITabBarController,
+         let selectedViewController = tabBarController.selectedViewController
+      {
+         return getTopViewController(selectedViewController)
       }
 
-      if let presentedViewController = baseViewController?
-         .presentedViewController
-      {
+      if let presentedViewController = baseViewController?.presentedViewController {
          return getTopViewController(presentedViewController)
       }
 

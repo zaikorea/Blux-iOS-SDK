@@ -46,17 +46,14 @@ public class Event: Codable {
 
     @discardableResult
     public func setItemId(_ itemId: String) throws -> Event {
-        var validatedItemId = try Validator.validateString(
-            itemId, min: 1, max: 500, varName: "itemId")
-
+        let validatedItemId = try Validator.validateString(itemId, min: 1, max: 500, varName: "itemId")
         eventProperties.itemId = validatedItemId
         return self
     }
 
     @discardableResult
     public func setPage(_ page: String) throws -> Event {
-        var validatedPage = try Validator.validateString(
-            page, min: 1, max: 500, varName: "page")
+        let validatedPage = try Validator.validateString(page, min: 1, max: 500, varName: "page")
 
         eventProperties.page = validatedPage
         return self
@@ -64,32 +61,20 @@ public class Event: Codable {
 
     @discardableResult
     public func setPrice(_ price: Double) throws -> Event {
-        var validatedPrice = try Validator.validateNumber(
-            price,
-            min: 0,
-            varName: "price")
-
+        let validatedPrice = try Validator.validateNumber(price, min: 0, varName: "price")
         eventProperties.price = validatedPrice
         return self
     }
 
     @discardableResult
     public func setRating(_ rating: Double) throws -> Event {
-        var validatedRating = try Validator.validateNumber(
-            rating,
-            min: 0,
-            varName: "rating")
-
+        let validatedRating = try Validator.validateNumber(rating, min: 0, varName: "rating")
         eventProperties.rating = validatedRating
         return self
     }
 
     @discardableResult
-    public func setCustomEventProperties(
-        _ customEventProperties: [String: String]?
-    )
-        -> Event
-    {
+    public func setCustomEventProperties(_ customEventProperties: [String: String]?) -> Event {
         self.customEventProperties = customEventProperties
         return self
     }
