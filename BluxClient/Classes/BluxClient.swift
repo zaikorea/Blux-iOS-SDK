@@ -5,8 +5,6 @@
 //  Copyright © 2024 Blux. All rights reserved.
 //
 
-import UIKit
-
 // Used in setUserProperties, setCustomUserProperties
 struct PropertiesWrapper<T: Codable>: Codable {
     var properties: T
@@ -89,15 +87,11 @@ struct PropertiesWrapper<T: Codable>: Codable {
 
     /// Set userId of the device
     @objc public static func signIn(userId: String) {
-        guard let clientId = SdkConfig.clientIdInUserDefaults else {
-            return
-        }
-        guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
-            return
-        }
-        guard let deviceId = SdkConfig.deviceIdInUserDefaults else {
-            return
-        }
+        guard
+            let clientId = SdkConfig.clientIdInUserDefaults,
+            let bluxId = SdkConfig.bluxIdInUserDefaults,
+            let deviceId = SdkConfig.deviceIdInUserDefaults
+        else { return }
 
         let body = DeviceService.getBluxDeviceInfo()
         body.userId = userId
@@ -123,15 +117,11 @@ struct PropertiesWrapper<T: Codable>: Codable {
 
     /// Signout from the device
     @objc public static func signOut() {
-        guard let clientId = SdkConfig.clientIdInUserDefaults else {
-            return
-        }
-        guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
-            return
-        }
-        guard let deviceId = SdkConfig.deviceIdInUserDefaults else {
-            return
-        }
+        guard
+            let clientId = SdkConfig.clientIdInUserDefaults,
+            let bluxId = SdkConfig.bluxIdInUserDefaults,
+            let deviceId = SdkConfig.deviceIdInUserDefaults
+        else { return }
 
         let body = DeviceService.getBluxDeviceInfo()
         body.deviceId = deviceId
@@ -155,12 +145,10 @@ struct PropertiesWrapper<T: Codable>: Codable {
     }
 
     public static func setUserProperties(userProperties: UserProperties) {
-        guard let clientId = SdkConfig.clientIdInUserDefaults else {
-            return
-        }
-        guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
-            return
-        }
+        guard
+            let clientId = SdkConfig.clientIdInUserDefaults,
+            let bluxId = SdkConfig.bluxIdInUserDefaults
+        else { return }
 
         // Input으로 받은 userProperties 객체를 한번 더 감싼 형태
 
@@ -236,12 +224,10 @@ struct PropertiesWrapper<T: Codable>: Codable {
     public static func setCustomUserProperties(
         customUserProperties: [String: Any?]
     ) throws {
-        guard let clientId = SdkConfig.clientIdInUserDefaults else {
-            return
-        }
-        guard let bluxId = SdkConfig.bluxIdInUserDefaults else {
-            return
-        }
+        guard
+            let clientId = SdkConfig.clientIdInUserDefaults,
+            let bluxId = SdkConfig.bluxIdInUserDefaults
+        else { return }
 
         var processedCustomProperties: [String: CustomValue] = [:]
 

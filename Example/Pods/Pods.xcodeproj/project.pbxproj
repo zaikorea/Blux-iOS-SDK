@@ -573,7 +573,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FDBDC43D486D0F0E1F206D69CB13EF26 /* BluxClient.debug.xcconfig */;
 			buildSettings = {
-				API_BASE_URL = "https://api.blux.ai/dev";
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -672,7 +671,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C1E0252D333F4FDF1972D9475BF1DFC0 /* BluxClient.release.xcconfig */;
 			buildSettings = {
-				API_BASE_URL = "https://api.blux.ai/prod";
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";

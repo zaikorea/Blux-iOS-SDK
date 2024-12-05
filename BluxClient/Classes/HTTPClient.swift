@@ -7,52 +7,37 @@
 
 import Foundation
 
-enum Environment: String {
-    case local = "http://localhost:9000/local"
-    case dev = "https://api.blux.ai/dev"
-    case stg = "https://api.blux.ai/stg"
-    case prod = "https://api.blux.ai/prod"
-}
-
-enum Configuration {
-    static let apiBaseUrl: String = {
-        guard let bundle = Bundle(identifier: "org.cocoapods.BluxClient"),
-              let url = bundle.object(forInfoDictionaryKey: "API_BASE_URL")
-              as? String
-        else {
-            return Environment.local.rawValue
-        }
-        return url
-    }()
-}
-
 final class HTTPClient {
     static let shared: HTTPClient = .init()
 
-    private static let API_BASE_URL: URL = .init(
-        string: Configuration.apiBaseUrl)!
-
-    init() {
-        Logger.verbose(HTTPClient.API_BASE_URL)
-    }
-
-    enum HTTPMethodWithBody: String {
+    private enum HTTPMethodWithBody: String {
         case POST
         case PUT
         case PATCH
         case DELETE
     }
 
-    enum HTTPError: Error {
+    private enum HTTPError: Error {
         case transportError(Error)
         case serverSideError(Int)
     }
 
-    func createRequest(path: String) -> URLRequest? {
+    private enum Environment: String {
+        case local = "http://localhost:9000/local"
+        case dev = "https://api.blux.ai/dev"
+        case stg = "https://api.blux.ai/stg"
+        case prod = "https://api.blux.ai/prod"
+    }
+
+    private var API_BASE_URL: String = Environment.prod.rawValue
+
+    // MARK: - Private Methods
+
+    private func createRequest(path: String) -> URLRequest? {
         guard let clientId = SdkConfig.clientIdInUserDefaults else {
             return nil
         }
-        guard let url = URL(string: "\(HTTPClient.API_BASE_URL)\(path)")
+        guard let url = URL(string: "\(API_BASE_URL)\(path)")
         else {
             return nil
         }
@@ -75,7 +60,7 @@ final class HTTPClient {
         return request
     }
 
-    func createRequestWithBody<T: Codable>(
+    private func createRequestWithBody<T: Codable>(
         method: HTTPMethodWithBody, path: String, body: T
     ) -> URLRequest? {
         guard let clientId = SdkConfig.clientIdInUserDefaults else {
@@ -83,7 +68,7 @@ final class HTTPClient {
             return nil
         }
 
-        guard let url = URL(string: "\(HTTPClient.API_BASE_URL)\(path)")
+        guard let url = URL(string: "\(API_BASE_URL)\(path)")
         else {
             return nil
         }
@@ -110,7 +95,7 @@ final class HTTPClient {
         return request
     }
 
-    func createAsyncTask<V: Codable>(
+    private func createAsyncTask<V: Codable>(
         request: URLRequest, completion: @escaping (V?, Error?) -> Void
     ) -> URLSessionDataTask {
         let task = URLSession.shared.dataTask(with: request) {
@@ -153,71 +138,49 @@ final class HTTPClient {
         return task
     }
 
-    // MARK: - Methods
+    // MARK: - Public Methods
 
     func get<T: Codable>(
         path: String, completion: @escaping (T?, Error?) -> Void
     ) {
-        guard let request = createRequest(path: path) else {
-            return
-        }
+        guard let request = createRequest(path: path)
+        else { return }
 
         Logger.verbose("GET Request - path:\(path)")
-
-        let task = createAsyncTask(
-            request: request, completion: completion)
-
+        let task = createAsyncTask(request: request, completion: completion)
         task.resume()
     }
 
     func post<T: Codable, V: Codable>(
         path: String, body: T, completion: @escaping (V?, Error?) -> Void
     ) {
-        guard
-            let request = createRequestWithBody(
-                method: HTTPMethodWithBody.POST, path: path, body: body)
-        else {
-            return
-        }
+        guard let request = createRequestWithBody(method: HTTPMethodWithBody.POST, path: path, body: body)
+        else { return }
 
         Logger.verbose("POST Request - path:\(path) body:\(body)")
-
         let task = createAsyncTask(request: request, completion: completion)
-
         task.resume()
     }
 
     func put<T: Codable, V: Codable>(
         path: String, body: T, completion: @escaping (V?, Error?) -> Void
     ) {
-        guard
-            let request = createRequestWithBody(
-                method: HTTPMethodWithBody.PUT, path: path, body: body)
-        else {
-            return
-        }
+        guard let request = createRequestWithBody(method: HTTPMethodWithBody.PUT, path: path, body: body)
+        else { return }
 
         Logger.verbose("PUT Request - path:\(path) body:\(body)")
-
         let task = createAsyncTask(request: request, completion: completion)
-
         task.resume()
     }
 
     func patch<T: Codable, V: Codable>(
         path: String, body: T, completion: @escaping (V?, Error?) -> Void
     ) {
-        guard
-            let request = createRequestWithBody(
-                method: HTTPMethodWithBody.PATCH, path: path, body: body)
-        else {
-            return
-        }
+        guard let request = createRequestWithBody(method: HTTPMethodWithBody.PATCH, path: path, body: body)
+        else { return }
 
         Logger.verbose("PATCH Request - path:\(path) body:\(body)")
-
         let task = createAsyncTask(request: request, completion: completion)
-
         task.resume()
     }
 }
