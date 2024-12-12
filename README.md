@@ -39,8 +39,12 @@ end
 
 ```swift
 BluxClient.setLogLevel()
-BluxClient.initialize(launchOptions, bluxClientId: BLUX_CLIENT_ID, bluxAPIKey: BLUX_API_KEY) {
+BluxClient.initialize(launchOptions, bluxClientId: BLUX_CLIENT_ID, bluxAPIKey: BLUX_API_KEY) { error in
+  if let error = error {
+    print("BluxClient initialize error: \(error)")
+  } else {
     BluxClient.signIn(userId: "USER_ID")
+  }
 }
 ```
 
