@@ -208,18 +208,31 @@ class InappService {
 @available(iOSApplicationExtension, unavailable)
 extension UIViewController {
    static func getTopViewController(
-      _ baseViewController: UIViewController? = UIApplication.shared.keyWindow?.rootViewController
+      _ baseViewController: UIViewController? = {
+         if #available(iOS 13.0, *) {
+            // iOS 13 이상에서는 connectedScenes를 사용
+            guard let windowScene = UIApplication.shared.connectedScenes
+               .compactMap({ $0 as? UIWindowScene })
+               .first(where: { $0.activationState == .foregroundActive }),
+               let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow })
+            else {
+               return nil
+            }
+            return keyWindow.rootViewController
+         } else {
+            // iOS 12 이하 호환용 (이 경우엔 keyWindow 사용 가능)
+            return UIApplication.shared.keyWindow?.rootViewController
+         }
+      }()
    ) -> UIViewController? {
       if let navigationController = baseViewController as? UINavigationController {
          return getTopViewController(navigationController.visibleViewController)
       }
-
       if let tabBarController = baseViewController as? UITabBarController,
          let selectedViewController = tabBarController.selectedViewController
       {
          return getTopViewController(selectedViewController)
       }
-
       if let presentedViewController = baseViewController?.presentedViewController {
          return getTopViewController(presentedViewController)
       }

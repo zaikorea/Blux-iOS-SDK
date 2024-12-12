@@ -77,9 +77,8 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
         webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = self
 
-        if #available(iOSApplicationExtension 14.0, *) {
-            webView.configuration.defaultWebpagePreferences
-                .allowsContentJavaScript = true
+        if #available(iOS 14.0, *) {
+            webView.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
         } else {
             webView.configuration.preferences.javaScriptEnabled = true
         }

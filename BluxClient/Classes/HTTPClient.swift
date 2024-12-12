@@ -22,14 +22,14 @@ final class HTTPClient {
         case serverSideError(Int)
     }
 
-    private enum Environment: String {
+    public enum APIBaseURLByStage: String {
         case local = "http://localhost:9000/local"
         case dev = "https://api.blux.ai/dev"
         case stg = "https://api.blux.ai/stg"
         case prod = "https://api.blux.ai/prod"
     }
 
-    private var API_BASE_URL: String = Environment.prod.rawValue
+    private var API_BASE_URL: String = APIBaseURLByStage.prod.rawValue
 
     // MARK: - Private Methods
 
@@ -182,5 +182,9 @@ final class HTTPClient {
         Logger.verbose("PATCH Request - path:\(path) body:\(body)")
         let task = createAsyncTask(request: request, completion: completion)
         task.resume()
+    }
+
+    func setAPIStage(_ apiBaseUrl: APIBaseURLByStage) {
+        API_BASE_URL = apiBaseUrl.rawValue
     }
 }

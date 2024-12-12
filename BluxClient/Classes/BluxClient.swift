@@ -305,6 +305,24 @@ struct PropertiesWrapper<T: Codable>: Codable {
             "NotificationForegroundReceivedHandler has been registered.")
     }
 
+    @objc public static func setAPIStage(_ stage: String) {
+        if stage == "prod" {
+            HTTPClient.shared.setAPIStage(HTTPClient.APIBaseURLByStage.prod)
+            return
+        } else if stage == "stg" {
+            HTTPClient.shared.setAPIStage(HTTPClient.APIBaseURLByStage.stg)
+            return
+        } else if stage == "dev" {
+            HTTPClient.shared.setAPIStage(HTTPClient.APIBaseURLByStage.dev)
+            return
+        } else if stage == "local" {
+            HTTPClient.shared.setAPIStage(HTTPClient.APIBaseURLByStage.local)
+            return
+        }
+
+        Logger.verbose("Invalid stage string")
+    }
+
     static func hasPermissionForNotifications(
         completion: @escaping (Bool) -> Void
     ) {
