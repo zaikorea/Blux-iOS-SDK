@@ -8,17 +8,18 @@
 
 Pod::Spec.new do |s|
   s.name             = 'BluxClient'
-  s.version          = '0.3.0'
+  s.version          = '0.3.1'
   s.summary          = 'Blux iOS SDK.'
 
   s.homepage         = 'https://github.com/zaikorea/Blux-iOS-SDK.git'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Blux' => 'tech@blux.ai' }
+
   s.source           = { :git => 'https://github.com/zaikorea/Blux-iOS-SDK.git', :tag => s.version.to_s }
+  s.source_files = 'BluxClient/Classes/**/*'
 
   s.ios.deployment_target = '13.0'
-
-  s.source_files = 'BluxClient/Classes/**/*'
+  s.swift_version = '5.0'
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
