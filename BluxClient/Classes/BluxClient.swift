@@ -21,9 +21,10 @@ struct PropertiesWrapper<T: Codable>: Codable {
     /// Initialize Blux SDK
     @objc public static func initialize(
         _ launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
-        bluxClientId: String, bluxAPIKey: String,
+        bluxClientId: String,
+        bluxAPIKey: String,
         requestPermissionOnLaunch: Bool = true,
-        completion: @escaping (() -> Void) = {}
+        completion: @escaping ((NSError?) -> Void) = { _ in }
     ) {
         SdkConfig.requestPermissionOnLaunch = requestPermissionOnLaunch
 
@@ -40,6 +41,7 @@ struct PropertiesWrapper<T: Codable>: Codable {
         // Check UserDefaults availability
         guard SdkConfig.clientIdInUserDefaults == bluxClientId else {
             Logger.verbose("UserDefaults unavailable.")
+            completion(NSError(domain: "BluxClient", code: -1, userInfo: [NSLocalizedDescriptionKey: "UserDefaults unavailable."]))
             return
         }
 
@@ -57,24 +59,33 @@ struct PropertiesWrapper<T: Codable>: Codable {
 
         ColdStartNotificationManager.process()
 
-        if isActivated { return }
+        if isActivated {
+            completion(nil)
+            return
+        }
         isActivated = true
 
         let savedDeviceId = SdkConfig.deviceIdInUserDefaults
-
         Logger.verbose(
             savedDeviceId != nil
                 ? "Blux Device ID exists: \(savedDeviceId!)."
-                : "Blux Device ID does not exist, create new one.")
+                : "Blux Device ID does not exist, create new one."
+        )
 
-        DeviceService.initializeDevice(deviceId: savedDeviceId) {
-            let eventRequest = EventRequest()
-            eventRequest.events.append(Event(eventType: "visit"))
-            self.sendRequest(eventRequest)
+        DeviceService.initializeDevice(deviceId: savedDeviceId) { result in
+            switch result {
+            case .success:
+                let eventRequest = EventRequest()
+                eventRequest.events.append(Event(eventType: "visit"))
+                self.sendRequest(eventRequest)
 
-            completion()
-            if requestPermissionOnLaunch {
-                requestPermissionForNotifications()
+                completion(nil)
+                if requestPermissionOnLaunch {
+                    requestPermissionForNotifications()
+                }
+            case .failure(let error):
+                Logger.error("Failed to initialize device: \(error).")
+                completion(error as NSError)
             }
         }
     }
