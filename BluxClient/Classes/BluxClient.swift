@@ -97,12 +97,15 @@ struct PropertiesWrapper<T: Codable>: Codable {
     }
 
     /// Set userId of the device
-    @objc public static func signIn(userId: String) {
+    @objc public static func signIn(userId: String, completion: @escaping ((NSError?) -> Void) = { _ in }) {
         guard
             let clientId = SdkConfig.clientIdInUserDefaults,
             let bluxId = SdkConfig.bluxIdInUserDefaults,
             let deviceId = SdkConfig.deviceIdInUserDefaults
-        else { return }
+        else {
+            completion(NSError(domain: "BluxClient", code: -1, userInfo: [NSLocalizedDescriptionKey: "Required IDs not found"]))
+            return
+        }
 
         let body = DeviceService.getBluxDeviceInfo()
         body.userId = userId
@@ -114,6 +117,7 @@ struct PropertiesWrapper<T: Codable>: Codable {
         ) { (response: BluxDeviceResponse?, error) in
             if let error = error {
                 Logger.error("Failed to request sign-in. - \(error)")
+                completion(NSError(domain: "BluxClient", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to request sign-in. - \(error)"]))
                 return
             }
 
@@ -122,6 +126,7 @@ struct PropertiesWrapper<T: Codable>: Codable {
                 SdkConfig.userIdInUserDefaults = userId
                 Logger.verbose("Signin request success.")
                 Logger.verbose("Blux ID: \(bluxDeviceResponse.bluxId).")
+                completion(nil)
             }
         }
     }
