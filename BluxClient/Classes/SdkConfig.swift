@@ -14,7 +14,7 @@ public enum SdkType: String {
 }
 
 final class SdkConfig {
-    static var sdkVersion = "0.3.3"
+    static var sdkVersion = "0.4.1"
     static var sdkType: SdkType = .native
     
     static var bluxAppGroupNameKey = "BluxAppGroupName"

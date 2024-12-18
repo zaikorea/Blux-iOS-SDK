@@ -1,5 +1,5 @@
 PODS:
-  - BluxClient (0.3.3)
+  - BluxClient (0.4.1)
 
 DEPENDENCIES:
   - BluxClient (from `../`)
