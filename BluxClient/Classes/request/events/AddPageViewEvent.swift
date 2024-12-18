@@ -5,23 +5,23 @@ public class AddPageViewEvent: EventRequest {
     
     init(builder: Builder) throws {
         super.init()
-        self.events.append(
-            try Event(eventType: builder.eventType)
-                    .setPage(builder.page)
-                    .setCustomEventProperties(builder.customEventProperties)
+        try self.events.append(
+            Event(eventType: builder.eventType)
+                .setPage(builder.page)
+                .setCustomEventProperties(builder.customEventProperties)
         )
     }
     
     public class Builder {
-        var eventType: String = AddPageViewEvent.DEFAULT_EVENT_TYPE
-        var page: String
-        var customEventProperties: [String: String]? = nil
+        fileprivate let eventType: String = DEFAULT_EVENT_TYPE
+        fileprivate let page: String
+        
+        fileprivate var customEventProperties: [String: String]? = nil
         
         public init(page: String) {
             self.page = page
         }
         
-
         public func customEventProperties(_ customEventProperties: [String: String]) -> Builder {
             self.customEventProperties = customEventProperties
             return self
@@ -32,4 +32,3 @@ public class AddPageViewEvent: EventRequest {
         }
     }
 }
-

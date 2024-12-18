@@ -5,7 +5,7 @@
 //  Created by Tommy on 6/4/24.
 //
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 
 @available(iOSApplicationExtension, unavailable)
 final class WebViewController: UIViewController, WKNavigationDelegate,

@@ -5,17 +5,18 @@ public class AddCartaddEvent: EventRequest {
     
     init(builder: Builder) throws {
         super.init()
-        self.events.append(
-            try Event(eventType: builder.eventType)
+        try self.events.append(
+            Event(eventType: builder.eventType)
                 .setItemId(builder.itemId)
                 .setCustomEventProperties(builder.customEventProperties)
         )
     }
     
     public class Builder {
-        var itemId: String
-        var eventType: String = AddCartaddEvent.DEFAULT_EVENT_TYPE
-        var customEventProperties: [String: String]? = nil
+        fileprivate let eventType: String = AddCartaddEvent.DEFAULT_EVENT_TYPE
+        
+        fileprivate var itemId: String
+        fileprivate var customEventProperties: [String: String]? = nil
         
         public init(itemId: String) {
             self.itemId = itemId
@@ -31,4 +32,3 @@ public class AddCartaddEvent: EventRequest {
         }
     }
 }
-

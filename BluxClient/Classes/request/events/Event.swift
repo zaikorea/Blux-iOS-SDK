@@ -2,17 +2,29 @@ import Foundation
 
 public class EventProperties: Codable {
     public var itemId: String?
+    public var section: String?
+    public var prevSection: String?
+    public var recommendationId: String?
     public var price: Double?
+    public var orderId: String?
     public var rating: Double?
+    public var prevPage: String?
     public var page: String?
+    public var position: Double?
 
     enum CodingKeys: String,
         CodingKey
     {
         case itemId = "item_id"
+        case section
+        case prevSection = "prev_section"
+        case recommendationId = "recommendation_id"
         case price
+        case orderId = "order_id"
         case rating
+        case prevPage = "prev_page"
         case page
+        case position
     }
 }
 
@@ -52,24 +64,81 @@ public class Event: Codable {
     }
 
     @discardableResult
-    public func setPage(_ page: String) throws -> Event {
-        let validatedPage = try Validator.validateString(page, min: 1, max: 500, varName: "page")
-
-        eventProperties.page = validatedPage
+    public func setSection(_ section: String?) throws -> Event {
+        if let section = section {
+            let validatedSection = try Validator.validateString(section, min: 1, max: 500, varName: "section")
+            eventProperties.section = validatedSection
+        }
         return self
     }
 
     @discardableResult
-    public func setPrice(_ price: Double) throws -> Event {
-        let validatedPrice = try Validator.validateNumber(price, min: 0, varName: "price")
-        eventProperties.price = validatedPrice
+    public func setPrevSection(_ prevSection: String?) throws -> Event {
+        if let prevSection = prevSection {
+            let validatedPrevSection = try Validator.validateString(prevSection, min: 1, max: 500, varName: "prevSection")
+            eventProperties.prevSection = validatedPrevSection
+        }
         return self
     }
 
     @discardableResult
-    public func setRating(_ rating: Double) throws -> Event {
-        let validatedRating = try Validator.validateNumber(rating, min: 0, varName: "rating")
-        eventProperties.rating = validatedRating
+    public func setRecommendationId(_ recommendationId: String?) throws -> Event {
+        if let recommendationId = recommendationId {
+            let validatedRecommendationId = try Validator.validateString(recommendationId, min: 1, max: 500, varName: "recommendationId")
+            eventProperties.recommendationId = validatedRecommendationId
+        }
+        return self
+    }
+
+    @discardableResult
+    public func setPrice(_ price: Double?) throws -> Event {
+        if let price = price {
+            let validatedPrice = try Validator.validateNumber(price, min: 0, varName: "price")
+            eventProperties.price = validatedPrice
+        }
+        return self
+    }
+
+    @discardableResult
+    public func setOrderId(_ orderId: String?) throws -> Event {
+        if let orderId = orderId {
+            let validatedOrderId = try Validator.validateString(orderId, min: 1, max: 500, varName: "orderId")
+            eventProperties.orderId = validatedOrderId
+        }
+        return self
+    }
+
+    @discardableResult
+    public func setRating(_ rating: Double?) throws -> Event {
+        if let rating = rating {
+            eventProperties.rating = rating
+        }
+        return self
+    }
+
+    @discardableResult
+    public func setPrevPage(_ prevPage: String?) throws -> Event {
+        if let prevPage = prevPage {
+            let validatedPrevPage = try Validator.validateString(prevPage, min: 1, max: 500, varName: "prevPage")
+            eventProperties.prevPage = validatedPrevPage
+        }
+        return self
+    }
+
+    @discardableResult
+    public func setPage(_ page: String?) throws -> Event {
+        if let page = page {
+            let validatedPage = try Validator.validateString(page, min: 1, max: 500, varName: "page")
+            eventProperties.page = validatedPage
+        }
+        return self
+    }
+
+    @discardableResult
+    public func setPosition(_ position: Double?) throws -> Event {
+        if let position = position {
+            eventProperties.position = position
+        }
         return self
     }
 
