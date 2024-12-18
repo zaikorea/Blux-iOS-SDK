@@ -11,12 +11,18 @@ public class AddCustomEvent: EventRequest {
     }
 
     public class Builder {
-        var itemId: String?
-        var eventType: String
-        var customEventProperties: [String: String]? = nil
+        fileprivate let eventType: String
+
+        fileprivate var itemId: String?
+        fileprivate var customEventProperties: [String: String]? = nil
 
         public init(eventType: String) {
             self.eventType = eventType
+        }
+
+        public func itemId(_ itemId: String) -> Builder {
+            self.itemId = itemId
+            return self
         }
 
         public func customEventProperties(

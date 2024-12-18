@@ -5,19 +5,20 @@ public class AddRateEvent: EventRequest {
     
     init(builder: Builder) throws {
         super.init()
-        self.events.append(
-            try Event(eventType: builder.eventType)
-                    .setItemId(builder.itemId)
-                    .setRating(builder.rating)
-                    .setCustomEventProperties(builder.customEventProperties)
+        try self.events.append(
+            Event(eventType: builder.eventType)
+                .setItemId(builder.itemId)
+                .setRating(builder.rating)
+                .setCustomEventProperties(builder.customEventProperties)
         )
     }
     
     public class Builder {
-        var itemId: String
-        var eventType: String = AddRateEvent.DEFAULT_EVENT_TYPE
-        var rating: Double
-        var customEventProperties: [String: String]? = nil
+        fileprivate let eventType: String = DEFAULT_EVENT_TYPE
+        fileprivate let itemId: String
+        fileprivate let rating: Double
+        
+        fileprivate var customEventProperties: [String: String]? = nil
         
         public init(itemId: String, rating: Double) {
             self.itemId = itemId
@@ -34,4 +35,3 @@ public class AddRateEvent: EventRequest {
         }
     }
 }
-

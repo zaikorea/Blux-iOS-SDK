@@ -287,15 +287,14 @@ struct PropertiesWrapper<T: Codable>: Codable {
         }
     }
 
-    public static func sendRequestData(_ data: [Event]) {
-        EventService.sendRequest(data)
-        InappService.handleInappEvent(data)
+    public static func sendRequestData(_ events: [Event]) {
+        EventService.sendRequest(events)
+        InappService.handleInappEvent(events)
     }
 
     /// Send Request
-    public static func sendRequest(_ request: EventRequest) {
-        let requestData = request.getPayload()
-        sendRequestData(requestData)
+    public static func sendRequest(_ eventRequest: EventRequest) {
+        sendRequestData(eventRequest.getPayload())
     }
 
     /// Set the handler when notification is clicked

@@ -9,25 +9,22 @@ public class AddPurchaseEvent: EventRequest {
     }
     
     public class Builder {
-        var events: [Event] = []
-        var eventType: String = AddPurchaseEvent.DEFAULT_EVENT_TYPE
-        var customEventProperties: [String: String]? = nil
+        fileprivate var events: [Event] = []
         
-        public init() {
-            
-        }
+        public init() {}
         
-        public func addPurchase(itemId: String, price: Double, quantity: Int, customEventProperties: [String: String]? = nil) throws -> Builder {
-            guard (quantity > 0) else {
+        public func addPurchase(itemId: String, price: Double, quantity: Int, orderId: String? = nil, customEventProperties: [String: String]? = nil) throws -> Builder {
+            guard quantity > 0 else {
                 throw BluxError.InvalidQuantity
             }
             
             var customEventPropertiesWithQuantity = customEventProperties ?? [:]
             customEventPropertiesWithQuantity["quantity"] = "\(quantity)"
             
-            let event = try Event(eventType: eventType)
+            let event = try Event(eventType: DEFAULT_EVENT_TYPE)
                 .setItemId(itemId)
                 .setPrice(price * Double(quantity))
+                .setOrderId(orderId)
                 .setCustomEventProperties(customEventPropertiesWithQuantity)
             
             self.events.append(event)
@@ -39,4 +36,3 @@ public class AddPurchaseEvent: EventRequest {
         }
     }
 }
-

@@ -1,34 +1,30 @@
 import Foundation
 
-public class AddLikeEvent: EventRequest {
-    private static let DEFAULT_EVENT_TYPE: String = "like"
+public class AddPageVisitEvent: EventRequest {
+    private static let DEFAULT_EVENT_TYPE: String = "page_visit"
     
     init(builder: Builder) throws {
         super.init()
-        try self.events.append(
+        self.events.append(
             Event(eventType: builder.eventType)
-                .setItemId(builder.itemId)
                 .setCustomEventProperties(builder.customEventProperties)
         )
     }
     
     public class Builder {
         fileprivate let eventType: String = DEFAULT_EVENT_TYPE
-        fileprivate let itemId: String
         
         fileprivate var customEventProperties: [String: String]? = nil
         
-        public init(itemId: String) {
-            self.itemId = itemId
-        }
+        public init() {}
         
         public func customEventProperties(_ customEventProperties: [String: String]) -> Builder {
             self.customEventProperties = customEventProperties
             return self
         }
         
-        public func build() throws -> AddLikeEvent {
-            return try AddLikeEvent(builder: self)
+        public func build() throws -> AddPageVisitEvent {
+            return try AddPageVisitEvent(builder: self)
         }
     }
 }
