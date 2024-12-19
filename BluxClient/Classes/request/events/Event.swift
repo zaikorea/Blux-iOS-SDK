@@ -143,6 +143,14 @@ public class Event: Codable {
     }
 
     @discardableResult
+    public func setEventProperties(_ eventProperties: EventProperties?) -> Event {
+        if let eventProperties = eventProperties {
+            self.eventProperties = eventProperties
+        }
+        return self
+    }
+
+    @discardableResult
     public func setCustomEventProperties(_ customEventProperties: [String: String]?) -> Event {
         self.customEventProperties = customEventProperties
         return self

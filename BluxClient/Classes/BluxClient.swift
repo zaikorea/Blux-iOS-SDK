@@ -321,16 +321,17 @@ struct PropertiesWrapper<T: Codable>: Codable {
     }
 
     @objc public static func setAPIStage(_ stage: String) {
-        if stage == "prod" {
+        let uppercasedStage = stage.uppercased()
+        if uppercasedStage == "PROD" {
             HTTPClient.shared.setAPIStage(HTTPClient.APIBaseURLByStage.prod)
             return
-        } else if stage == "stg" {
+        } else if uppercasedStage == "STG" {
             HTTPClient.shared.setAPIStage(HTTPClient.APIBaseURLByStage.stg)
             return
-        } else if stage == "dev" {
+        } else if uppercasedStage == "DEV" {
             HTTPClient.shared.setAPIStage(HTTPClient.APIBaseURLByStage.dev)
             return
-        } else if stage == "local" {
+        } else if uppercasedStage == "LOCAL" {
             HTTPClient.shared.setAPIStage(HTTPClient.APIBaseURLByStage.local)
             return
         }
