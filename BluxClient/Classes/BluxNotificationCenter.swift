@@ -117,7 +117,7 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
     // MARK: Private Methods
 
     private func presentWebView(url: URL) {
-        guard let topViewController = UIViewController.getTopViewController() else {
+        guard let topViewController = getTopViewController() else {
             return
         }
 
@@ -129,6 +129,24 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
         navigationController.modalPresentationStyle = .fullScreen
         topViewController.present(
             navigationController, animated: true, completion: nil)
+    }
+
+    private func getTopViewController(_ baseViewController: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
+        if let navigationController = baseViewController as? UINavigationController {
+            return getTopViewController(navigationController.visibleViewController)
+        }
+
+        if let tabBarController = baseViewController as? UITabBarController {
+            if let selectedViewController = tabBarController.selectedViewController {
+                return getTopViewController(selectedViewController)
+            }
+        }
+
+        if let presentedViewController = baseViewController?.presentedViewController {
+            return getTopViewController(presentedViewController)
+        }
+
+        return baseViewController
     }
 
     private func presentApplication(url: URL) {
