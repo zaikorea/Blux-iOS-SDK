@@ -32,12 +32,12 @@ end
 
 ---
 
-- 필요 변수 : `클라이언트 ID`, `API 키`
+- 필요 변수 : `Application ID`, `API 키`
 - setLogLevel 을 제외한 다른 모든 메소드는 `initialize`로 SDK가 초기화 된 이후에 호출해야 합니다.
 
 ```swift
 BluxClient.setLogLevel()
-BluxClient.initialize(launchOptions, bluxClientId: BLUX_CLIENT_ID, bluxAPIKey: BLUX_API_KEY) { error in
+BluxClient.initialize(launchOptions, bluxApplicationId: BLUX_APPLICATION_ID, bluxAPIKey: BLUX_API_KEY) { error in
   if let error = error {
     print("BluxClient initialize error: \(error)")
   } else {
@@ -108,17 +108,26 @@ BluxClient.sendRequest(eventRequest)
 ---
 
 - **_동일 상품 복수 구매_**
-  - price 파라미터의 경우, 해당 상품 판매를 통한 총 매출을 계산할 때 활용됩니다. 추천에 의한 매출 기여액 지표를 보여드릴 때 사용되는 값으로 만약 5,000원짜리 상품을 5개 구매하였다면, 25,000 을 입력하시면 됩니다.
-- **_복수 상품 구매_**
-  - `AddPurchaseEvent` 객체를 각 상품 구매건에 맞춰서 생성한 후 list 형태로 넘겨주시면 됩니다.
+  - paidAmount 파라미터의 경우, 캠페인을 통한 성과 집계에 사용되는 값입니다.
 
 ```swift
-let eventRequest = try AddPurchaseEvent.Builder().addPurchase("ITEM_ID", 2000.0, 1).build()
+let eventRequest = try AddOrderEvent.Builder()
+                .addItem(id: "test_item_1", price: 1000, quantity: 1)
+                .orderAmount(12000)
+                .paidAmount(20000)
+                .orderId("test_order_id")
+                .build()
 BluxClient.sendRequest(eventRequest)
 ```
 
 ```swift
 // 복수 상품을 구매한 경우
-let eventRequest = try AddPurchaseEvent.Builder().addPurchase("ITEM_ID_1", 2000.0, 1).addPurchase("ITEM_ID_2", 1000.0, 5).addPurchase("ITEM_ID_3", 10000.0, 2).build()
+let eventRequest = try AddOrderEvent.Builder()
+                .addItem(id: "test_item_1", price: 1000, quantity: 1)
+                .addItem(id: "test_item_2", price: 2000, quantity: 2)
+                .orderAmount(12000)
+                .paidAmount(20000)
+                .orderId("test_order_id")
+                .build()
 BluxClient.sendRequest(eventRequest)
 ```
