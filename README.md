@@ -6,7 +6,7 @@
 
 ### Installation
 
-- Blux iOS SDK의 경우 cocoapods package manager를 통해 배포되어 있습니다. 
+- Blux iOS SDK의 경우 cocoapods package manager를 통해 배포되어 있습니다.
 
 #### CocoaPods
 
@@ -18,17 +18,15 @@ use_frameworks!
 
 target 'YOUR_PROJECT_NAME' do
   // 아래 줄 추가
-  pod 'BluxClient', '0.4.2'  
+  pod 'BluxClient', '0.4.3'
 end
 
 // 파일 최하단의 아래 줄 추가
 // 앞서 입력한 Extension의 Product Name을 target 이름으로 설정합니다.
 target 'BluxNotificationServiceExtenstion' do
-  pod 'BluxClient', '0.4.2'
+  pod 'BluxClient', '0.4.3'
 end
 ```
-
-
 
 ### **Initialize**
 
@@ -48,8 +46,6 @@ BluxClient.initialize(launchOptions, bluxClientId: BLUX_CLIENT_ID, bluxAPIKey: B
 }
 ```
 
-
-
 ### signIn
 
 - 회원 유저에 대해서 부여하고 계시는 유저 ID를 넘겨주시면 됩니다.
@@ -61,8 +57,6 @@ BluxClient.initialize(launchOptions, bluxClientId: BLUX_CLIENT_ID, bluxAPIKey: B
 BluxClient.signIn(userId: "USER_ID")
 ```
 
-
-
 ### signOut
 
 - 유저가 서비스에서 로그아웃 한 경우 호출해주시면 됩니다.
@@ -71,8 +65,6 @@ BluxClient.signIn(userId: "USER_ID")
 ```swift
 BluxClient.signOut()
 ```
-
-
 
 ### sendEvent
 
@@ -87,8 +79,6 @@ let eventRequest = try AddProductDetailViewEvent.Builder(itemId: "ITEM_ID").buil
 BluxClient.sendRequest(eventRequest)
 ```
 
-
-
 #### 상품 좋아요
 
 : 유저가 제품이나 영상 등에 좋아요를 누르거나, 찜을 해두는 등 적극적인 관심을 보이는 행동을 할 때 사용 가능한 이벤트입니다.
@@ -100,8 +90,6 @@ let eventRequest = try AddLikeEvent.Builder(itemId: "ITEM_ID").build()
 BluxClient.sendRequest(eventRequest)
 ```
 
-
-
 #### 상품 장바구니 담기
 
 : 이커머스에서 유저가 제품을 장바구니에 담는 행동을 할 때 사용 가능한 이벤트입니다.
@@ -112,8 +100,6 @@ BluxClient.sendRequest(eventRequest)
 let eventRequest = try AddCartaddEvent.Builder(itemId: "ITEM_ID").build()
 BluxClient.sendRequest(eventRequest)
 ```
-
-
 
 #### 상품 구매
 
@@ -136,4 +122,3 @@ BluxClient.sendRequest(eventRequest)
 let eventRequest = try AddPurchaseEvent.Builder().addPurchase("ITEM_ID_1", 2000.0, 1).addPurchase("ITEM_ID_2", 1000.0, 5).addPurchase("ITEM_ID_3", 10000.0, 2).build()
 BluxClient.sendRequest(eventRequest)
 ```
-
