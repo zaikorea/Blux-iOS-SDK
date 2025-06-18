@@ -21,25 +21,25 @@ struct PropertiesWrapper<T: Codable>: Codable {
     /// Initialize Blux SDK
     @objc public static func initialize(
         _ launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
-        bluxClientId: String,
+        bluxApplicationId: String,
         bluxAPIKey: String,
         requestPermissionOnLaunch: Bool = true,
         completion: @escaping ((NSError?) -> Void) = { _ in }
     ) {
         SdkConfig.requestPermissionOnLaunch = requestPermissionOnLaunch
 
-        Logger.verbose("Initialize BluxClient with Client ID: \(bluxClientId).")
+        Logger.verbose("Initialize BluxClient with Application ID: \(bluxApplicationId).")
         SdkConfig.apiKeyInUserDefaults = bluxAPIKey
 
         // If saved clientId is nil or different, reset deviceId to nil
-        let savedClientId = SdkConfig.clientIdInUserDefaults
-        if savedClientId == nil || savedClientId != bluxClientId {
-            SdkConfig.clientIdInUserDefaults = bluxClientId
+        let savedApplicationId = SdkConfig.clientIdInUserDefaults
+        if savedApplicationId == nil || savedApplicationId != bluxApplicationId {
+            SdkConfig.clientIdInUserDefaults = bluxApplicationId
             SdkConfig.deviceIdInUserDefaults = nil
         }
 
         // Check UserDefaults availability
-        guard SdkConfig.clientIdInUserDefaults == bluxClientId else {
+        guard SdkConfig.clientIdInUserDefaults == bluxApplicationId else {
             Logger.verbose("UserDefaults unavailable.")
             completion(NSError(domain: "BluxClient", code: -1, userInfo: [NSLocalizedDescriptionKey: "UserDefaults unavailable."]))
             return
@@ -289,7 +289,7 @@ struct PropertiesWrapper<T: Codable>: Codable {
 
     public static func sendRequestData(_ events: [Event]) {
         EventService.sendRequest(events)
-        InappService.handleInappEvent(events)
+//        InappService.handleInappEvent(events)
     }
 
     /// Send Request

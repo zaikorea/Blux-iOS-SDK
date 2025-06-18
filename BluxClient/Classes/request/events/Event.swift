@@ -11,6 +11,9 @@ public class EventProperties: Codable {
     public var prevPage: String?
     public var page: String?
     public var position: Double?
+    public var orderAmount: Double?
+    public var paidAmount: Double?
+    public var items: [AddOrderEvent.Item]?
 
     enum CodingKeys: String,
         CodingKey
@@ -25,6 +28,51 @@ public class EventProperties: Codable {
         case prevPage = "prev_page"
         case page
         case position
+        case orderAmount = "order_amount"
+        case paidAmount = "paid_amount"
+        case items
+    }
+}
+
+public enum CustomEventValue: Codable {
+    case string(String)
+    case double(Double)
+    case int(Int)
+    case bool(Bool)
+    case stringArray([String])
+
+    // Encoding
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .string(let value): try container.encode(value)
+        case .double(let value): try container.encode(value)
+        case .int(let value): try container.encode(value)
+        case .bool(let value): try container.encode(value)
+        case .stringArray(let value): try container.encode(value)
+        }
+    }
+
+    // Decoding
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+
+        if let value = try? container.decode(String.self) {
+            self = .string(value)
+        } else if let value = try? container.decode(Double.self) {
+            self = .double(value)
+        } else if let value = try? container.decode(Int.self) {
+            self = .int(value)
+        } else if let value = try? container.decode(Bool.self) {
+            self = .bool(value)
+        } else if let value = try? container.decode([String].self) {
+            self = .stringArray(value)
+        } else {
+            throw DecodingError.typeMismatch(
+                CustomEventValue.self,
+                DecodingError.Context(codingPath: container.codingPath, debugDescription: "Unsupported value")
+            )
+        }
     }
 }
 
@@ -35,7 +83,7 @@ public class Event: Codable {
     public var capturedAt: String
     public var eventType: String
     public var eventProperties: EventProperties
-    public var customEventProperties: [String: String]? = nil
+    public var customEventProperties: [String: CustomEventValue]? = nil
 
     enum CodingKeys: String,
         CodingKey
@@ -57,36 +105,9 @@ public class Event: Codable {
     }
 
     @discardableResult
-    public func setItemId(_ itemId: String) throws -> Event {
+    public func setItemId(_ itemId: String?) throws -> Event {
         let validatedItemId = try Validator.validateString(itemId, min: 1, max: 500, varName: "itemId")
         eventProperties.itemId = validatedItemId
-        return self
-    }
-
-    @discardableResult
-    public func setSection(_ section: String?) throws -> Event {
-        if let section = section {
-            let validatedSection = try Validator.validateString(section, min: 1, max: 500, varName: "section")
-            eventProperties.section = validatedSection
-        }
-        return self
-    }
-
-    @discardableResult
-    public func setPrevSection(_ prevSection: String?) throws -> Event {
-        if let prevSection = prevSection {
-            let validatedPrevSection = try Validator.validateString(prevSection, min: 1, max: 500, varName: "prevSection")
-            eventProperties.prevSection = validatedPrevSection
-        }
-        return self
-    }
-
-    @discardableResult
-    public func setRecommendationId(_ recommendationId: String?) throws -> Event {
-        if let recommendationId = recommendationId {
-            let validatedRecommendationId = try Validator.validateString(recommendationId, min: 1, max: 500, varName: "recommendationId")
-            eventProperties.recommendationId = validatedRecommendationId
-        }
         return self
     }
 
@@ -115,16 +136,7 @@ public class Event: Codable {
         }
         return self
     }
-
-    @discardableResult
-    public func setPrevPage(_ prevPage: String?) throws -> Event {
-        if let prevPage = prevPage {
-            let validatedPrevPage = try Validator.validateString(prevPage, min: 1, max: 500, varName: "prevPage")
-            eventProperties.prevPage = validatedPrevPage
-        }
-        return self
-    }
-
+    
     @discardableResult
     public func setPage(_ page: String?) throws -> Event {
         if let page = page {
@@ -135,9 +147,25 @@ public class Event: Codable {
     }
 
     @discardableResult
-    public func setPosition(_ position: Double?) throws -> Event {
-        if let position = position {
-            eventProperties.position = position
+    public func setOrderAmount(_ orderAmount: Double?) throws -> Event {
+        if let orderAmount = orderAmount {
+            eventProperties.orderAmount = orderAmount
+        }
+        return self
+    }
+    
+    @discardableResult
+    public func setPaidAmount(_ paidAmount: Double?) throws -> Event {
+        if let paidAmount = paidAmount {
+            eventProperties.paidAmount = paidAmount
+        }
+        return self
+    }
+    
+    @discardableResult
+    public func setItems(_ items: [AddOrderEvent.Item]?) throws -> Event {
+        if let items = items {
+            eventProperties.items = items
         }
         return self
     }
@@ -151,7 +179,7 @@ public class Event: Codable {
     }
 
     @discardableResult
-    public func setCustomEventProperties(_ customEventProperties: [String: String]?) -> Event {
+    public func setCustomEventProperties(_ customEventProperties: [String: CustomEventValue]?) -> Event {
         self.customEventProperties = customEventProperties
         return self
     }
@@ -192,44 +220,5 @@ extension Event: CustomStringConvertible {
         }
 
         return "\n\t\(properties.joined(separator: "\n\t"))\n"
-    }
-}
-
-public class EventResponse: Codable {
-    public var message: String
-    public var failureCount: Int?
-    public var capturedAt: String
-    public var processedEvents: [Event]?
-    public var unprocessedEvents: [Event]?
-
-    enum CodingKeys: String,
-        CodingKey
-    {
-        case message
-        case failureCount = "failure_count"
-        case capturedAt
-        case processedEvents = "processed_events"
-        case unprocessedEvents = "unprocessed_events"
-    }
-}
-
-extension EventResponse: CustomStringConvertible {
-    public var description: String {
-        var properties: [String] = []
-
-        properties.append("message: \(message)")
-        properties.append("capturedAt: \(capturedAt)")
-
-        if let failureCount = failureCount {
-            properties.append("failureCount: \(failureCount)")
-        }
-        if let processedEvents = processedEvents {
-            properties.append("processedEvents: \(processedEvents)")
-        }
-        if let unprocessedEvents = unprocessedEvents {
-            properties.append("unprocessedEvents: \(unprocessedEvents)")
-        }
-
-        return "\n\(properties.joined(separator: "\n"))"
     }
 }

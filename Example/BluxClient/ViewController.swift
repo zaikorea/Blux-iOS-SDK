@@ -52,7 +52,13 @@ class ViewController: UIViewController {
     
     @IBAction func SendPDVEvent2(_ sender: Any) {
         do {
-            let eventRequest = try AddProductDetailViewEvent.Builder(itemId: "test_item_2").build()
+            let eventRequest = try AddCustomEvent.Builder(eventType: "test_event_custom")
+                .addItem(id: "test_item", price: 10, quantity: 1)
+                .orderAmount(2000)
+                .paidAmount(3000)
+                .orderId("test_order_id")
+                .customEventProperties(["test_custom": .stringArray(["a"]), "test_custom_2": .string("2025-06-16T12:34:56Z")])
+                .build()
             BluxClient.sendRequest(eventRequest)
         } catch {
             print(error.localizedDescription)
@@ -61,7 +67,14 @@ class ViewController: UIViewController {
     
     @IBAction func SendPDVEvent3(_ sender: Any) {
         do {
-            let eventRequest = try AddProductDetailViewEvent.Builder(itemId: "test_item_3").build()
+            let eventRequest = try AddOrderEvent.Builder()
+                .addItem(id: "test_item_1", price: 1000, quantity: 1)
+                .addItem(id: "test_item_2", price: 2000, quantity: 2)
+                .orderAmount(12000)
+                .paidAmount(20000)
+                .orderId("test_order_id")
+                .customEventProperties(["coupons": .stringArray(["a", "b"])])
+                .build()
             BluxClient.sendRequest(eventRequest)
         } catch {
             print(error.localizedDescription)

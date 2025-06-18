@@ -14,11 +14,11 @@ public class AddPageVisitEvent: EventRequest {
     public class Builder {
         fileprivate let eventType: String = DEFAULT_EVENT_TYPE
         
-        fileprivate var customEventProperties: [String: String]? = nil
+        fileprivate var customEventProperties: [String: CustomEventValue]? = nil
         
         public init() {}
         
-        public func customEventProperties(_ customEventProperties: [String: String]) -> Builder {
+        public func customEventProperties(_ customEventProperties: [String: CustomEventValue]) -> Builder {
             self.customEventProperties = customEventProperties
             return self
         }

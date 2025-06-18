@@ -13,11 +13,9 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-//    let clientId = "CLIENT ID"
-//    let apiKey = "SECRET KEY"
-  
-    let clientId = "637a1627"
+    let applicationId = "66a38b6a233aab065644296f"
     let apiKey = "0QwVM7OdHcP1JlUm34acWQLTXnLLpInEncy3PT2QvtE"
+    
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication
@@ -25,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         BluxClient.setAPIStage("stg")
 
-        BluxClient.initialize(launchOptions, bluxClientId: clientId, bluxAPIKey: apiKey, requestPermissionOnLaunch: true) { error in
+        BluxClient.initialize(launchOptions, bluxApplicationId: applicationId, bluxAPIKey: apiKey, requestPermissionOnLaunch: true) { error in
             if let error = error {
                 Logger.verbose("BluxClient.initialize error: \(error)")
             } else {

@@ -18,14 +18,14 @@ public class AddRateEvent: EventRequest {
         fileprivate let itemId: String
         fileprivate let rating: Double
         
-        fileprivate var customEventProperties: [String: String]? = nil
+        fileprivate var customEventProperties: [String: CustomEventValue]? = nil
         
         public init(itemId: String, rating: Double) {
             self.itemId = itemId
             self.rating = rating
         }
         
-        public func customEventProperties(_ customEventProperties: [String: String]) -> Builder {
+        public func customEventProperties(_ customEventProperties: [String: CustomEventValue]) -> Builder {
             self.customEventProperties = customEventProperties
             return self
         }
