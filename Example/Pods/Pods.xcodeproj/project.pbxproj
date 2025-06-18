@@ -9,15 +9,11 @@
 /* Begin PBXBuildFile section */
 		025FB895582BD3D658F9923BF34CEC0F /* EventService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FC9F3F27F8E2C2AE610BFED27CBD23 /* EventService.swift */; };
 		064972E597D29F26F059E9D105A2B6E3 /* AddProductDetailViewEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21DB5DD39D03596D27F60825C55DFEC9 /* AddProductDetailViewEvent.swift */; };
-		1AD7B4A92D1282B5000C6FAF /* AddInstantImpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7B4A82D1282B2000C6FAF /* AddInstantImpression.swift */; };
 		1AEE71FC2D128F4100BA3C0F /* AddPageVisitEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEE71FB2D128F3900BA3C0F /* AddPageVisitEvent.swift */; };
-		1AEE71FE2D12982700BA3C0F /* AddPersistentImpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEE71FD2D12982600BA3C0F /* AddPersistentImpression.swift */; };
-		1AEE72002D129C8C00BA3C0F /* AddSectionViewEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEE71FF2D129C8A00BA3C0F /* AddSectionViewEvent.swift */; };
 		1EC147553D5D28A57081F1A6173A440C /* BluxClient-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 51EF65364429228275EA9C4C5666618D /* BluxClient-dummy.m */; };
 		20EDDC9C567C94AF4EA6E545D24C3E7E /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A3909FB093ECEE979A2606BBA84008 /* HTTPClient.swift */; };
 		21B04C1012D8CB1F05D2AC1704F846EB /* BluxNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7DFEF76AD16D53FE2694FA72786E96 /* BluxNotificationCenter.swift */; };
 		2499301C7052EFD42121E0B63F3C5C74 /* Pods-BluxNotificationServiceExtenstion-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 21DAAB3AAEC17F6A85FE8B7810FD6317 /* Pods-BluxNotificationServiceExtenstion-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		26B9436F0F8C30AA8CBC1707A373F0A3 /* AddPurchaseEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005759E130A9055C40998D349F473858 /* AddPurchaseEvent.swift */; };
 		313945057D12E33854AA837DA7D9C410 /* AddPageViewEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22BE8F520DCB2CC848E58640D3EE969 /* AddPageViewEvent.swift */; };
 		3DDE1842561E4EBC17123203C9C1BC3C /* ColdStartNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5598AAA5C07370E64B74FDD170AF54D4 /* ColdStartNotificationManager.swift */; };
 		3E5926F9A57C66A634B66E023A77152C /* AddRateEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E697AFD60CEF4A4480B5D0813A4579E2 /* AddRateEvent.swift */; };
@@ -28,6 +24,7 @@
 		69F7C4D334BB096FC79A82821CC3776A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		72086769BE89AC22018B84D21AB92D34 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D26C68ACC5F8E4BAD008A1394FCC8E9 /* Logger.swift */; };
 		780D20102C60711B002E01EF /* UserProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 780D200F2C60711B002E01EF /* UserProperties.swift */; };
+		78DCAB3E2E02CEFE00C20846 /* AddOrderEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DCAB3D2E02CEF700C20846 /* AddOrderEvent.swift */; };
 		7E81B19931C454634534C25735CBCBC4 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B50D3334A181D252B7256020E3DF9E /* WebViewController.swift */; };
 		811BECAF00C7E9F45A9CB34B9F7C26D5 /* Validator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3F6F12D091BC473DC28060AD3D1074 /* Validator.swift */; };
 		85C9CCC277A02AE9B5BAB0E45AA885B8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
@@ -72,14 +69,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		005759E130A9055C40998D349F473858 /* AddPurchaseEvent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddPurchaseEvent.swift; sourceTree = "<group>"; };
 		068E40AC4E4E971972B12454208B7641 /* Pods-BluxClient_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BluxClient_Example-acknowledgements.plist"; sourceTree = "<group>"; };
 		11FBF77E331C2375C764D5501F98873B /* Pods-BluxNotificationServiceExtenstion.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BluxNotificationServiceExtenstion.release.xcconfig"; sourceTree = "<group>"; };
 		1A90C5C3C7274A7186DE3605363F292E /* EventHandlers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EventHandlers.swift; path = BluxClient/Classes/EventHandlers.swift; sourceTree = "<group>"; };
-		1AD7B4A82D1282B2000C6FAF /* AddInstantImpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddInstantImpression.swift; sourceTree = "<group>"; };
 		1AEE71FB2D128F3900BA3C0F /* AddPageVisitEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPageVisitEvent.swift; sourceTree = "<group>"; };
-		1AEE71FD2D12982600BA3C0F /* AddPersistentImpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPersistentImpression.swift; sourceTree = "<group>"; };
-		1AEE71FF2D129C8A00BA3C0F /* AddSectionViewEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSectionViewEvent.swift; sourceTree = "<group>"; };
 		1D700A57D8BD33D63B8EEF4AF63A1FAA /* Pods-BluxNotificationServiceExtenstion-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-BluxNotificationServiceExtenstion-acknowledgements.markdown"; sourceTree = "<group>"; };
 		21DAAB3AAEC17F6A85FE8B7810FD6317 /* Pods-BluxNotificationServiceExtenstion-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-BluxNotificationServiceExtenstion-umbrella.h"; sourceTree = "<group>"; };
 		21DB5DD39D03596D27F60825C55DFEC9 /* AddProductDetailViewEvent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddProductDetailViewEvent.swift; sourceTree = "<group>"; };
@@ -101,6 +94,7 @@
 		7792655592ACAB7366CE62E4C54C743C /* BluxError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BluxError.swift; path = BluxClient/Classes/BluxError.swift; sourceTree = "<group>"; };
 		77A683A30F02D9CED082B6CC8E6D6ABF /* Pods-BluxNotificationServiceExtenstion.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-BluxNotificationServiceExtenstion.modulemap"; sourceTree = "<group>"; };
 		780D200F2C60711B002E01EF /* UserProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProperties.swift; sourceTree = "<group>"; };
+		78DCAB3D2E02CEF700C20846 /* AddOrderEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddOrderEvent.swift; sourceTree = "<group>"; };
 		7C89EB23110E41060446A3E897CD9D00 /* Pods-BluxClient_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-BluxClient_Example-umbrella.h"; sourceTree = "<group>"; };
 		7CD0EAA78BFFE5B975A610E733A88255 /* BluxClient-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "BluxClient-umbrella.h"; sourceTree = "<group>"; };
 		7D26C68ACC5F8E4BAD008A1394FCC8E9 /* Logger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Logger.swift; path = BluxClient/Classes/Logger.swift; sourceTree = "<group>"; };
@@ -218,18 +212,15 @@
 		70F14E1043E74BF864DF887D61ADCB71 /* events */ = {
 			isa = PBXGroup;
 			children = (
+				78DCAB3D2E02CEF700C20846 /* AddOrderEvent.swift */,
 				E9DBAAE72CE4A5BE003FC11C /* InappEvent.swift */,
 				5E45686C2CD11B6AA2AB2385B52F3FDD /* AddCartaddEvent.swift */,
 				4A35B7D704AC6369BBF18CA795EDC866 /* AddCustomEvent.swift */,
-				1AD7B4A82D1282B2000C6FAF /* AddInstantImpression.swift */,
 				C27427288323DD4CA72EF6DEA5F93943 /* AddLikeEvent.swift */,
 				E22BE8F520DCB2CC848E58640D3EE969 /* AddPageViewEvent.swift */,
 				1AEE71FB2D128F3900BA3C0F /* AddPageVisitEvent.swift */,
-				1AEE71FD2D12982600BA3C0F /* AddPersistentImpression.swift */,
 				21DB5DD39D03596D27F60825C55DFEC9 /* AddProductDetailViewEvent.swift */,
-				005759E130A9055C40998D349F473858 /* AddPurchaseEvent.swift */,
 				E697AFD60CEF4A4480B5D0813A4579E2 /* AddRateEvent.swift */,
-				1AEE71FF2D129C8A00BA3C0F /* AddSectionViewEvent.swift */,
 				FCF604E5BB559FA6D79BBE1AE30C4319 /* Event.swift */,
 				6D4BEBDF3EF53167EB03A5B8D8F72E73 /* EventRequest.swift */,
 			);
@@ -513,12 +504,11 @@
 			files = (
 				8DF014C87A560ADD9655C756B4C2A296 /* AddCartaddEvent.swift in Sources */,
 				8C6B3828B43412E51802ED006FA9A29B /* AddCustomEvent.swift in Sources */,
-				1AD7B4A92D1282B5000C6FAF /* AddInstantImpression.swift in Sources */,
 				52E881DF57AD86ECC4FA6A16DA89741F /* AddLikeEvent.swift in Sources */,
 				313945057D12E33854AA837DA7D9C410 /* AddPageViewEvent.swift in Sources */,
 				064972E597D29F26F059E9D105A2B6E3 /* AddProductDetailViewEvent.swift in Sources */,
 				1AEE71FC2D128F4100BA3C0F /* AddPageVisitEvent.swift in Sources */,
-				26B9436F0F8C30AA8CBC1707A373F0A3 /* AddPurchaseEvent.swift in Sources */,
+				78DCAB3E2E02CEFE00C20846 /* AddOrderEvent.swift in Sources */,
 				3E5926F9A57C66A634B66E023A77152C /* AddRateEvent.swift in Sources */,
 				89646924DCB8A7F37A195FFC78121450 /* BluxAppDelegate.swift in Sources */,
 				A3F6CB51F8E4AC99B2918F69EB5A7B06 /* BluxClient.swift in Sources */,
@@ -530,12 +520,10 @@
 				21B04C1012D8CB1F05D2AC1704F846EB /* BluxNotificationCenter.swift in Sources */,
 				E9BFC2202CEE0FBA00FC2055 /* WebViewMessageHandler.swift in Sources */,
 				E9AC4D052CE33BDE00659BB4 /* EventQueue.swift in Sources */,
-				1AEE71FE2D12982700BA3C0F /* AddPersistentImpression.swift in Sources */,
 				BF4A6CE53C258C87100E057E9E7378E5 /* BluxNotificationServiceExtension.swift in Sources */,
 				3DDE1842561E4EBC17123203C9C1BC3C /* ColdStartNotificationManager.swift in Sources */,
 				C92898E3034FC9C5EB7417CE4B1FF3CB /* DeviceService.swift in Sources */,
 				B2D4215FA999C5C9CBF5EC9F49278D51 /* Event.swift in Sources */,
-				1AEE72002D129C8C00BA3C0F /* AddSectionViewEvent.swift in Sources */,
 				D6307B19DAD07CC8DFA0241A7BCE3064 /* EventHandlers.swift in Sources */,
 				E9DBAAF92CE4D61D003FC11C /* UIColor.swift in Sources */,
 				E9DBAAEC2CE4AD2F003FC11C /* InappService.swift in Sources */,
