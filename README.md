@@ -18,13 +18,13 @@ use_frameworks!
 
 target 'YOUR_PROJECT_NAME' do
   // 아래 줄 추가
-  pod 'BluxClient', '0.4.3'
+  pod 'BluxClient', '0.4.4'
 end
 
 // 파일 최하단의 아래 줄 추가
 // 앞서 입력한 Extension의 Product Name을 target 이름으로 설정합니다.
 target 'BluxNotificationServiceExtenstion' do
-  pod 'BluxClient', '0.4.3'
+  pod 'BluxClient', '0.4.4'
 end
 ```
 
@@ -76,7 +76,7 @@ BluxClient.signOut()
 
 ```swift
 let eventRequest = try AddProductDetailViewEvent.Builder(itemId: "ITEM_ID").build()
-BluxClient.sendRequest(eventRequest)
+BluxClient.sendEvent(eventRequest)
 ```
 
 #### 상품 좋아요
@@ -87,7 +87,7 @@ BluxClient.sendRequest(eventRequest)
 
 ```swift
 let eventRequest = try AddLikeEvent.Builder(itemId: "ITEM_ID").build()
-BluxClient.sendRequest(eventRequest)
+BluxClient.sendEvent(eventRequest)
 ```
 
 #### 상품 장바구니 담기
@@ -98,7 +98,7 @@ BluxClient.sendRequest(eventRequest)
 
 ```swift
 let eventRequest = try AddCartaddEvent.Builder(itemId: "ITEM_ID").build()
-BluxClient.sendRequest(eventRequest)
+BluxClient.sendEvent(eventRequest)
 ```
 
 #### 상품 구매
@@ -117,7 +117,7 @@ let eventRequest = try AddOrderEvent.Builder()
                 .paidAmount(20000)
                 .orderId("test_order_id")
                 .build()
-BluxClient.sendRequest(eventRequest)
+BluxClient.sendEvent(eventRequest)
 ```
 
 ```swift
@@ -129,5 +129,5 @@ let eventRequest = try AddOrderEvent.Builder()
                 .paidAmount(20000)
                 .orderId("test_order_id")
                 .build()
-BluxClient.sendRequest(eventRequest)
+BluxClient.sendEvent(eventRequest)
 ```

@@ -44,7 +44,7 @@ class ViewController: UIViewController {
     @IBAction func SendPDVEvent1(_ sender: Any) {
         do {
             let eventRequest = try AddProductDetailViewEvent.Builder(itemId: "test_item_1").build()
-            BluxClient.sendRequest(eventRequest)
+            BluxClient.sendEvent(eventRequest)
         } catch {
             print(error.localizedDescription)
         }
@@ -59,7 +59,7 @@ class ViewController: UIViewController {
                 .orderId("test_order_id")
                 .customEventProperties(["test_custom": .stringArray(["a"]), "test_custom_2": .string("2025-06-16T12:34:56Z")])
                 .build()
-            BluxClient.sendRequest(eventRequest)
+            BluxClient.sendEvent(eventRequest)
         } catch {
             print(error.localizedDescription)
         }
@@ -75,7 +75,7 @@ class ViewController: UIViewController {
                 .orderId("test_order_id")
                 .customEventProperties(["coupons": .stringArray(["a", "b"])])
                 .build()
-            BluxClient.sendRequest(eventRequest)
+            BluxClient.sendEvent(eventRequest)
         } catch {
             print(error.localizedDescription)
         }
@@ -84,7 +84,7 @@ class ViewController: UIViewController {
     @IBAction func SendLikeEvent(_ sender: Any) {
         do {
             let eventRequest = try AddLikeEvent.Builder(itemId: "TEST_ITEM_1").build()
-            BluxClient.sendRequest(eventRequest)
+            BluxClient.sendEvent(eventRequest)
         } catch {
             print(error.localizedDescription)
         }
@@ -93,7 +93,7 @@ class ViewController: UIViewController {
     @IBAction func SendCartaddEvent(_ sender: Any) {
         do {
             let eventRequest = try AddCartaddEvent.Builder(itemId: "TEST_ITEM_1").build()
-            BluxClient.sendRequest(eventRequest)
+            BluxClient.sendEvent(eventRequest)
         } catch {
             print(error.localizedDescription)
         }

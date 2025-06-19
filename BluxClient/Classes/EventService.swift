@@ -35,7 +35,7 @@ class EventService {
     /// Send request
     /// - Parameters:
     ///   - data: event data
-    static func sendRequest(
+    static func sendEvent(
         _ data: [Event]
     ) {
         let eventTask = {

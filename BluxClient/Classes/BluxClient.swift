@@ -77,7 +77,7 @@ struct PropertiesWrapper<T: Codable>: Codable {
             case .success:
                 let eventRequest = EventRequest()
                 eventRequest.events.append(Event(eventType: "visit"))
-                self.sendRequest(eventRequest)
+                self.sendEvent(eventRequest)
 
                 completion(nil)
                 if requestPermissionOnLaunch {
@@ -287,14 +287,14 @@ struct PropertiesWrapper<T: Codable>: Codable {
         }
     }
 
-    public static func sendRequestData(_ events: [Event]) {
-        EventService.sendRequest(events)
+    public static func sendEventData(_ events: [Event]) {
+        EventService.sendEvent(events)
 //        InappService.handleInappEvent(events)
     }
 
     /// Send Request
-    public static func sendRequest(_ eventRequest: EventRequest) {
-        sendRequestData(eventRequest.getPayload())
+    public static func sendEvent(_ eventRequest: EventRequest) {
+        sendEventData(eventRequest.getPayload())
     }
 
     /// Set the handler when notification is clicked
