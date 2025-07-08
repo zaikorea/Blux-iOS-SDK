@@ -21,7 +21,5 @@ import Foundation
     @objc public func display() {
         Logger.verbose("Notification received: \(self.notification)")
         self.completionHandler([.alert, .sound])
-
-        EventService.createReceived(self.notification.id)
     }
 }
