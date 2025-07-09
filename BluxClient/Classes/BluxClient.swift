@@ -14,9 +14,6 @@ struct PropertiesWrapper<T: Codable>: Codable {
 @objc open class BluxClient: NSObject {
     private static var isActivated: Bool = false
     private static var appDelegate = BluxAppDelegate()
-    private static let swizzlingEnabledKey = "BluxSwizzlingEnabled"
-
-    // MARK: - Public Methods
 
     /// Initialize Blux SDK
     @objc public static func initialize(
@@ -47,15 +44,6 @@ struct PropertiesWrapper<T: Codable>: Codable {
 
         ColdStartNotificationManager.setColdStartNotification(
             launchOptions: launchOptions)
-
-        let swizzlingEnabled =
-            Bundle.main.object(forInfoDictionaryKey: swizzlingEnabledKey)
-                as? Bool
-        if swizzlingEnabled != false {
-            UNUserNotificationCenter.current().delegate =
-                BluxNotificationCenter.shared
-            appDelegate.swizzle()
-        }
 
         ColdStartNotificationManager.process()
 
@@ -352,8 +340,6 @@ struct PropertiesWrapper<T: Codable>: Codable {
             }
         }
     }
-
-    // MARK: Private Methods
 
     private static func requestPermissionForNotifications() {
         let options: UNAuthorizationOptions = [.badge, .alert, .sound]
