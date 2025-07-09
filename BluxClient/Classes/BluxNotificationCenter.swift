@@ -129,7 +129,7 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
             navigationController, animated: true, completion: nil)
     }
 
-    private func getTopViewController(_ baseViewController: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
+    private func getTopViewController(_ baseViewController: UIViewController? = UIApplication.shared.windows.first(where: { $0.isKeyWindow } )?.rootViewController) -> UIViewController? {
         if let navigationController = baseViewController as? UINavigationController {
             return getTopViewController(navigationController.visibleViewController)
         }
