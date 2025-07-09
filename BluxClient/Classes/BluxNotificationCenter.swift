@@ -12,15 +12,13 @@ import UserNotifications
 public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate {
     @objc public static let shared = BluxNotificationCenter()
 
-    // MARK: - Delegate Methods
-
     /// Called when notification is clicked
     @objc public func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        defer { // Called just before the function terminates
+        defer { // Called just before the function terminatesg
             completionHandler()
         }
 
@@ -62,6 +60,8 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
                 )
                 return
             }
+            
+            
 
             if let urlString = notification.url,
                let url = URL(string: urlString), let scheme = url.scheme
@@ -113,8 +113,6 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
             }
         }
     }
-
-    // MARK: Private Methods
 
     private func presentWebView(url: URL) {
         guard let topViewController = getTopViewController() else {

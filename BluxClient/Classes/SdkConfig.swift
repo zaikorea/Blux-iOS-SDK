@@ -14,7 +14,7 @@ public enum SdkType: String {
 }
 
 final class SdkConfig {
-    static var sdkVersion = "0.4.4"
+    static var sdkVersion = "0.4.5"
     static var sdkType: SdkType = .native
     
     static var bluxAppGroupNameKey = "BluxAppGroupName"
@@ -28,7 +28,6 @@ final class SdkConfig {
 
     static var logLevel: LogLevel = .verbose
     static var requestPermissionOnLaunch: Bool = false
-    static var isSwizzled: Bool = false
     
     /// Save bluxId in user defaults (local storage)
     private static var bluxIdKey = "bluxId"

@@ -28,10 +28,6 @@ enum DeviceService {
         )
     }
 
-    /// Create device data
-    /// - Parameters:
-    ///   - body: Data key & value
-
     static func initializeDevice(
         deviceId: String?,
         completion: @escaping (Result<BluxDeviceResponse, Error>) -> Void = { _ in }
