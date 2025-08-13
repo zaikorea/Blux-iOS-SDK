@@ -66,6 +66,8 @@ struct PropertiesWrapper<T: Codable>: Codable {
                 let eventRequest = EventRequest()
                 eventRequest.events.append(Event(eventType: "visit"))
                 self.sendEvent(eventRequest)
+                // Enable in-app auto dispatch control after Blux user creation
+                InappService.enableAutoDispatching()
 
                 completion(nil)
                 if requestPermissionOnLaunch {
@@ -277,7 +279,6 @@ struct PropertiesWrapper<T: Codable>: Codable {
 
     public static func sendEventData(_ events: [Event]) {
         EventService.sendEvent(events)
-//        InappService.handleInappEvent(events)
     }
 
     /// Send Request
