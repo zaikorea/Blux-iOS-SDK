@@ -51,19 +51,16 @@ enum InappDispatchResponse: Codable {
 }
 
 struct InappDispatchRequest: Codable {
-    let events: [Event]
     let bluxUserId: String
     let deviceId: String
     let platform: String = "ios"
 
-    public init(events: [Event], bluxUserId: String, deviceId: String) {
-        self.events = events
+    public init(bluxUserId: String, deviceId: String) {
         self.bluxUserId = bluxUserId
         self.deviceId = deviceId
     }
 
     enum CodingKeys: String, CodingKey {
-        case events
         case bluxUserId = "blux_user_id"
         case deviceId = "device_id"
         case platform

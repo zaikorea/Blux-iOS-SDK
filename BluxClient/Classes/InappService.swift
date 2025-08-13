@@ -1,4 +1,5 @@
 import Foundation
+import Network
 import UIKit
 import WebKit
 
@@ -7,8 +8,93 @@ class InappService {
    private static var webViewQueue: [() -> Void] = []
    private static var isWebViewPresented = false
 
-   public static func handleInappEvent(_ events: [Event]) {
+   private static var dispatchTimer: Timer?
+   private static var isDispatching = false
+
+   private static var isAppActive: Bool = true
+   private static var isNetworkReachable: Bool = true
+   private static var canDispatch: Bool = false
+   private static var lifecycleObserversRegistered: Bool = false
+
+   private static var pathMonitor: NWPathMonitor?
+   private static let pathMonitorQueue = DispatchQueue(label: "inappservice.network")
+
+   public static func enableAutoDispatching() {
+      if lifecycleObserversRegistered { return }
+      lifecycleObserversRegistered = true
+
+      NotificationCenter.default.addObserver(
+         forName: NSNotification.Name.UIApplicationDidBecomeActive,
+         object: nil,
+         queue: .main
+      ) { _ in
+         isAppActive = true
+         updateCanDispatch()
+      }
+
+      NotificationCenter.default.addObserver(
+         forName: NSNotification.Name.UIApplicationWillResignActive,
+         object: nil,
+         queue: .main
+      ) { _ in
+         isAppActive = false
+         updateCanDispatch()
+      }
+
+      NotificationCenter.default.addObserver(
+         forName: NSNotification.Name.UIApplicationDidEnterBackground,
+         object: nil,
+         queue: .main
+      ) { _ in
+         isAppActive = false
+         updateCanDispatch()
+      }
+
+      // Network reachability
+      let monitor = NWPathMonitor()
+      monitor.pathUpdateHandler = { path in
+         let reachable = path.status == .satisfied
+         if isNetworkReachable != reachable {
+            isNetworkReachable = reachable
+            DispatchQueue.main.async {
+               updateCanDispatch()
+            }
+         }
+      }
+      monitor.start(queue: pathMonitorQueue)
+      pathMonitor = monitor
+
+      // Initial evaluation and start timer
+      updateCanDispatch()
+      startDispatching()
+   }
+
+   private static func updateCanDispatch() {
+      canDispatch = isAppActive && isNetworkReachable
+   }
+
+   private static func startDispatching() {
+      guard dispatchTimer == nil else { return }
+
+      DispatchQueue.main.async { // 메인 스레드 보장
+         Logger.verbose("INAPP: Start dispatch timer (5s interval)")
+         let timer = Timer(timeInterval: 5.0, repeats: true) { _ in
+            handleInappEvent()
+         }
+         RunLoop.main.add(timer, forMode: .commonModes)
+         dispatchTimer = timer
+         timer.fire()
+      }
+   }
+
+   private static func handleInappEvent() {
       Logger.verbose("INAPP: Handling inapp event")
+
+      // Ensure only when allowed
+      if !canDispatch {
+         Logger.verbose("INAPP: Not allowed to dispatch inapp event")
+         return
+      }
 
       let device = DeviceService.getBluxDeviceInfo()
       guard
@@ -16,17 +102,21 @@ class InappService {
          let bluxId = device.bluxId,
          let clientId = SdkConfig.clientIdInUserDefaults
       else {
+         Logger.verbose("INAPP: Not allowed to dispatch inapp event")
          return
       }
 
-      let event = InappDispatchRequest(
-         events: events, bluxUserId: bluxId, deviceId: deviceId
-      )
+      if isDispatching { return }
+      isDispatching = true
 
+      let inappDispatchBody = InappDispatchRequest(bluxUserId: bluxId, deviceId: deviceId)
+
+      Logger.verbose("INAPP: Dispatching inapp event")
       HTTPClient.shared.post(
          path: "/applications/" + clientId + "/inapps/dispatch",
-         body: event
+         body: inappDispatchBody
       ) { (response: InappDispatchResponse?, error) in
+         defer { isDispatching = false }
          if let error = error {
             Logger.error(
                "INAPP: Failed to get inapp dispatch response - \(error)")
