@@ -19,12 +19,28 @@ class InappService {
    private static var pathMonitor: NWPathMonitor?
    private static let pathMonitorQueue = DispatchQueue(label: "inappservice.network")
 
+   #if swift(>=4.2)
+   private static let didBecomeActiveNotification = UIApplication.didBecomeActiveNotification
+   private static let willResignActiveNotification = UIApplication.willResignActiveNotification
+   private static let didEnterBackgroundNotification = UIApplication.didEnterBackgroundNotification
+   #else
+   private static let didBecomeActiveNotification = NSNotification.Name.UIApplicationDidBecomeActive
+   private static let willResignActiveNotification = NSNotification.Name.UIApplicationWillResignActive
+   private static let didEnterBackgroundNotification = NSNotification.Name.UIApplicationDidEnterBackground
+   #endif
+
+   #if swift(>=4.2)
+   private static let commonMode: RunLoop.Mode = .common
+   #else
+   private static let commonMode = RunLoopMode.commonModes
+   #endif
+
    public static func enableAutoDispatching() {
       if lifecycleObserversRegistered { return }
       lifecycleObserversRegistered = true
 
       NotificationCenter.default.addObserver(
-         forName: NSNotification.Name.UIApplicationDidBecomeActive,
+         forName: didBecomeActiveNotification,
          object: nil,
          queue: .main
       ) { _ in
@@ -33,7 +49,7 @@ class InappService {
       }
 
       NotificationCenter.default.addObserver(
-         forName: NSNotification.Name.UIApplicationWillResignActive,
+         forName: didBecomeActiveNotification,
          object: nil,
          queue: .main
       ) { _ in
@@ -42,7 +58,7 @@ class InappService {
       }
 
       NotificationCenter.default.addObserver(
-         forName: NSNotification.Name.UIApplicationDidEnterBackground,
+         forName: didBecomeActiveNotification,
          object: nil,
          queue: .main
       ) { _ in
@@ -81,7 +97,7 @@ class InappService {
          let timer = Timer(timeInterval: 5.0, repeats: true) { _ in
             handleInappEvent()
          }
-         RunLoop.main.add(timer, forMode: .commonModes)
+         RunLoop.main.add(timer, forMode: commonMode)
          dispatchTimer = timer
          timer.fire()
       }
