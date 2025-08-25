@@ -49,7 +49,7 @@ class InappService {
       }
 
       NotificationCenter.default.addObserver(
-         forName: didBecomeActiveNotification,
+         forName: willResignActiveNotification,
          object: nil,
          queue: .main
       ) { _ in
@@ -58,7 +58,7 @@ class InappService {
       }
 
       NotificationCenter.default.addObserver(
-         forName: didBecomeActiveNotification,
+         forName: didEnterBackgroundNotification,
          object: nil,
          queue: .main
       ) { _ in
