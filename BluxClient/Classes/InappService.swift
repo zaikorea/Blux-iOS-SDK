@@ -99,7 +99,6 @@ class InappService {
          }
          RunLoop.main.add(timer, forMode: commonMode)
          dispatchTimer = timer
-         timer.fire()
       }
    }
 
