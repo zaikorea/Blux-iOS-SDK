@@ -149,20 +149,35 @@ struct PropertiesWrapper<T: Codable>: Codable {
             }
         }
     }
-
-    public static func setUserProperties(userProperties: UserProperties) {
+    
+    public static func setUserPropertiesData(userProperties: [String: Any?]) {
         guard
             let clientId = SdkConfig.clientIdInUserDefaults,
             let bluxId = SdkConfig.bluxIdInUserDefaults
         else { return }
 
-        // Input으로 받은 userProperties 객체를 한번 더 감싼 형태
+        var processedProperties: [String: CustomValue] = [:]
 
-        let propertiesWrapper = PropertiesWrapper(properties: userProperties)
-
+        for (key, value) in userProperties {
+            if let stringValue = value as? String {
+                processedProperties[key] = .string(stringValue)
+            } else if let intValue = value as? Int {
+                processedProperties[key] = .int(intValue)
+            } else if let doubleValue = value as? Double {
+                processedProperties[key] = .double(doubleValue)
+            } else if let boolValue = value as? Bool {
+                processedProperties[key] = .bool(boolValue)
+            } else if let stringArrayValue = value as? [String] {
+                processedProperties[key] = .stringArray(stringArrayValue)
+            }
+        }
+        
+        let propertiesWrapper = PropertiesWrapper(
+            properties: processedProperties)
+        
         HTTPClient.shared.put(
-            path: "/applications/" + clientId + "/blux-users/" + bluxId
-                + "/update-user-properties", body: propertiesWrapper
+            path: "/applications/" + clientId + "/blux-users/" + bluxId + "/update-user-properties",
+            body: propertiesWrapper
         ) { (response: BluxDeviceResponse?, error) in
 
             if let error = error {
@@ -176,6 +191,21 @@ struct PropertiesWrapper<T: Codable>: Codable {
                 Logger.verbose("Blux ID: \(bluxDeviceResponse.bluxId).")
             }
         }
+    }
+
+    public static func setUserProperties(userProperties: UserProperties) {
+        // 기존 UserProperties 객체를 감싸던 부분 제거 → Dictionary 형태로 변환해서 넘김
+        let userPropertiesDict: [String: Any?] = [
+            "phone_number": userProperties.phoneNumber,
+            "email_address": userProperties.emailAddress,
+            "marketing_notification_consent": userProperties.marketingNotificationConsent,
+            "marketing_notification_sms_consent": userProperties.marketingNotificationSmsConsent,
+            "marketing_notification_email_consent": userProperties.marketingNotificationEmailConsent,
+            "marketing_notification_push_consent": userProperties.marketingNotificationPushConsent,
+            "marketing_notification_kakao_consent": userProperties.marketingNotificationKakaoConsent
+        ]
+
+        setUserPropertiesData(userProperties: userPropertiesDict)
     }
 
     // Used to convert customUserProperties to Codable
@@ -277,13 +307,13 @@ struct PropertiesWrapper<T: Codable>: Codable {
         }
     }
 
-    public static func sendEventData(_ events: [Event]) {
+    public static func sendRequestData(_ events: [Event]) {
         EventService.sendEvent(events)
     }
 
     /// Send Request
     public static func sendEvent(_ eventRequest: EventRequest) {
-        sendEventData(eventRequest.getPayload())
+        sendRequestData(eventRequest.getPayload())
     }
 
     /// Set the handler when notification is clicked
