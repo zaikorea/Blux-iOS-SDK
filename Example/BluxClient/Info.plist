@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>BluxAppGroupName</key>
-	<string>group.com.zaikorea.BluxExample</string>
+	<string>group.ai.blux.example.nativeapp.blux</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
