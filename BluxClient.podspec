@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'BluxClient'
-  s.version          = '0.5.5'
+  s.version          = '0.5.6'
   s.summary          = 'Blux iOS SDK.'
 
   s.homepage         = 'https://github.com/zaikorea/Blux-iOS-SDK.git'
