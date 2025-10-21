@@ -161,12 +161,12 @@ struct PropertiesWrapper<T: Codable>: Codable {
         for (key, value) in userProperties {
             if let stringValue = value as? String {
                 processedProperties[key] = .string(stringValue)
+            } else if let boolValue = value as? Bool {
+                processedProperties[key] = .bool(boolValue)
             } else if let intValue = value as? Int {
                 processedProperties[key] = .int(intValue)
             } else if let doubleValue = value as? Double {
                 processedProperties[key] = .double(doubleValue)
-            } else if let boolValue = value as? Bool {
-                processedProperties[key] = .bool(boolValue)
             } else if let stringArrayValue = value as? [String] {
                 processedProperties[key] = .stringArray(stringArrayValue)
             }
