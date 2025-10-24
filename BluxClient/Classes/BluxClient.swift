@@ -211,9 +211,9 @@ struct PropertiesWrapper<T: Codable>: Codable {
     // Used to convert customUserProperties to Codable
     enum CustomValue: Codable {
         case string(String)
+        case bool(Bool)
         case int(Int)
         case double(Double)
-        case bool(Bool)
         case null
         case stringArray([String])
 
@@ -221,12 +221,12 @@ struct PropertiesWrapper<T: Codable>: Codable {
             let container = try decoder.singleValueContainer()
             if let value = try? container.decode(String.self) {
                 self = .string(value)
+            } else if let value = try? container.decode(Bool.self) {
+                self = .bool(value)
             } else if let value = try? container.decode(Int.self) {
                 self = .int(value)
             } else if let value = try? container.decode(Double.self) {
                 self = .double(value)
-            } else if let value = try? container.decode(Bool.self) {
-                self = .bool(value)
             } else if let value = try? container.decode([String].self) {
                 self = .stringArray(value)
             } else if container.decodeNil() {
@@ -243,11 +243,11 @@ struct PropertiesWrapper<T: Codable>: Codable {
             switch self {
             case .string(let value):
                 try container.encode(value)
+            case .bool(let value):
+                try container.encode(value)
             case .int(let value):
                 try container.encode(value)
             case .double(let value):
-                try container.encode(value)
-            case .bool(let value):
                 try container.encode(value)
             case .stringArray(let value):
                 try container.encode(value)
@@ -270,12 +270,12 @@ struct PropertiesWrapper<T: Codable>: Codable {
         for (key, value) in customUserProperties {
             if let stringValue = value as? String {
                 processedCustomProperties[key] = .string(stringValue)
+            } else if let boolValue = value as? Bool {
+                processedCustomProperties[key] = .bool(boolValue)
             } else if let intValue = value as? Int {
                 processedCustomProperties[key] = .int(intValue)
             } else if let doubleValue = value as? Double {
                 processedCustomProperties[key] = .double(doubleValue)
-            } else if let boolValue = value as? Bool {
-                processedCustomProperties[key] = .bool(boolValue)
             } else if let stringArrayValue = value as? [String] {
                 processedCustomProperties[key] = .stringArray(stringArrayValue)
             } else {

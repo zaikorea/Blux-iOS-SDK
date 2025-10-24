@@ -36,9 +36,9 @@ public class EventProperties: Codable {
 
 public enum CustomEventValue: Codable {
     case string(String)
+    case bool(Bool)
     case double(Double)
     case int(Int)
-    case bool(Bool)
     case stringArray([String])
 
     // Encoding
@@ -46,9 +46,9 @@ public enum CustomEventValue: Codable {
         var container = encoder.singleValueContainer()
         switch self {
         case .string(let value): try container.encode(value)
+        case .bool(let value): try container.encode(value)
         case .double(let value): try container.encode(value)
         case .int(let value): try container.encode(value)
-        case .bool(let value): try container.encode(value)
         case .stringArray(let value): try container.encode(value)
         }
     }
@@ -59,12 +59,12 @@ public enum CustomEventValue: Codable {
 
         if let value = try? container.decode(String.self) {
             self = .string(value)
+        } else if let value = try? container.decode(Bool.self) {
+            self = .bool(value)
         } else if let value = try? container.decode(Double.self) {
             self = .double(value)
         } else if let value = try? container.decode(Int.self) {
             self = .int(value)
-        } else if let value = try? container.decode(Bool.self) {
-            self = .bool(value)
         } else if let value = try? container.decode([String].self) {
             self = .stringArray(value)
         } else {
