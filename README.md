@@ -18,13 +18,13 @@ use_frameworks!
 
 target 'YOUR_PROJECT_NAME' do
   // 아래 줄 추가
-  pod 'BluxClient', '0.5.7'
+  pod 'BluxClient', '0.5.8'
 end
 
 // 파일 최하단의 아래 줄 추가
 // 앞서 입력한 Extension의 Product Name을 target 이름으로 설정합니다.
 target 'BluxNotificationServiceExtenstion' do
-  pod 'BluxClient', '0.5.7'
+  pod 'BluxClient', '0.5.8'
 end
 ```
 
