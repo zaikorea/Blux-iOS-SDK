@@ -14,7 +14,7 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
 
     /// Called when notification is clicked
     @objc public func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
+        _: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
@@ -60,8 +60,6 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
                 )
                 return
             }
-            
-            
 
             if let urlString = notification.url,
                let url = URL(string: urlString), let scheme = url.scheme
@@ -78,7 +76,7 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
 
     /// Called when notification is received on the foreground
     @objc public func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
+        _: UNUserNotificationCenter,
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (
             UNNotificationPresentationOptions
@@ -101,7 +99,8 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
 
             let event = NotificationReceivedEvent(
                 UIApplication.shared, notification: bluxNotification,
-                completionHandler: completionHandler)
+                completionHandler: completionHandler
+            )
 
             if let handler = EventHandlers.notificationForegroundReceived {
                 Logger.verbose(
@@ -126,10 +125,11 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
             rootViewController: webViewController)
         navigationController.modalPresentationStyle = .fullScreen
         topViewController.present(
-            navigationController, animated: true, completion: nil)
+            navigationController, animated: true, completion: nil
+        )
     }
 
-    private func getTopViewController(_ baseViewController: UIViewController? = UIApplication.shared.windows.first(where: { $0.isKeyWindow } )?.rootViewController) -> UIViewController? {
+    private func getTopViewController(_ baseViewController: UIViewController? = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.rootViewController) -> UIViewController? {
         if let navigationController = baseViewController as? UINavigationController {
             return getTopViewController(navigationController.visibleViewController)
         }

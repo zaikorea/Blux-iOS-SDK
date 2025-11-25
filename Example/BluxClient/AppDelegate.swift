@@ -15,9 +15,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     let applicationId = "66fac6b03e71e06835703c25"
     let apiKey = "Is5r2sK-HBQe4sX343twQopcccevFm0Ci6nu9tA9"
-    
+
     func application(
-        _ application: UIApplication,
+        _: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication
             .LaunchOptionsKey: Any]?
     ) -> Bool {
@@ -66,7 +66,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) {
         BluxAppDelegate.shared.application(
             application,
-            didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
+            didRegisterForRemoteNotificationsWithDeviceToken: deviceToken
+        )
     }
 }
 
@@ -79,7 +80,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     ) {
         BluxNotificationCenter.shared.userNotificationCenter(
             center, didReceive: response,
-            withCompletionHandler: completionHandler)
+            withCompletionHandler: completionHandler
+        )
     }
 
     func userNotificationCenter(
@@ -91,6 +93,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     ) {
         BluxNotificationCenter.shared.userNotificationCenter(
             center, willPresent: notification,
-            withCompletionHandler: completionHandler)
+            withCompletionHandler: completionHandler
+        )
     }
 }

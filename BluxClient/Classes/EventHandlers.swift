@@ -7,8 +7,8 @@
 
 import Foundation
 
-final class EventHandlers {
-  static var unhandledNotification: BluxNotification?
-  static var notificationClicked: ((BluxNotification) -> Void)? = nil
-  static var notificationForegroundReceived: ((NotificationReceivedEvent) -> Void)? = nil
+enum EventHandlers {
+    static var unhandledNotification: BluxNotification?
+    static var notificationClicked: ((BluxNotification) -> Void)?
+    static var notificationForegroundReceived: ((NotificationReceivedEvent) -> Void)?
 }

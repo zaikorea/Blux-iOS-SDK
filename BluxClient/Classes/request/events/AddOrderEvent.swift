@@ -5,8 +5,8 @@ public class AddOrderEvent: EventRequest {
 
     init(builder: Builder) throws {
         super.init()
-        
-        try self.events.append(
+
+        try events.append(
             Event(eventType: Self.DEFAULT_EVENT_TYPE)
                 .setOrderId(builder.orderId)
                 .setOrderAmount(builder.orderAmount)
@@ -38,7 +38,7 @@ public class AddOrderEvent: EventRequest {
         public init() {}
 
         public func addItem(id: String, price: Double, quantity: Int) -> Builder {
-            self.items.append(Item(id: id, price: price, quantity: quantity))
+            items.append(Item(id: id, price: price, quantity: quantity))
             return self
         }
 
@@ -48,17 +48,17 @@ public class AddOrderEvent: EventRequest {
         }
 
         public func orderAmount(_ amount: Double) -> Builder {
-            self.orderAmount = amount
+            orderAmount = amount
             return self
         }
 
         public func paidAmount(_ amount: Double) -> Builder {
-            self.paidAmount = amount
+            paidAmount = amount
             return self
         }
 
         public func customEventProperties(_ properties: [String: CustomEventValue]) -> Builder {
-            self.customEventProperties = properties
+            customEventProperties = properties
             return self
         }
 

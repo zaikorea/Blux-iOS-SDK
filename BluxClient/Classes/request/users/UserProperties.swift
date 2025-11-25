@@ -15,7 +15,6 @@ public class UserProperties: Codable {
     var marketingNotificationEmailConsent: Bool?
     var marketingNotificationPushConsent: Bool?
     var marketingNotificationKakaoConsent: Bool?
-    
 
     public init(phoneNumber: String? = nil, emailAddress: String? = nil, marketingNotificationConsent: Bool? = nil, marketingNotificationSmsConsent: Bool? = nil, marketingNotificationEmailConsent: Bool? = nil, marketingNotificationPushConsent: Bool? = nil, marketingNotificationKakaoConsent: Bool? = nil) {
         self.phoneNumber = phoneNumber
@@ -26,7 +25,7 @@ public class UserProperties: Codable {
         self.marketingNotificationPushConsent = marketingNotificationPushConsent
         self.marketingNotificationKakaoConsent = marketingNotificationKakaoConsent
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case phoneNumber = "phone_number"
         case emailAddress = "email_address"

@@ -1,5 +1,5 @@
 //
-//  Request.swift
+//  HTTPClient.swift
 //  BluxClient
 //
 //  Created by Tommy on 5/21/24.
@@ -22,7 +22,7 @@ final class HTTPClient {
         case serverSideError(Int)
     }
 
-    public enum APIBaseURLByStage: String {
+    enum APIBaseURLByStage: String {
         case local = "http://localhost:9000/local"
         case dev = "https://api.blux.ai/dev"
         case stg = "https://api.blux.ai/stg"
@@ -47,15 +47,19 @@ final class HTTPClient {
 
         request.setValue(
             "\(SdkConfig.sdkType)-\(SdkConfig.sdkVersion)",
-            forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader)
+            forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader
+        )
         request.setValue(
-            clientId, forHTTPHeaderField: SdkConfig.bluxClientIdHeader)
+            clientId, forHTTPHeaderField: SdkConfig.bluxClientIdHeader
+        )
         request.setValue(
             SdkConfig.apiKeyInUserDefaults,
-            forHTTPHeaderField: SdkConfig.bluxApiKeyHeader)
+            forHTTPHeaderField: SdkConfig.bluxApiKeyHeader
+        )
         request.setValue(
             SdkConfig.apiKeyInUserDefaults,
-            forHTTPHeaderField: SdkConfig.bluxAuthorizationHeader)
+            forHTTPHeaderField: SdkConfig.bluxAuthorizationHeader
+        )
 
         return request
     }
@@ -78,19 +82,23 @@ final class HTTPClient {
         request.httpBody = try? JSONEncoder().encode(body)
         request.addValue(
             "application/json; charset=UTF-8",
-            forHTTPHeaderField: "Content-Type")
+            forHTTPHeaderField: "Content-Type"
+        )
         request.addValue("application/json", forHTTPHeaderField: "Accept")
 
         request.setValue(
             "\(SdkConfig.sdkType)-\(SdkConfig.sdkVersion)",
-            forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader)
+            forHTTPHeaderField: SdkConfig.bluxSdkInfoHeader
+        )
         request.setValue(clientId, forHTTPHeaderField: "X-BLUX-CLIENT-ID")
         request.setValue(
             UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.string(
-                forKey: "bluxAPIKey"), forHTTPHeaderField: "X-BLUX-API-KEY")
+                forKey: "bluxAPIKey"), forHTTPHeaderField: "X-BLUX-API-KEY"
+        )
         request.setValue(
             UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.string(
-                forKey: "bluxAPIKey"), forHTTPHeaderField: "Authorization")
+                forKey: "bluxAPIKey"), forHTTPHeaderField: "Authorization"
+        )
 
         return request
     }
@@ -118,7 +126,8 @@ final class HTTPClient {
 
             // Check is data empty
             if let jsonObject = try? JSONSerialization.jsonObject(
-                with: data, options: []),
+                with: data, options: []
+            ),
                 let jsonDict = jsonObject as? [String: Any],
                 jsonDict.isEmpty
             {
@@ -128,7 +137,8 @@ final class HTTPClient {
 
             do {
                 let responseObject = try JSONDecoder().decode(
-                    V.self, from: data)
+                    V.self, from: data
+                )
                 completion(responseObject, nil)
             } catch {
                 completion(nil, error)

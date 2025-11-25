@@ -18,7 +18,7 @@ struct EmptyResponse: Codable {}
 class EventWrapper: Codable {
     let events: [Event]
 
-    public init(events: [Event]) {
+    init(events: [Event]) {
         self.events = events
     }
 }
@@ -145,7 +145,6 @@ class EventService {
                 path: "/applications/" + clientId + "/notifications/"
                     + notificationId, body: StatusBody(status: "received")
             ) { (response: BluxNotificationResponse?, error) in
-
                 if let error = error {
                     Logger.error("Failed to send request.")
                     Logger.error("Error: \(error)")

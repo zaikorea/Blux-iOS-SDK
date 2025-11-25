@@ -3,7 +3,7 @@ import Foundation
 public class AddCustomEvent: EventRequest {
     init(builder: Builder) throws {
         super.init()
-        try self.events.append(
+        try events.append(
             Event(eventType: builder.eventType)
                 .setItemId(builder.itemId)
                 .setOrderId(builder.orderId)
@@ -26,14 +26,14 @@ public class AddCustomEvent: EventRequest {
         fileprivate var rating: Double?
         fileprivate var page: String?
         fileprivate var items: [AddOrderEvent.Item] = []
-        fileprivate var customEventProperties: [String: CustomEventValue]? = nil
+        fileprivate var customEventProperties: [String: CustomEventValue]?
 
         public init(eventType: String) {
             self.eventType = eventType
         }
-        
+
         public func addItem(id: String, price: Double, quantity: Int) -> Builder {
-            self.items.append(AddOrderEvent.Item(id: id, price: price, quantity: quantity))
+            items.append(AddOrderEvent.Item(id: id, price: price, quantity: quantity))
             return self
         }
 
@@ -41,27 +41,27 @@ public class AddCustomEvent: EventRequest {
             self.itemId = itemId
             return self
         }
-        
+
         public func orderId(_ orderId: String) -> Builder {
             self.orderId = orderId
             return self
         }
 
         public func orderAmount(_ amount: Double) -> Builder {
-            self.orderAmount = amount
+            orderAmount = amount
             return self
         }
 
         public func paidAmount(_ amount: Double) -> Builder {
-            self.paidAmount = amount
+            paidAmount = amount
             return self
         }
-        
+
         public func rating(_ rating: Double) -> Builder {
             self.rating = rating
             return self
         }
-        
+
         public func page(_ page: String) -> Builder {
             self.page = page
             return self

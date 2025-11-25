@@ -28,7 +28,7 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
     }
 
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -112,7 +112,8 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
         if #available(iOS 14.0, *) {
             navigationItem.leftBarButtonItem = .init(
                 image: UIImage(systemName: "xmark"), style: .done, target: self,
-                action: #selector(closeWebView))
+                action: #selector(closeWebView)
+            )
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = .systemGroupedBackground
@@ -123,7 +124,8 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
         } else {
             navigationItem.leftBarButtonItem = .init(
                 barButtonSystemItem: .done, target: self,
-                action: #selector(closeWebView))
+                action: #selector(closeWebView)
+            )
             navigationController?.navigationBar.isTranslucent = false
             navigationController?.navigationBar.barTintColor = .lightGray
         }
@@ -135,10 +137,10 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
 
     private func loadContent() {
         switch content {
-        case .url(let url):
+        case let .url(url):
             let request = URLRequest(url: url)
             webView.load(request)
-        case .htmlString(let html, let baseURL):
+        case let .htmlString(html, baseURL):
             webView.loadHTMLString(html, baseURL: baseURL)
         }
     }
@@ -149,7 +151,7 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
     }
 
     func webView(
-        _ webView: WKWebView,
+        _: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction,
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ) {
@@ -165,7 +167,7 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
         }
 
         // http, https 외의 URL 스킴 처리
-        if url.scheme != "http" && url.scheme != "https" {
+        if url.scheme != "http", url.scheme != "https" {
             UIApplication.shared.open(url, options: [:]) { success in
                 if !success {
                     print("Failed to open URL: \(url)")
@@ -178,13 +180,13 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
         decisionHandler(.allow)
     }
 
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
         let host = webView.url?.host ?? ""
         navigationItem.title = host
     }
 
     func userContentController(
-        _ userContentController: WKUserContentController,
+        _: WKUserContentController,
         didReceive message: WKScriptMessage
     ) {
         guard

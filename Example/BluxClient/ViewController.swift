@@ -12,20 +12,20 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    
-    @IBAction func SignIn(_ sender: Any) {
+
+    @IBAction func SignIn(_: Any) {
         BluxClient.signIn(userId: userId)
     }
 
-    @IBAction func SignOut(_ sender: Any) {
+    @IBAction func SignOut(_: Any) {
         BluxClient.signOut()
     }
-    
-    @IBAction func SetUserProperties(_ sender: Any) {
+
+    @IBAction func SetUserProperties(_: Any) {
         BluxClient.setUserProperties(userProperties: UserProperties(phoneNumber: "01089200854", emailAddress: "luna@blux.ai"))
     }
-    
-    @IBAction func SetCustomUserProperties(_ sender: Any) {
+
+    @IBAction func SetCustomUserProperties(_: Any) {
         do {
             let customProperties: [String: Any] = [
                 "phone_number": "01089200854",
@@ -33,15 +33,15 @@ class ViewController: UIViewController {
                 "age": 30,
                 "is_active": true,
                 "height": 5.9,
-                "hobbies": ["reading", "gaming"]
+                "hobbies": ["reading", "gaming"],
             ]
             try BluxClient.setCustomUserProperties(customUserProperties: customProperties)
         } catch {
             print(error.localizedDescription)
         }
     }
-    
-    @IBAction func SendPDVEvent1(_ sender: Any) {
+
+    @IBAction func SendPDVEvent1(_: Any) {
         do {
             let eventRequest = try AddProductDetailViewEvent.Builder(itemId: "test_item_1").build()
             BluxClient.sendEvent(eventRequest)
@@ -49,8 +49,8 @@ class ViewController: UIViewController {
             print(error.localizedDescription)
         }
     }
-    
-    @IBAction func SendPDVEvent2(_ sender: Any) {
+
+    @IBAction func SendPDVEvent2(_: Any) {
         do {
             let eventRequest = try AddCustomEvent.Builder(eventType: "test_event_custom")
                 .addItem(id: "test_item", price: 10, quantity: 1)
@@ -64,8 +64,8 @@ class ViewController: UIViewController {
             print(error.localizedDescription)
         }
     }
-    
-    @IBAction func SendPDVEvent3(_ sender: Any) {
+
+    @IBAction func SendPDVEvent3(_: Any) {
         do {
             let eventRequest = try AddOrderEvent.Builder()
                 .addItem(id: "test_item_1", price: 1000, quantity: 1)
@@ -81,7 +81,7 @@ class ViewController: UIViewController {
         }
     }
 
-    @IBAction func SendLikeEvent(_ sender: Any) {
+    @IBAction func SendLikeEvent(_: Any) {
         do {
             let eventRequest = try AddLikeEvent.Builder(itemId: "TEST_ITEM_1").build()
             BluxClient.sendEvent(eventRequest)
@@ -89,8 +89,8 @@ class ViewController: UIViewController {
             print(error.localizedDescription)
         }
     }
-    
-    @IBAction func SendCartaddEvent(_ sender: Any) {
+
+    @IBAction func SendCartaddEvent(_: Any) {
         do {
             let eventRequest = try AddCartaddEvent.Builder(itemId: "TEST_ITEM_1").build()
             BluxClient.sendEvent(eventRequest)
@@ -98,7 +98,7 @@ class ViewController: UIViewController {
             print(error.localizedDescription)
         }
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

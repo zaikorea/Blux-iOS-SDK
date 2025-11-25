@@ -30,7 +30,7 @@ enum InappDispatchResponse: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         switch self {
-        case .display(let notificationId, let htmlString, let inappId, let baseUrl):
+        case let .display(notificationId, htmlString, inappId, baseUrl):
             try container.encode(true, forKey: .shouldDisplay)
             try container.encode(notificationId, forKey: .notificationId)
             try container.encode(htmlString, forKey: .htmlString)
@@ -55,7 +55,7 @@ struct InappDispatchRequest: Codable {
     let deviceId: String
     let platform: String = "ios"
 
-    public init(bluxUserId: String, deviceId: String) {
+    init(bluxUserId: String, deviceId: String) {
         self.bluxUserId = bluxUserId
         self.deviceId = deviceId
     }
