@@ -25,7 +25,7 @@ class EventQueue {
     private func processNext() {
         queue.async { [weak self] in
             guard let self = self, !self.isProcessing,
-                let nextTask = self.eventsQueue.first
+                  let nextTask = self.eventsQueue.first
             else { return }
 
             self.isProcessing = true

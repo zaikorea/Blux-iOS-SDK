@@ -73,7 +73,7 @@ struct PropertiesWrapper<T: Codable>: Codable {
                 if requestPermissionOnLaunch {
                     requestPermissionForNotifications()
                 }
-            case .failure(let error):
+            case let .failure(error):
                 Logger.error("Failed to initialize device: \(error).")
                 completion(error as NSError)
             }
@@ -149,7 +149,7 @@ struct PropertiesWrapper<T: Codable>: Codable {
             }
         }
     }
-    
+
     public static func setUserPropertiesData(userProperties: [String: Any?]) {
         guard
             let clientId = SdkConfig.clientIdInUserDefaults,
@@ -171,15 +171,14 @@ struct PropertiesWrapper<T: Codable>: Codable {
                 processedProperties[key] = .stringArray(stringArrayValue)
             }
         }
-        
+
         let propertiesWrapper = PropertiesWrapper(
             properties: processedProperties)
-        
+
         HTTPClient.shared.put(
             path: "/applications/" + clientId + "/blux-users/" + bluxId + "/update-user-properties",
             body: propertiesWrapper
         ) { (response: BluxDeviceResponse?, error) in
-
             if let error = error {
                 Logger.error("Failed to send request.")
                 Logger.error("Error: \(error)")
@@ -202,7 +201,7 @@ struct PropertiesWrapper<T: Codable>: Codable {
             "marketing_notification_sms_consent": userProperties.marketingNotificationSmsConsent,
             "marketing_notification_email_consent": userProperties.marketingNotificationEmailConsent,
             "marketing_notification_push_consent": userProperties.marketingNotificationPushConsent,
-            "marketing_notification_kakao_consent": userProperties.marketingNotificationKakaoConsent
+            "marketing_notification_kakao_consent": userProperties.marketingNotificationKakaoConsent,
         ]
 
         setUserPropertiesData(userProperties: userPropertiesDict)
@@ -217,7 +216,7 @@ struct PropertiesWrapper<T: Codable>: Codable {
         case null
         case stringArray([String])
 
-        public init(from decoder: Decoder) throws {
+        init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let value = try? container.decode(String.self) {
                 self = .string(value)
@@ -238,18 +237,18 @@ struct PropertiesWrapper<T: Codable>: Codable {
             }
         }
 
-        public func encode(to encoder: Encoder) throws {
+        func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
             switch self {
-            case .string(let value):
+            case let .string(value):
                 try container.encode(value)
-            case .bool(let value):
+            case let .bool(value):
                 try container.encode(value)
-            case .int(let value):
+            case let .int(value):
                 try container.encode(value)
-            case .double(let value):
+            case let .double(value):
                 try container.encode(value)
-            case .stringArray(let value):
+            case let .stringArray(value):
                 try container.encode(value)
             case .null:
                 try container.encodeNil()
@@ -293,7 +292,6 @@ struct PropertiesWrapper<T: Codable>: Codable {
             path: "/applications/" + clientId + "/blux-users/" + bluxId
                 + "/update-custom-user-properties", body: propertiesWrapper
         ) { (response: BluxDeviceResponse?, error) in
-
             if let error = error {
                 Logger.error("Failed to send request.")
                 Logger.error("Error: \(error)")

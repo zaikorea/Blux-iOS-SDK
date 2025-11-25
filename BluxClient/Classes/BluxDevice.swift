@@ -10,13 +10,14 @@ import Foundation
 open class BluxDeviceResponse: Codable {
     public var bluxId: String
     public var deviceId: String?
-    
+
     enum CodingKeys: String,
-                     CodingKey {
+        CodingKey
+    {
         case bluxId = "blux_user_id"
         case deviceId = "device_id"
     }
-    
+
     public init(bluxId: String, deviceId: String?) {
         self.bluxId = bluxId
         self.deviceId = deviceId
@@ -29,7 +30,7 @@ open class BluxDeviceInfo: Codable {
     public var deviceId: String? = SdkConfig.deviceIdInUserDefaults
     public var userId: String? = SdkConfig.userIdInUserDefaults
     public var pushToken: String?
-    
+
     // Create & Update
     public var platform: String
     public var deviceModel: String
@@ -40,25 +41,25 @@ open class BluxDeviceInfo: Codable {
     public var countryCode: String?
     public var sdkType: String
     public var isVisitHandlingInSdk: Bool = true
-    
-    
+
     enum CodingKeys: String,
-                     CodingKey {
+        CodingKey
+    {
         case bluxId = "blux_id"
         case deviceId = "device_id"
         case userId = "user_id"
         case pushToken = "push_token"
-        case platform = "platform"
+        case platform
         case deviceModel = "device_model"
         case osVersion = "os_version"
         case sdkVersion = "sdk_version"
-        case timezone = "timezone"
+        case timezone
         case languageCode = "language_code"
         case countryCode = "country_code"
         case sdkType = "sdk_type"
-        case isVisitHandlingInSdk = "isVisitHandlingInSdk"
+        case isVisitHandlingInSdk
     }
-    
+
     public init(
         pushToken: String? = nil,
         platform: String,
@@ -80,18 +81,17 @@ open class BluxDeviceInfo: Codable {
         self.countryCode = countryCode
         self.sdkType = sdkType
     }
-    
+
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(bluxId, forKey: .bluxId)
         if let deviceId = deviceId {
             try container.encode(deviceId, forKey: .deviceId)
         }
-        
+
         if let userId = userId {
             try container.encode(userId, forKey: .userId)
-        }
-        else {
+        } else {
             try container.encodeNil(forKey: .userId) // "null" on server
         }
 
@@ -112,7 +112,7 @@ open class BluxDeviceInfo: Codable {
 extension BluxDeviceInfo: CustomStringConvertible {
     public var description: String {
         var properties: [String] = []
-        
+
         if let bluxId = bluxId {
             properties.append("bluxId: \(bluxId)")
         }
@@ -126,22 +126,22 @@ extension BluxDeviceInfo: CustomStringConvertible {
         if let pushToken = pushToken {
             properties.append("pushToken: \(pushToken)")
         }
-        
+
         properties.append("platform: \(platform)")
         properties.append("deviceModel: \(deviceModel)")
         properties.append("osVersion: \(osVersion)")
         properties.append("sdkVersion: \(sdkVersion)")
         properties.append("timezone: \(timezone)")
-        
+
         if let languageCode = languageCode {
             properties.append("languageCode: \(languageCode)")
         }
         if let countryCode = countryCode {
             properties.append("countryCode: \(countryCode)")
         }
-        
+
         properties.append("sdkType: \(sdkType)")
-        
+
         return "\n\t\(properties.joined(separator: "\n\t"))\n"
     }
 }

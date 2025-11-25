@@ -1,9 +1,9 @@
 import Foundation
 
-open class EventRequest{
+open class EventRequest {
     public var events: [Event] = []
-    
-    public func getPayload(isTest: Bool = false) -> [Event] {
-        return self.events
+
+    public func getPayload(isTest _: Bool = false) -> [Event] {
+        return events
     }
 }

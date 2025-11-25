@@ -11,13 +11,13 @@ public enum BluxError: Error {
 extension BluxError: LocalizedError {
     public var errorDescription: String? {
         switch self {
-        case .LengthOutOfRangeBetween(let varName, let min, let max):
+        case let .LengthOutOfRangeBetween(varName, min, max):
             return "The length of `\(varName)` must be between \(min) and \(max)."
-        case .LengthOutOfRangeGe(let varName, let min):
+        case let .LengthOutOfRangeGe(varName, min):
             return "The length of `\(varName)` must be greater than or equal to \(min)."
-        case .ValueOutOfRangeBetween(let varName, let min, let max):
+        case let .ValueOutOfRangeBetween(varName, min, max):
             return "The value of `\(varName)` must be between \(min) and \(max)."
-        case .ValueOutOfRangeGe(let varName, let min):
+        case let .ValueOutOfRangeGe(varName, min):
             return "The value of `\(varName)` must be greater than or equal to \(min)."
         case .InvalidQuantity:
             return "Purchase quantity must be greater than 0."
@@ -25,10 +25,9 @@ extension BluxError: LocalizedError {
     }
 }
 
-extension BluxError {
-    public struct ClientError: Error {
+public extension BluxError {
+    struct ClientError: Error {
         public var message: String?
         public var httpStatusCode: Int?
     }
 }
-

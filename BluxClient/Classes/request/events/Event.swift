@@ -45,11 +45,11 @@ public enum CustomEventValue: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
-        case .string(let value): try container.encode(value)
-        case .bool(let value): try container.encode(value)
-        case .double(let value): try container.encode(value)
-        case .int(let value): try container.encode(value)
-        case .stringArray(let value): try container.encode(value)
+        case let .string(value): try container.encode(value)
+        case let .bool(value): try container.encode(value)
+        case let .double(value): try container.encode(value)
+        case let .int(value): try container.encode(value)
+        case let .stringArray(value): try container.encode(value)
         }
     }
 
@@ -99,9 +99,9 @@ public class Event: Codable {
 
     public init(eventType: String) {
         let dateFormatter = ISO8601DateFormatter()
-        self.capturedAt = dateFormatter.string(from: Date())
+        capturedAt = dateFormatter.string(from: Date())
         self.eventType = eventType
-        self.eventProperties = EventProperties()
+        eventProperties = EventProperties()
     }
 
     @discardableResult
@@ -136,7 +136,7 @@ public class Event: Codable {
         }
         return self
     }
-    
+
     @discardableResult
     public func setPage(_ page: String?) throws -> Event {
         if let page = page {
@@ -153,7 +153,7 @@ public class Event: Codable {
         }
         return self
     }
-    
+
     @discardableResult
     public func setPaidAmount(_ paidAmount: Double?) throws -> Event {
         if let paidAmount = paidAmount {
@@ -161,7 +161,7 @@ public class Event: Codable {
         }
         return self
     }
-    
+
     @discardableResult
     public func setItems(_ items: [AddOrderEvent.Item]?) throws -> Event {
         if let items = items {
