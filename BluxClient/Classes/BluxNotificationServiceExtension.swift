@@ -1,10 +1,3 @@
-//
-//  BluxNotificationServiceExtension.swift
-//  BluxClient
-//
-//  Created by Tommy on 6/4/24.
-//
-
 import Intents
 import MobileCoreServices
 import UIKit
@@ -29,17 +22,21 @@ open class BluxNotificationServiceExtension: UNNotificationServiceExtension {
 
     @objc public func didReceive(_ request: UNNotificationRequest,
                                  withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void,
-                                 replaceContent: UNMutableNotificationContent? = nil)
+                                 interceptor: BluxNotificationInterceptor? = nil)
     {
         self.contentHandler = contentHandler
-        bestAttemptContent = replaceContent ?? (request.content.mutableCopy() as? UNMutableNotificationContent)
+        bestAttemptContent = request.content.mutableCopy() as? UNMutableNotificationContent
 
         guard let bestAttemptContent = bestAttemptContent else {
             contentHandler(request.content)
             return
         }
 
-        guard let bluxNotification = BluxNotification.getBluxNotificationFromUNNotificationContent(request.content) else {
+        let bluxNotification = BluxNotification.getBluxNotificationFromUNNotificationContent(bestAttemptContent)
+
+        interceptor?(request, bestAttemptContent, bluxNotification)
+
+        guard let bluxNotification = bluxNotification else {
             contentHandler(bestAttemptContent)
             return
         }
@@ -91,3 +88,9 @@ open class BluxNotificationServiceExtension: UNNotificationServiceExtension {
         return false
     }
 }
+
+public typealias BluxNotificationInterceptor = (
+    _ request: UNNotificationRequest,
+    _ content: UNMutableNotificationContent,
+    _ bluxNotification: BluxNotification?
+) -> Void
