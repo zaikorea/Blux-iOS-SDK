@@ -129,11 +129,7 @@ class EventService {
 
     static func createReceived(_ notificationId: String) {
         let eventTask = {
-            Logger.error(SdkConfig.bluxSuiteName ?? "nil")
-            guard
-                let clientId = UserDefaults(suiteName: SdkConfig.bluxSuiteName)?
-                .string(forKey: "bluxClientId")
-            else {
+            guard let clientId = SdkConfig.clientIdInUserDefaults else {
                 return
             }
 
