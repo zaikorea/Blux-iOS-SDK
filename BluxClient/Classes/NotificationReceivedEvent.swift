@@ -1,10 +1,3 @@
-//
-//  NotificationReceivedEvent.swift
-//  BluxClient
-//
-//  Created by Tommy on 6/4/24.
-//
-
 import Foundation
 
 @objc open class NotificationReceivedEvent: NSObject {
@@ -16,6 +9,12 @@ import Foundation
         self.application = application
         self.notification = notification
         self.completionHandler = completionHandler
+    }
+
+    @objc public func toDictionary() -> [String: Any] {
+        return [
+            "notification": notification.toDictionary(),
+        ]
     }
 
     @objc public func display() {
