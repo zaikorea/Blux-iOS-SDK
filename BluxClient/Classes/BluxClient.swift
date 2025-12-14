@@ -314,7 +314,14 @@ struct PropertiesWrapper<T: Codable>: Codable {
         sendRequestData(eventRequest.getPayload())
     }
 
-    /// Set the handler when notification is clicked
+    @objc public static func setNotificationForegroundWillDisplayHandler(
+        callback: @escaping (NotificationReceivedEvent) -> Void
+    ) {
+        EventHandlers.notificationForegroundWillDisplay = callback
+        Logger.verbose(
+            "NotificationForegroundWillDisplayHandler has been registered.")
+    }
+
     @objc public static func setNotificationClickedHandler(
         callback: @escaping (BluxNotification) -> Void
     ) {
@@ -326,15 +333,6 @@ struct PropertiesWrapper<T: Codable>: Codable {
             callback(unhandledNotification)
             EventHandlers.unhandledNotification = nil
         }
-    }
-
-    /// Set the handler when notification foreground received
-    @objc public static func setNotificationForegroundReceivedHandler(
-        callback: @escaping (NotificationReceivedEvent) -> Void
-    ) {
-        EventHandlers.notificationForegroundReceived = callback
-        Logger.verbose(
-            "NotificationForegroundReceivedHandler has been registered.")
     }
 
     @objc public static func setAPIStage(_ stage: String) {

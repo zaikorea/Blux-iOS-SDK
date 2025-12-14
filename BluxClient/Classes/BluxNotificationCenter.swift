@@ -102,7 +102,7 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
                 completionHandler: completionHandler
             )
 
-            if let handler = EventHandlers.notificationForegroundReceived {
+            if let handler = EventHandlers.notificationForegroundWillDisplay {
                 Logger.verbose(
                     "Handle foreground notification received with registered handler."
                 )
