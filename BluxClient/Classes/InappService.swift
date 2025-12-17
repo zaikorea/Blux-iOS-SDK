@@ -8,9 +8,6 @@ class InappService {
     private static var webViewQueue: [() -> Void] = []
     private static var isWebViewPresented = false
 
-    private static var dispatchTimer: Timer?
-    private static var isDispatching = false
-
     private static var isAppActive: Bool = true
     private static var isNetworkReachable: Bool = true
     private static var canDispatch: Bool = false
@@ -80,88 +77,29 @@ class InappService {
         monitor.start(queue: pathMonitorQueue)
         pathMonitor = monitor
 
-        // Initial evaluation and start timer
+        // Initial evaluation
         updateCanDispatch()
-        startDispatching()
     }
 
     private static func updateCanDispatch() {
         canDispatch = isAppActive && isNetworkReachable
     }
 
-    private static func startDispatching() {
-        guard dispatchTimer == nil else { return }
-
-        DispatchQueue.main.async { // 메인 스레드 보장
-            Logger.verbose("INAPP: Start dispatch timer (5s interval)")
-            let timer = Timer(timeInterval: 5.0, repeats: true) { _ in
-                handleInappEvent()
-            }
-            RunLoop.main.add(timer, forMode: commonMode)
-            dispatchTimer = timer
-        }
-    }
-
-    private static func handleInappEvent() {
-        Logger.verbose("INAPP: Handling inapp event")
-
-        // Ensure only when allowed
-        if !canDispatch {
-            Logger.verbose("INAPP: Not allowed to dispatch inapp event")
+    /// collect-events 응답에서 전달된 인앱 페이로드 처리
+    /// inapp 객체가 있으면 표시 (shouldDisplay 필드 없이 객체 유무로 판단)
+    static func handleInappResponse(_ response: InappDispatchResponse) {
+        // 화면/네트워크 상태 체크
+        guard canDispatch else {
+            Logger.verbose("INAPP: Cannot display inapp (app inactive or offline)")
             return
         }
 
-        let device = DeviceService.getBluxDeviceInfo()
-        guard
-            let deviceId = device.deviceId,
-            let bluxId = device.bluxId,
-            let clientId = SdkConfig.clientIdInUserDefaults
-        else {
-            Logger.verbose("INAPP: Not allowed to dispatch inapp event")
+        Logger.verbose("INAPP: Dispatch response received. \(response.inappId) \(response.baseUrl)")
+        guard let baseURL = URL(string: response.baseUrl) else {
+            Logger.error("INAPP: Invalid baseUrl \(response.baseUrl)")
             return
         }
-
-        if isDispatching { return }
-        isDispatching = true
-
-        let inappDispatchBody = InappDispatchRequest(bluxUserId: bluxId, deviceId: deviceId)
-
-        Logger.verbose("INAPP: Dispatching inapp event")
-        HTTPClient.shared.post(
-            path: "/applications/" + clientId + "/inapps/dispatch",
-            body: inappDispatchBody
-        ) { (response: InappDispatchResponse?, error) in
-            defer { isDispatching = false }
-            if let error = error {
-                Logger.error(
-                    "INAPP: Failed to get inapp dispatch response - \(error)")
-                return
-            }
-
-            if let inappDispatchResponse = response {
-                switch inappDispatchResponse {
-                case let .display(
-                    notificationId,
-                    htmlString,
-                    inappId,
-                    baseUrl
-                ):
-                    Logger.verbose(
-                        "INAPP: Dispatch response received. \(inappId) \(baseUrl)"
-                    )
-                    queueInappWebview(
-                        notificationId,
-                        htmlString,
-                        inappId,
-                        URL(string: baseUrl)!
-                    )
-                case .noDisplay:
-                    Logger.verbose(
-                        "INAPP: Inapp should not be displayed."
-                    )
-                }
-            }
-        }
+        queueInappWebview(response.notificationId, response.htmlString, response.inappId, baseURL)
     }
 
     private static func queueInappWebview(
