@@ -41,7 +41,7 @@ open class BluxNotificationServiceExtension: UNNotificationServiceExtension {
             return
         }
 
-        EventService.createReceived(bluxNotification.id)
+        bluxNotification.trackReceived()
 
         guard let imageUrl = bluxNotification.imageUrl,
               let attachmentUrl = URL(string: imageUrl)

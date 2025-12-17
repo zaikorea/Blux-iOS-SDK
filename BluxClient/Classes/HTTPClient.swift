@@ -7,6 +7,8 @@
 
 import Foundation
 
+struct EmptyResponse: Codable {}
+
 final class HTTPClient {
     static let shared: HTTPClient = .init()
 

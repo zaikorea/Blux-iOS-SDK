@@ -261,7 +261,7 @@ class InappService {
                         {
                             switch scheme {
                             case "http", "https":
-                                EventService.createInappOpened(notificationId)
+                                createInappOpened(notificationId)
                                 // 기존 웹뷰 닫기
                                 dismissWebView(webviewController) {
                                     DispatchQueue.main.async {
@@ -298,13 +298,65 @@ class InappService {
                     }
                 )
 
-                EventService.createReceived(notificationId)
+                createReceived(notificationId)
                 Logger.verbose("INAPP: Presenting inapp webview.")
                 webviewController.view.backgroundColor = .clear
                 webviewController.modalPresentationStyle = .overFullScreen
                 topController.present(
                     webviewController, animated: false, completion: nil
                 )
+            }
+        }
+    }
+
+    private static func createInappOpened(_ notificationId: String) {
+        guard let clientId = SdkConfig.clientIdInUserDefaults else {
+            return
+        }
+
+        let capturedAtString = ISO8601DateFormatter().string(from: Date())
+
+        Logger.verbose("capturedAt: \(capturedAtString)")
+
+        HTTPClient.shared.post(
+            path: "/applications/" + clientId + "/crm-events",
+            body: CRMEventsBody(
+                notification_id: notificationId,
+                crm_event_type: "inapp_opened",
+                captured_at: capturedAtString
+            )
+        ) { (_: EmptyResponse?, error) in
+            if let error = error {
+                Logger.error("Failed to send request.")
+                Logger.error("Error: \(error)")
+                return
+            }
+        }
+    }
+
+    private static func createReceived(_ notificationId: String) {
+        guard let clientId = SdkConfig.clientIdInUserDefaults else {
+            return
+        }
+
+        struct StatusBody: Codable {
+            let status: String
+        }
+
+        HTTPClient.shared.post(
+            path: "/applications/" + clientId + "/notifications/"
+                + notificationId, body: StatusBody(status: "received")
+        ) { (response: BluxNotificationResponse?, error) in
+            if let error = error {
+                Logger.error("Failed to send request.")
+                Logger.error("Error: \(error)")
+                return
+            }
+
+            if let notificationResponse = response {
+                Logger.verbose("Create Received request success.")
+                Logger.verbose(
+                    "Notification ID: " + notificationResponse.id)
             }
         }
     }

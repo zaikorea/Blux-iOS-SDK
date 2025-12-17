@@ -37,7 +37,7 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
                 Logger.verbose("ColdStartNotification exists. Skip didReceive.")
             } else {
                 Logger.verbose("Notification clicked.")
-                EventService.createPushOpened(notification: notification)
+                notification.trackOpened()
             }
 
             if let bluxDismissLaunchUrl = Bundle.main.object(
