@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os.log
 
 @objc public enum LogLevel: IntegerLiteralType, CustomStringConvertible {
     case none = 0
@@ -30,15 +31,21 @@ enum LogEvent: String {
 }
 
 public enum Logger {
+    private static var osLog: OSLog {
+        return OSLog(subsystem: Bundle.main.bundleIdentifier ?? "com.blux.client", category: "BluxLogger")
+    }
+
     public static func error(_ object: Any, filename: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
         if SdkConfig.logLevel.rawValue >= LogLevel.error.rawValue {
-            print("\(Date()) [BluxLogger]\(LogEvent.error.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)")
+            let message = "🔴 [BluxLogger]\(LogEvent.error.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(funcName) -> \(object)"
+            os_log(.error, log: osLog, "%@", message)
         }
     }
 
     public static func verbose(_ object: Any, filename: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
         if SdkConfig.logLevel.rawValue >= LogLevel.verbose.rawValue {
-            print("\(Date()) [BluxLogger]\(LogEvent.verbose.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)")
+            let message = "🔵 [BluxLogger]\(LogEvent.verbose.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(funcName) -> \(object)"
+            os_log(.debug, log: osLog, "%@", message)
         }
     }
 
