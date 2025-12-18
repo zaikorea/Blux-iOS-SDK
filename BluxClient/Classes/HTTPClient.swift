@@ -119,9 +119,10 @@ final class HTTPClient {
             }
 
             guard (200 ..< 300) ~= response.statusCode else {
+                let errorMessage = String(data: data, encoding: .utf8)
+                    ?? "\(request.httpMethod!) error"
                 Logger.error(
-                    String(data: data, encoding: .utf8)
-                        ?? "\(request.httpMethod!) error")
+                    "[\(request.url?.path ?? "unknown")] \(errorMessage)")
                 completion(nil, HTTPError.serverSideError(response.statusCode))
                 return
             }
