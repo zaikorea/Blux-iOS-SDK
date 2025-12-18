@@ -80,7 +80,7 @@ class ViewController: UIViewController {
 
         // --- Custom Event Inputs (Events 섹션에 포함) ---
         eventTypeTextField.placeholder = "Event Type (required)"
-        eventTypeTextField.text = "signup"
+        eventTypeTextField.text = "signup2"
         eventTypeTextField.borderStyle = .roundedRect
         stackView.addArrangedSubview(eventTypeTextField)
 
