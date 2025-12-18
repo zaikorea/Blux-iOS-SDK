@@ -66,7 +66,14 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
             {
                 switch scheme {
                 case "http", "https":
-                    presentWebView(url: url)
+                    switch SdkConfig.notificationUrlOpenOptions.httpUrlOpenTarget {
+                    case .internalWebView:
+                        presentWebView(url: url)
+                    case .externalBrowser:
+                        presentApplication(url: url)
+                    case .none:
+                        return
+                    }
                 default:
                     presentApplication(url: url)
                 }

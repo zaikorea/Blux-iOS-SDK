@@ -28,6 +28,7 @@ enum SdkConfig {
 
     static var logLevel: LogLevel = .verbose
     static var requestPermissionOnLaunch: Bool = false
+    static var notificationUrlOpenOptions: NotificationUrlOpenOptions = NotificationUrlOpenOptions()
 
     /// Save bluxId in user defaults (local storage)
     private static var bluxIdKey = "bluxId"
