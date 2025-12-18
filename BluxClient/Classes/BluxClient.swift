@@ -86,6 +86,10 @@ struct PropertiesWrapper<T: Codable>: Codable {
         SdkConfig.logLevel = level
     }
 
+    @objc public static func setNotificationUrlOpenOptions(_ options: NotificationUrlOpenOptions) {
+        SdkConfig.notificationUrlOpenOptions = options
+    }
+
     /// Set userId of the device
     @objc public static func signIn(userId: String, completion: @escaping ((NSError?) -> Void) = { _ in }) {
         guard
