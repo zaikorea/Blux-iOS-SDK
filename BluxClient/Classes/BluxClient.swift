@@ -5,9 +5,64 @@
 //  Copyright © 2024 Blux. All rights reserved.
 //
 
-// Used in setUserProperties, setCustomUserProperties
-struct PropertiesWrapper<T: Codable>: Codable {
-    var properties: T
+// Used to convert userProperties and customUserProperties to Codable
+enum CustomValue: Codable {
+    case string(String)
+    case bool(Bool)
+    case int(Int)
+    case double(Double)
+    case null
+    case stringArray([String])
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let value = try? container.decode(String.self) {
+            self = .string(value)
+        } else if let value = try? container.decode(Bool.self) {
+            self = .bool(value)
+        } else if let value = try? container.decode(Int.self) {
+            self = .int(value)
+        } else if let value = try? container.decode(Double.self) {
+            self = .double(value)
+        } else if let value = try? container.decode([String].self) {
+            self = .stringArray(value)
+        } else if container.decodeNil() {
+            self = .null
+        } else {
+            throw DecodingError.dataCorruptedError(
+                in: container, debugDescription: "Unsupported type"
+            )
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case let .string(value):
+            try container.encode(value)
+        case let .bool(value):
+            try container.encode(value)
+        case let .int(value):
+            try container.encode(value)
+        case let .double(value):
+            try container.encode(value)
+        case let .stringArray(value):
+            try container.encode(value)
+        case .null:
+            try container.encodeNil()
+        }
+    }
+}
+
+// Used in setUserProperties, setCustomUserProperties (bluxUsersUpdateProperties API)
+struct UpdatePropertiesBody: Codable {
+    var userProperties: [String: CustomValue]?
+    var customUserProperties: [String: CustomValue]?
+    
+    enum CodingKeys: String, CodingKey {
+        case userProperties = "user_properties"
+        case customUserProperties = "custom_user_properties"
+    }
 }
 
 @available(iOSApplicationExtension, unavailable)
@@ -176,12 +231,11 @@ struct PropertiesWrapper<T: Codable>: Codable {
             }
         }
 
-        let propertiesWrapper = PropertiesWrapper(
-            properties: processedProperties)
+        let body = UpdatePropertiesBody(userProperties: processedProperties)
 
         HTTPClient.shared.put(
-            path: "/applications/" + clientId + "/blux-users/" + bluxId + "/update-user-properties",
-            body: propertiesWrapper
+            path: "/applications/" + clientId + "/blux-users/" + bluxId + "/update-properties",
+            body: body
         ) { (response: BluxDeviceResponse?, error) in
             if let error = error {
                 Logger.error("Failed to send request.")
@@ -209,55 +263,6 @@ struct PropertiesWrapper<T: Codable>: Codable {
         ]
 
         setUserPropertiesData(userProperties: userPropertiesDict)
-    }
-
-    // Used to convert customUserProperties to Codable
-    enum CustomValue: Codable {
-        case string(String)
-        case bool(Bool)
-        case int(Int)
-        case double(Double)
-        case null
-        case stringArray([String])
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let value = try? container.decode(String.self) {
-                self = .string(value)
-            } else if let value = try? container.decode(Bool.self) {
-                self = .bool(value)
-            } else if let value = try? container.decode(Int.self) {
-                self = .int(value)
-            } else if let value = try? container.decode(Double.self) {
-                self = .double(value)
-            } else if let value = try? container.decode([String].self) {
-                self = .stringArray(value)
-            } else if container.decodeNil() {
-                self = .null
-            } else {
-                throw DecodingError.dataCorruptedError(
-                    in: container, debugDescription: "Unsupported type"
-                )
-            }
-        }
-
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.singleValueContainer()
-            switch self {
-            case let .string(value):
-                try container.encode(value)
-            case let .bool(value):
-                try container.encode(value)
-            case let .int(value):
-                try container.encode(value)
-            case let .double(value):
-                try container.encode(value)
-            case let .stringArray(value):
-                try container.encode(value)
-            case .null:
-                try container.encodeNil()
-            }
-        }
     }
 
     public static func setCustomUserProperties(
@@ -289,12 +294,11 @@ struct PropertiesWrapper<T: Codable>: Codable {
             }
         }
 
-        let propertiesWrapper = PropertiesWrapper(
-            properties: processedCustomProperties)
+        let body = UpdatePropertiesBody(customUserProperties: processedCustomProperties)
 
         HTTPClient.shared.put(
-            path: "/applications/" + clientId + "/blux-users/" + bluxId
-                + "/update-custom-user-properties", body: propertiesWrapper
+            path: "/applications/" + clientId + "/blux-users/" + bluxId + "/update-properties",
+            body: body
         ) { (response: BluxDeviceResponse?, error) in
             if let error = error {
                 Logger.error("Failed to send request.")
