@@ -41,7 +41,6 @@ open class BluxDeviceInfo: Codable {
     public var languageCode: String?
     public var countryCode: String?
     public var sdkType: String
-    public var isVisitHandlingInSdk: Bool = true
 
     enum CodingKeys: String,
         CodingKey
@@ -59,7 +58,6 @@ open class BluxDeviceInfo: Codable {
         case languageCode = "language_code"
         case countryCode = "country_code"
         case sdkType = "sdk_type"
-        case isVisitHandlingInSdk
     }
 
     public init(
@@ -113,7 +111,6 @@ open class BluxDeviceInfo: Codable {
         try container.encode(languageCode, forKey: .languageCode)
         try container.encode(countryCode, forKey: .countryCode)
         try container.encode(sdkType, forKey: .sdkType)
-        try container.encode(isVisitHandlingInSdk, forKey: .isVisitHandlingInSdk)
     }
 }
 
