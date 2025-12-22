@@ -22,7 +22,7 @@ class EventService {
     private static var pollTimer: Timer?
     
     // 마지막으로 서버에서 받은 polling 간격 (밀리초)
-    private static var cachedPollDelayMs: Int? = 10000
+    private static var cachedPollDelayMs: Int = 10000
 
     private static func resetPollTimer() {
         DispatchQueue.main.async {
@@ -78,11 +78,9 @@ class EventService {
                 if let error = error {
                     Logger.error("Failed to send event request: \(error)")
                     // 요청 실패 시 캐싱된 polling 간격이 있으면 재시도
-                    if let cachedDelay = cachedPollDelayMs {
-                        let nextPollDelay = cachedDelay > 1000 * 60 * 60 * 24 ? cachedDelay : cachedDelay * 2
-                        cachedPollDelayMs = nextPollDelay
-                        scheduleNextPoll(delayMs: nextPollDelay)
-                    }
+                    let nextPollDelay = cachedPollDelayMs > 1000 * 60 * 60 * 24 ? cachedPollDelayMs : cachedPollDelayMs * 2
+                    cachedPollDelayMs = nextPollDelay
+                    scheduleNextPoll(delayMs: nextPollDelay)
                     return
                 }
 
