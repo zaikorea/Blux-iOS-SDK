@@ -30,6 +30,7 @@ open class BluxDeviceInfo: Codable {
     public var deviceId: String? = SdkConfig.deviceIdInUserDefaults
     public var userId: String? = SdkConfig.userIdInUserDefaults
     public var pushToken: String?
+    public var sessionId: String?
 
     // Create & Update
     public var platform: String
@@ -49,6 +50,7 @@ open class BluxDeviceInfo: Codable {
         case deviceId = "device_id"
         case userId = "user_id"
         case pushToken = "push_token"
+        case sessionId = "session_id"
         case platform
         case deviceModel = "device_model"
         case osVersion = "os_version"
@@ -69,7 +71,8 @@ open class BluxDeviceInfo: Codable {
         timezone: String,
         languageCode: String?,
         countryCode: String?,
-        sdkType: String
+        sdkType: String,
+        sessionId: String? = SdkConfig.sessionId
     ) {
         self.pushToken = pushToken
         self.platform = platform
@@ -80,6 +83,7 @@ open class BluxDeviceInfo: Codable {
         self.languageCode = languageCode
         self.countryCode = countryCode
         self.sdkType = sdkType
+        self.sessionId = sessionId
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -96,6 +100,10 @@ open class BluxDeviceInfo: Codable {
         }
 
         try container.encode(pushToken, forKey: .pushToken)
+        
+        if let sessionId = sessionId {
+            try container.encode(sessionId, forKey: .sessionId)
+        }
 
         try container.encode(platform, forKey: .platform)
         try container.encode(deviceModel, forKey: .deviceModel)
@@ -125,6 +133,9 @@ extension BluxDeviceInfo: CustomStringConvertible {
         }
         if let pushToken = pushToken {
             properties.append("pushToken: \(pushToken)")
+        }
+        if let sessionId = sessionId {
+            properties.append("sessionId: \(sessionId)")
         }
 
         properties.append("platform: \(platform)")

@@ -24,7 +24,8 @@ enum DeviceService {
             timezone: TimeZone.current.identifier,
             languageCode: languageCode,
             countryCode: Locale.current.regionCode,
-            sdkType: SdkConfig.sdkType.rawValue
+            sdkType: SdkConfig.sdkType.rawValue,
+            sessionId: SdkConfig.sessionId
         )
     }
 
