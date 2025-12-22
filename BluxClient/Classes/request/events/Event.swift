@@ -80,6 +80,7 @@ public class Event: Codable {
     public var bluxId: String? = SdkConfig.bluxIdInUserDefaults
     public var deviceId: String? = SdkConfig.deviceIdInUserDefaults
     public var userId: String? = SdkConfig.userIdInUserDefaults
+    public var sessionId: String? = SdkConfig.sessionId
     public var capturedAt: String
     public var eventType: String
     public var eventProperties: EventProperties
@@ -91,6 +92,7 @@ public class Event: Codable {
         case bluxId = "blux_id"
         case deviceId = "device_id"
         case userId = "user_id"
+        case sessionId = "session_id"
         case capturedAt = "captured_at"
         case eventType = "event_type"
         case eventProperties = "event_properties"
@@ -206,6 +208,9 @@ extension Event: CustomStringConvertible {
             if userId != "null" {
                 properties.append("userId: \(userId)")
             }
+        }
+        if let sessionId = sessionId {
+            properties.append("sessionId: \(sessionId)")
         }
 
         if let customEventProperties = customEventProperties {

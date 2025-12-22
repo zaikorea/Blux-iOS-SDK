@@ -88,4 +88,19 @@ enum SdkConfig {
             UserDefaults(suiteName: bluxSuiteName)?.string(forKey: apiKey)
         }
     }
+
+    /// Session ID for current app session (memory-based, not persisted)
+    /// Automatically generates a UUID when first accessed
+    private static var _sessionId: String?
+    static var sessionId: String {
+        get {
+            if _sessionId == nil {
+                _sessionId = UUID().uuidString
+            }
+            return _sessionId!
+        }
+        set {
+            _sessionId = newValue
+        }
+    }
 }
