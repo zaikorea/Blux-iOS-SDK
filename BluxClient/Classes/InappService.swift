@@ -32,7 +32,7 @@ class InappService {
         private static let commonMode = RunLoopMode.commonModes
     #endif
 
-    static func enableAutoDispatching() {
+    static func startMonitoringState() {
         if lifecycleObserversRegistered { return }
         lifecycleObserversRegistered = true
 
