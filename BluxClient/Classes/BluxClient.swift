@@ -122,7 +122,7 @@ struct UpdatePropertiesBody: Codable {
                 eventRequest.events.append(Event(eventType: "visit"))
                 self.sendEvent(eventRequest)
                 // Enable in-app auto dispatch control after Blux user creation
-                InappService.enableAutoDispatching()
+                InappService.startMonitoringState()
 
                 completion(nil)
                 if requestPermissionOnLaunch {
