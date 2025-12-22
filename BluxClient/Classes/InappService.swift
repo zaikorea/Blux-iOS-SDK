@@ -10,8 +10,11 @@ class InappService {
 
     private static var isAppActive: Bool = true
     private static var isNetworkReachable: Bool = true
-    private static var canDispatch: Bool = false
     private static var lifecycleObserversRegistered: Bool = false
+    
+    private static var canDispatch: Bool {
+        return isAppActive && isNetworkReachable
+    }
 
     private static var pathMonitor: NWPathMonitor?
     private static let pathMonitorQueue = DispatchQueue(label: "inappservice.network")
@@ -42,7 +45,6 @@ class InappService {
             queue: .main
         ) { _ in
             isAppActive = true
-            updateCanDispatch()
         }
 
         NotificationCenter.default.addObserver(
@@ -51,7 +53,6 @@ class InappService {
             queue: .main
         ) { _ in
             isAppActive = false
-            updateCanDispatch()
         }
 
         NotificationCenter.default.addObserver(
@@ -60,29 +61,20 @@ class InappService {
             queue: .main
         ) { _ in
             isAppActive = false
-            updateCanDispatch()
         }
 
         // Network reachability
         let monitor = NWPathMonitor()
         monitor.pathUpdateHandler = { path in
             let reachable = path.status == .satisfied
-            if isNetworkReachable != reachable {
-                isNetworkReachable = reachable
-                DispatchQueue.main.async {
-                    updateCanDispatch()
+            DispatchQueue.main.async {
+                if isNetworkReachable != reachable {
+                    isNetworkReachable = reachable
                 }
             }
         }
         monitor.start(queue: pathMonitorQueue)
         pathMonitor = monitor
-
-        // Initial evaluation
-        updateCanDispatch()
-    }
-
-    private static func updateCanDispatch() {
-        canDispatch = isAppActive && isNetworkReachable
     }
 
     /// collect-events 응답에서 전달된 인앱 페이로드 처리
