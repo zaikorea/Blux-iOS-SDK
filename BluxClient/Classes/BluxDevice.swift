@@ -70,7 +70,7 @@ open class BluxDeviceInfo: Codable {
         languageCode: String?,
         countryCode: String?,
         sdkType: String,
-        sessionId: String? = SdkConfig.sessionId
+        sessionId: String? = nil
     ) {
         self.pushToken = pushToken
         self.platform = platform
@@ -81,7 +81,7 @@ open class BluxDeviceInfo: Codable {
         self.languageCode = languageCode
         self.countryCode = countryCode
         self.sdkType = sdkType
-        self.sessionId = sessionId
+        self.sessionId = sessionId ?? SdkConfig.sessionId
     }
 
     public func encode(to encoder: any Encoder) throws {
