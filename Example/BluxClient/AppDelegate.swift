@@ -13,22 +13,22 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    let applicationId = "66fac6b03e71e06835703c25"
-    let apiKey = "Is5r2sK-HBQe4sX343twQopcccevFm0Ci6nu9tA9"
+    let applicationId = "69327634beb1da48e4278ed6"
+    let apiKey = "RicSIM9zJTFZawchFbl12et6R_u6aLkgEwERnk8t"
 
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication
             .LaunchOptionsKey: Any]?
     ) -> Bool {
-        BluxClient.setAPIStage("prod")
+        BluxClient.setAPIStage("stg")
 
         BluxClient.initialize(launchOptions, bluxApplicationId: applicationId, bluxAPIKey: apiKey, requestPermissionOnLaunch: true) { error in
             if let error = error {
                 Logger.verbose("BluxClient.initialize error: \(error)")
             } else {
                 Logger.verbose("BluxClient.initialize success")
-                BluxClient.signIn(userId: "luna")
+                BluxClient.signIn(userId: "team")
             }
         }
 
