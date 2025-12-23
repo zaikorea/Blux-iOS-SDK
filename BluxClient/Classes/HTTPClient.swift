@@ -31,7 +31,7 @@ final class HTTPClient {
         case prod = "https://api.blux.ai/prod"
     }
 
-    private var API_BASE_URL: String = APIBaseURLByStage.prod.rawValue
+    private var API_BASE_URL: String = APIBaseURLByStage.stg.rawValue
 
     // MARK: - Private Methods
 
