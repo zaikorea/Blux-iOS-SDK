@@ -33,16 +33,13 @@ class EventService {
 
     private static func scheduleNextPoll(delayMs: Int) {
         resetPollTimer()
-
-        // 지연이 0 이하인 경우 즉시 빈 이벤트 폴링
-        guard delayMs > 0 else {
-            sendEvent([])
-            return
-        }
+        
+        // 서버가 0(또는 너무 작은 값)을 주면 즉시 요청 루프가 생길 수 있어 최소 3초 지연을 보장한다.
+        let normalizedDelayMs = max(delayMs, 3000)
 
         DispatchQueue.main.async {
             let timer = Timer(
-                timeInterval: Double(delayMs) / 1000.0,
+                timeInterval: Double(normalizedDelayMs) / 1000.0,
                 repeats: false
             ) { _ in
                 // 빈 이벤트를 보내 폴링 (sendEvent 내부에서 resetPollTimer 호출됨)
@@ -91,9 +88,9 @@ class EventService {
                         }
                     }
                     if let nextPollDelay = response.nextPollDelayMs {
-                        // 서버 응답값 캐싱
-                        cachedPollDelayMs = nextPollDelay
-                        scheduleNextPoll(delayMs: nextPollDelay)
+                        let normalizedDelayMs = max(nextPollDelay, 3000)
+                        cachedPollDelayMs = normalizedDelayMs
+                        scheduleNextPoll(delayMs: normalizedDelayMs)
                     }
                 }
             }
