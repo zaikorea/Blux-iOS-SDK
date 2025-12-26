@@ -11,7 +11,7 @@ class InappService {
     private static var isAppActive: Bool = true
     private static var isNetworkReachable: Bool = true
     private static var lifecycleObserversRegistered: Bool = false
-    
+
     private static var canDispatch: Bool {
         return isAppActive && isNetworkReachable
     }
@@ -100,15 +100,23 @@ class InappService {
         _ inappId: String,
         _ baseURL: URL
     ) {
-        let presentWebView = {
-            presentInappWebview(notificationId, htmlString, inappId, baseURL)
-        }
+        // ⚠️ 스레드 안전성: 큐 조작은 반드시 메인 스레드에서 수행
+        // handleInappResponse가 백그라운드 스레드에서 호출될 수 있으므로 메인 스레드로 강제
+        DispatchQueue.main.async {
+            let presentWebView = {
+                presentInappWebview(notificationId, htmlString, inappId, baseURL)
+            }
 
-        webViewQueue.append(presentWebView)
-        processWebViewQueue()
+            webViewQueue.append(presentWebView)
+            processWebViewQueue()
+        }
     }
 
     private static func processWebViewQueue() {
+        // ⚠️ 스레드 안전성: 이 함수는 반드시 메인 스레드에서만 호출되어야 함
+        // 호출처: queueInappWebview(main.async 안), dismissWebView(completion은 메인), presentInappWebview(main.async 안)
+        dispatchPrecondition(condition: .onQueue(.main))
+        
         guard !isWebViewPresented, let nextWebView = webViewQueue.first else {
             return
         }
@@ -122,6 +130,8 @@ class InappService {
         _ webviewController: WebViewController,
         completion: @escaping () -> Void = {}
     ) {
+        // Note: dismiss(animated:completion:)의 completion은 UIKit에서 메인 스레드 호출 보장
+        // processWebViewQueue()도 메인 스레드 가드가 있으므로 안전함
         webviewController.dismiss(animated: false) {
             isWebViewPresented = false
             processWebViewQueue()
