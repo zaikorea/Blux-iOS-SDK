@@ -11,9 +11,19 @@ class EventQueue {
 
     private var eventsQueue: [() -> Void] = []
     private var isProcessing = false
+    private var isInitialized = false
     private let queue = DispatchQueue(label: "eventQueue")
 
     private init() {}
+
+    /// SDK 초기화 완료 시 호출. 대기 중인 이벤트들을 처리 시작.
+    func setInitialized() {
+        queue.async { [weak self] in
+            guard let self = self else { return }
+            self.isInitialized = true
+            self.processNext()
+        }
+    }
 
     func addEvent(_ eventTask: @escaping () -> Void) {
         queue.async { [weak self] in
@@ -24,7 +34,9 @@ class EventQueue {
 
     private func processNext() {
         queue.async { [weak self] in
-            guard let self = self, !self.isProcessing,
+            guard let self = self,
+                  self.isInitialized,  // 초기화 완료 전에는 실행하지 않음
+                  !self.isProcessing,
                   let nextTask = self.eventsQueue.first
             else { return }
 
