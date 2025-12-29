@@ -118,6 +118,9 @@ struct UpdatePropertiesBody: Codable {
         DeviceService.initializeDevice(deviceId: savedDeviceId) { result in
             switch result {
             case .success:
+                // 초기화 완료 - 대기 중인 이벤트들 처리 시작
+                EventQueue.shared.setInitialized()
+                
                 let eventRequest = EventRequest()
                 eventRequest.events.append(Event(eventType: "visit"))
                 self.sendEvent(eventRequest)
