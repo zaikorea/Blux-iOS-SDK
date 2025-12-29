@@ -85,6 +85,7 @@ public class Event: Codable {
     public var eventType: String
     public var eventProperties: EventProperties
     public var customEventProperties: [String: CustomEventValue]? = nil
+    public var internalEventProperties: [String: CustomEventValue]? = nil
 
     enum CodingKeys: String,
         CodingKey
@@ -97,6 +98,7 @@ public class Event: Codable {
         case eventType = "event_type"
         case eventProperties = "event_properties"
         case customEventProperties = "custom_event_properties"
+        case internalEventProperties = "internal_event_properties"
     }
 
     public init(eventType: String) {
@@ -185,6 +187,12 @@ public class Event: Codable {
         self.customEventProperties = customEventProperties
         return self
     }
+
+    @discardableResult
+    public func setInternalEventProperties(_ internalEventProperties: [String: CustomEventValue]?) -> Event {
+        self.internalEventProperties = internalEventProperties
+        return self
+    }
 }
 
 extension Event: CustomStringConvertible {
@@ -224,6 +232,16 @@ extension Event: CustomStringConvertible {
             }
         }
 
+        if let internalEventProperties = internalEventProperties {
+            if internalEventProperties.count > 0 {
+                let internalEventPropertiesDescription = internalEventProperties.map {
+                    "\($0.key): \($0.value)"
+                }.joined(separator: ", ")
+                properties.append(
+                    "internalEventProperties: [\(internalEventPropertiesDescription)]"
+                )
+            }
+        }
         return "\n\t\(properties.joined(separator: "\n\t"))\n"
     }
 }
