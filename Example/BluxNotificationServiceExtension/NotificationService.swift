@@ -1,11 +1,3 @@
-//
-//  NotificationService.swift
-//  BluxNotificationServiceExtenstion
-//
-//  Created by Tommy on 6/4/24.
-//  Copyright © 2024 CocoaPods. All rights reserved.
-//
-
 import BluxClient
 
 // Swizzling Disabled
