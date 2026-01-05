@@ -23,7 +23,7 @@ end
 
 // 파일 최하단의 아래 줄 추가
 // 앞서 입력한 Extension의 Product Name을 target 이름으로 설정합니다.
-target 'BluxNotificationServiceExtenstion' do
+target 'BluxNotificationServiceExtension' do
   pod 'BluxClient', '0.6.5'
 end
 ```

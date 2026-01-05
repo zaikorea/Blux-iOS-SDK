@@ -6,6 +6,6 @@ target 'BluxExample' do
   pod 'BluxClient', :path => '../'
 end
 
-target 'BluxNotificationServiceExtenstion' do
+target 'BluxNotificationServiceExtension' do
   pod 'BluxClient', :path => '../'
 end
