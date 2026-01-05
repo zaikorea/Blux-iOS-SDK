@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-               BuildableName = "BluxClient_Example.app"
-               BlueprintName = "BluxClient_Example"
+               BuildableName = "BluxExample.app"
+               BlueprintName = "BluxExample"
                ReferencedContainer = "container:BluxClient.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,8 +45,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "BluxClient_Example.app"
-            BlueprintName = "BluxClient_Example"
+            BuildableName = "BluxExample.app"
+            BlueprintName = "BluxExample"
             ReferencedContainer = "container:BluxClient.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -78,8 +78,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "BluxClient_Example.app"
-            BlueprintName = "BluxClient_Example"
+            BuildableName = "BluxExample.app"
+            BlueprintName = "BluxExample"
             ReferencedContainer = "container:BluxClient.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -95,8 +95,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "BluxClient_Example.app"
-            BlueprintName = "BluxClient_Example"
+            BuildableName = "BluxExample.app"
+            BlueprintName = "BluxExample"
             ReferencedContainer = "container:BluxClient.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

@@ -2,7 +2,7 @@ use_frameworks!
 
 platform :ios, '13.0'
 
-target 'BluxClient_Example' do
+target 'BluxExample' do
   pod 'BluxClient', :path => '../'
 end
 
