@@ -7,20 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0F16EF9D7E96F56FA5F2A7B2 /* Pods_BluxNotificationServiceExtenstion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D3F0667B0270FB0612BBAC9 /* Pods_BluxNotificationServiceExtenstion.framework */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		78926C512C48FCB800F605C4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78926C502C48FCB800F605C4 /* ViewController.swift */; };
-		8300BEF1517422F597C3517A /* Pods_BluxClient_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 409E50EB8AB75F3F77E5B194 /* Pods_BluxClient_Example.framework */; };
-		875AF9BAF8189D862CF63EA9 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		8A890B3A5E51D11FAA6DDED7 /* Pods_BluxClient_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED88E7772C1022E00082EA44 /* Pods_BluxClient_Example.framework */; };
+		E11ED1A554B3F8D8B1A68928 /* Pods_BluxNotificationServiceExtenstion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BBF66483C5B6D0A23C1AD3F /* Pods_BluxNotificationServiceExtenstion.framework */; };
 		ED88E7682C0F40A30082EA44 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED88E7672C0F40A30082EA44 /* NotificationService.swift */; };
 		ED88E76C2C0F40A30082EA44 /* BluxNotificationServiceExtenstion.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = ED88E7652C0F40A30082EA44 /* BluxNotificationServiceExtenstion.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		EDDC10E32C22BED800242D14 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EDDC10E22C22BED800242D14 /* Media.xcassets */; };
 		EDDC10EB2C22C5B100242D14 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDC10EA2C22C5B100242D14 /* Item.swift */; };
+		F2B29EFC796B48FF4F9BE2C4 /* Pods_BluxExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9AEAD7BA76BBF20CBD737C9 /* Pods_BluxExample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,10 +53,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0BBF66483C5B6D0A23C1AD3F /* Pods_BluxNotificationServiceExtenstion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BluxNotificationServiceExtenstion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FACEEF88C0AE07F453B4E7B /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
-		409E50EB8AB75F3F77E5B194 /* Pods_BluxClient_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BluxClient_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		5D3F0667B0270FB0612BBAC9 /* Pods_BluxNotificationServiceExtenstion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BluxNotificationServiceExtenstion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		607FACD01AFB9204008FA782 /* BluxClient_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BluxClient_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3286E8A664F95BB5516A8441 /* Pods-BluxExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluxExample.release.xcconfig"; path = "Target Support Files/Pods-BluxExample/Pods-BluxExample.release.xcconfig"; sourceTree = "<group>"; };
+		607FACD01AFB9204008FA782 /* BluxExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BluxExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		607FACDA1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -68,16 +66,15 @@
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		78926C502C48FCB800F605C4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		7DEFD06627CB0B94B86740EA /* Pods-BluxNotificationServiceExtenstion.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluxNotificationServiceExtenstion.release.xcconfig"; path = "Target Support Files/Pods-BluxNotificationServiceExtenstion/Pods-BluxNotificationServiceExtenstion.release.xcconfig"; sourceTree = "<group>"; };
-		8412B5031A0DFB2BBAE2EA93 /* Pods-BluxClient_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluxClient_Example.debug.xcconfig"; path = "Target Support Files/Pods-BluxClient_Example/Pods-BluxClient_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		AB534E1A7CC1298E08AF1239 /* Pods-BluxNotificationServiceExtenstion.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluxNotificationServiceExtenstion.debug.xcconfig"; path = "Target Support Files/Pods-BluxNotificationServiceExtenstion/Pods-BluxNotificationServiceExtenstion.debug.xcconfig"; sourceTree = "<group>"; };
-		E358ED639F6E93DFCF8CC6B6 /* Pods-BluxClient_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluxClient_Example.release.xcconfig"; path = "Target Support Files/Pods-BluxClient_Example/Pods-BluxClient_Example.release.xcconfig"; sourceTree = "<group>"; };
+		A67EB7CA6733B6177FF8EB0E /* Pods-BluxNotificationServiceExtenstion.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluxNotificationServiceExtenstion.release.xcconfig"; path = "Target Support Files/Pods-BluxNotificationServiceExtenstion/Pods-BluxNotificationServiceExtenstion.release.xcconfig"; sourceTree = "<group>"; };
+		C72ECC78183E9102EB1D545B /* Pods-BluxNotificationServiceExtenstion.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluxNotificationServiceExtenstion.debug.xcconfig"; path = "Target Support Files/Pods-BluxNotificationServiceExtenstion/Pods-BluxNotificationServiceExtenstion.debug.xcconfig"; sourceTree = "<group>"; };
+		D93ED8302F0BA62700AB82C7 /* BluxExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BluxExample.entitlements; sourceTree = "<group>"; };
 		E3C06284814146EA3C0DCEE0 /* BluxClient.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = BluxClient.podspec; path = ../BluxClient.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		ED88E7602C0F407C0082EA44 /* BluxClient_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BluxClient_Example.entitlements; sourceTree = "<group>"; };
+		E441C8A26EA1BFB70EB08666 /* Pods-BluxExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluxExample.debug.xcconfig"; path = "Target Support Files/Pods-BluxExample/Pods-BluxExample.debug.xcconfig"; sourceTree = "<group>"; };
+		E9AEAD7BA76BBF20CBD737C9 /* Pods_BluxExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BluxExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED88E7652C0F40A30082EA44 /* BluxNotificationServiceExtenstion.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BluxNotificationServiceExtenstion.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED88E7672C0F40A30082EA44 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		ED88E7692C0F40A30082EA44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		ED88E7772C1022E00082EA44 /* Pods_BluxClient_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_BluxClient_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED88E7802C1072170082EA44 /* BluxNotificationServiceExtenstion.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BluxNotificationServiceExtenstion.entitlements; sourceTree = "<group>"; };
 		EDDC10E22C22BED800242D14 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		EDDC10EA2C22C5B100242D14 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
@@ -89,9 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8300BEF1517422F597C3517A /* Pods_BluxClient_Example.framework in Frameworks */,
-				8A890B3A5E51D11FAA6DDED7 /* Pods_BluxClient_Example.framework in Frameworks */,
-				875AF9BAF8189D862CF63EA9 /* (null) in Frameworks */,
+				F2B29EFC796B48FF4F9BE2C4 /* Pods_BluxExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,18 +101,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0F16EF9D7E96F56FA5F2A7B2 /* Pods_BluxNotificationServiceExtenstion.framework in Frameworks */,
+				E11ED1A554B3F8D8B1A68928 /* Pods_BluxNotificationServiceExtenstion.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1535185174C4D60B98E89729 /* Frameworks */ = {
+		4D09AE001D3613C84CFBF1C4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				409E50EB8AB75F3F77E5B194 /* Pods_BluxClient_Example.framework */,
-				5D3F0667B0270FB0612BBAC9 /* Pods_BluxNotificationServiceExtenstion.framework */,
+				E9AEAD7BA76BBF20CBD737C9 /* Pods_BluxExample.framework */,
+				0BBF66483C5B6D0A23C1AD3F /* Pods_BluxNotificationServiceExtenstion.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -125,22 +120,22 @@
 		607FACC71AFB9204008FA782 = {
 			isa = PBXGroup;
 			children = (
-				ED88E7602C0F407C0082EA44 /* BluxClient_Example.entitlements */,
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
 				607FACD21AFB9204008FA782 /* Example for BluxClient */,
 				607FACE81AFB9204008FA782 /* Tests */,
 				ED88E7662C0F40A30082EA44 /* BluxNotificationServiceExtenstion */,
 				607FACD11AFB9204008FA782 /* Products */,
 				AB6181A94D8A1EF4BAE930D5 /* Pods */,
-				1535185174C4D60B98E89729 /* Frameworks */,
 				ED88E77F2C1029020082EA44 /* Recovered References */,
+				D93ED8302F0BA62700AB82C7 /* BluxExample.entitlements */,
+				4D09AE001D3613C84CFBF1C4 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 		607FACD11AFB9204008FA782 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				607FACD01AFB9204008FA782 /* BluxClient_Example.app */,
+				607FACD01AFB9204008FA782 /* BluxExample.app */,
 				607FACE51AFB9204008FA782 /* BluxClient_Tests.xctest */,
 				ED88E7652C0F40A30082EA44 /* BluxNotificationServiceExtenstion.appex */,
 			);
@@ -200,10 +195,10 @@
 		AB6181A94D8A1EF4BAE930D5 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				8412B5031A0DFB2BBAE2EA93 /* Pods-BluxClient_Example.debug.xcconfig */,
-				E358ED639F6E93DFCF8CC6B6 /* Pods-BluxClient_Example.release.xcconfig */,
-				AB534E1A7CC1298E08AF1239 /* Pods-BluxNotificationServiceExtenstion.debug.xcconfig */,
-				7DEFD06627CB0B94B86740EA /* Pods-BluxNotificationServiceExtenstion.release.xcconfig */,
+				E441C8A26EA1BFB70EB08666 /* Pods-BluxExample.debug.xcconfig */,
+				3286E8A664F95BB5516A8441 /* Pods-BluxExample.release.xcconfig */,
+				C72ECC78183E9102EB1D545B /* Pods-BluxNotificationServiceExtenstion.debug.xcconfig */,
+				A67EB7CA6733B6177FF8EB0E /* Pods-BluxNotificationServiceExtenstion.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -222,7 +217,6 @@
 		ED88E77F2C1029020082EA44 /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
-				ED88E7772C1022E00082EA44 /* Pods_BluxClient_Example.framework */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -230,25 +224,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		607FACCF1AFB9204008FA782 /* BluxClient_Example */ = {
+		607FACCF1AFB9204008FA782 /* BluxExample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BluxClient_Example" */;
+			buildConfigurationList = 607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BluxExample" */;
 			buildPhases = (
-				BB71A4DD94C714207F2FF12D /* [CP] Check Pods Manifest.lock */,
+				DBC953D65E94AD834D20AE98 /* [CP] Check Pods Manifest.lock */,
 				607FACCC1AFB9204008FA782 /* Sources */,
 				607FACCD1AFB9204008FA782 /* Frameworks */,
 				607FACCE1AFB9204008FA782 /* Resources */,
-				36A629B54169ECC919B3B423 /* [CP] Embed Pods Frameworks */,
 				ED88E7702C0F40A30082EA44 /* Embed Foundation Extensions */,
+				CF7C5982C390E67437EA49EE /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				ED88E76B2C0F40A30082EA44 /* PBXTargetDependency */,
 			);
-			name = BluxClient_Example;
+			name = BluxExample;
 			productName = BluxClient;
-			productReference = 607FACD01AFB9204008FA782 /* BluxClient_Example.app */;
+			productReference = 607FACD01AFB9204008FA782 /* BluxExample.app */;
 			productType = "com.apple.product-type.application";
 		};
 		607FACE41AFB9204008FA782 /* BluxClient_Tests */ = {
@@ -273,7 +267,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = ED88E76D2C0F40A30082EA44 /* Build configuration list for PBXNativeTarget "BluxNotificationServiceExtenstion" */;
 			buildPhases = (
-				39D546259F4DA49E371FF81E /* [CP] Check Pods Manifest.lock */,
+				7AEBC60FFB28FBAC3ED7B3C6 /* [CP] Check Pods Manifest.lock */,
 				ED88E7612C0F40A30082EA44 /* Sources */,
 				ED88E7622C0F40A30082EA44 /* Frameworks */,
 				ED88E7632C0F40A30082EA44 /* Resources */,
@@ -330,7 +324,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				607FACCF1AFB9204008FA782 /* BluxClient_Example */,
+				607FACCF1AFB9204008FA782 /* BluxExample */,
 				607FACE41AFB9204008FA782 /* BluxClient_Tests */,
 				ED88E7642C0F40A30082EA44 /* BluxNotificationServiceExtenstion */,
 			);
@@ -366,25 +360,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		36A629B54169ECC919B3B423 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BluxClient_Example/Pods-BluxClient_Example-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/BluxClient/BluxClient.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BluxClient.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BluxClient_Example/Pods-BluxClient_Example-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		39D546259F4DA49E371FF81E /* [CP] Check Pods Manifest.lock */ = {
+		7AEBC60FFB28FBAC3ED7B3C6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -406,7 +382,25 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BB71A4DD94C714207F2FF12D /* [CP] Check Pods Manifest.lock */ = {
+		CF7C5982C390E67437EA49EE /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BluxExample/Pods-BluxExample-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/BluxClient/BluxClient.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BluxClient.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BluxExample/Pods-BluxExample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DBC953D65E94AD834D20AE98 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -421,7 +415,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-BluxClient_Example-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-BluxExample-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -462,7 +456,7 @@
 /* Begin PBXTargetDependency section */
 		607FACE71AFB9204008FA782 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 607FACCF1AFB9204008FA782 /* BluxClient_Example */;
+			target = 607FACCF1AFB9204008FA782 /* BluxExample */;
 			targetProxy = 607FACE61AFB9204008FA782 /* PBXContainerItemProxy */;
 		};
 		ED88E76B2C0F40A30082EA44 /* PBXTargetDependency */ = {
@@ -593,11 +587,11 @@
 		};
 		607FACF01AFB9204008FA782 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8412B5031A0DFB2BBAE2EA93 /* Pods-BluxClient_Example.debug.xcconfig */;
+			baseConfigurationReference = E441C8A26EA1BFB70EB08666 /* Pods-BluxExample.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = BluxClient_Example.entitlements;
+				CODE_SIGN_ENTITLEMENTS = BluxExample.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6RFZ8SZ44U;
@@ -615,11 +609,11 @@
 		};
 		607FACF11AFB9204008FA782 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E358ED639F6E93DFCF8CC6B6 /* Pods-BluxClient_Example.release.xcconfig */;
+			baseConfigurationReference = 3286E8A664F95BB5516A8441 /* Pods-BluxExample.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = BluxClient_Example.entitlements;
+				CODE_SIGN_ENTITLEMENTS = BluxExample.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6RFZ8SZ44U;
@@ -654,7 +648,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BluxClient_Example.app/BluxClient_Example";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BluxExample.app/BluxExample";
 			};
 			name = Debug;
 		};
@@ -673,13 +667,13 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BluxClient_Example.app/BluxClient_Example";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BluxExample.app/BluxExample";
 			};
 			name = Release;
 		};
 		ED88E76E2C0F40A30082EA44 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AB534E1A7CC1298E08AF1239 /* Pods-BluxNotificationServiceExtenstion.debug.xcconfig */;
+			baseConfigurationReference = C72ECC78183E9102EB1D545B /* Pods-BluxNotificationServiceExtenstion.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -722,7 +716,7 @@
 		};
 		ED88E76F2C0F40A30082EA44 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7DEFD06627CB0B94B86740EA /* Pods-BluxNotificationServiceExtenstion.release.xcconfig */;
+			baseConfigurationReference = A67EB7CA6733B6177FF8EB0E /* Pods-BluxNotificationServiceExtenstion.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -772,7 +766,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BluxClient_Example" */ = {
+		607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BluxExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				607FACF01AFB9204008FA782 /* Debug */,
