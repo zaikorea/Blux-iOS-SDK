@@ -29,8 +29,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "607FACE41AFB9204008FA782"
-               BuildableName = "BluxClient_Tests.xctest"
-               BlueprintName = "BluxClient_Tests"
+               BuildableName = "BluxExampleTests.xctest"
+               BlueprintName = "BluxExampleTests"
                ReferencedContainer = "container:BluxClient.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -56,8 +56,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "607FACE41AFB9204008FA782"
-               BuildableName = "BluxClient_Tests.xctest"
-               BlueprintName = "BluxClient_Tests"
+               BuildableName = "BluxExampleTests.xctest"
+               BlueprintName = "BluxExampleTests"
                ReferencedContainer = "container:BluxClient.xcodeproj">
             </BuildableReference>
          </TestableReference>
