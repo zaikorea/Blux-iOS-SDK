@@ -62,7 +62,7 @@
 		607FACDA1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		607FACDC1AFB9204008FA782 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		607FACE51AFB9204008FA782 /* BluxClient_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BluxClient_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		607FACE51AFB9204008FA782 /* BluxExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BluxExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		78926C502C48FCB800F605C4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -136,7 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				607FACD01AFB9204008FA782 /* BluxExample.app */,
-				607FACE51AFB9204008FA782 /* BluxClient_Tests.xctest */,
+				607FACE51AFB9204008FA782 /* BluxExampleTests.xctest */,
 				ED88E7652C0F40A30082EA44 /* BluxNotificationServiceExtenstion.appex */,
 			);
 			name = Products;
@@ -245,9 +245,9 @@
 			productReference = 607FACD01AFB9204008FA782 /* BluxExample.app */;
 			productType = "com.apple.product-type.application";
 		};
-		607FACE41AFB9204008FA782 /* BluxClient_Tests */ = {
+		607FACE41AFB9204008FA782 /* BluxExampleTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 607FACF21AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BluxClient_Tests" */;
+			buildConfigurationList = 607FACF21AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BluxExampleTests" */;
 			buildPhases = (
 				607FACE11AFB9204008FA782 /* Sources */,
 				607FACE21AFB9204008FA782 /* Frameworks */,
@@ -258,9 +258,9 @@
 			dependencies = (
 				607FACE71AFB9204008FA782 /* PBXTargetDependency */,
 			);
-			name = BluxClient_Tests;
+			name = BluxExampleTests;
 			productName = Tests;
-			productReference = 607FACE51AFB9204008FA782 /* BluxClient_Tests.xctest */;
+			productReference = 607FACE51AFB9204008FA782 /* BluxExampleTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		ED88E7642C0F40A30082EA44 /* BluxNotificationServiceExtenstion */ = {
@@ -325,7 +325,7 @@
 			projectRoot = "";
 			targets = (
 				607FACCF1AFB9204008FA782 /* BluxExample */,
-				607FACE41AFB9204008FA782 /* BluxClient_Tests */,
+				607FACE41AFB9204008FA782 /* BluxExampleTests */,
 				ED88E7642C0F40A30082EA44 /* BluxNotificationServiceExtenstion */,
 			);
 		};
@@ -775,7 +775,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		607FACF21AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BluxClient_Tests" */ = {
+		607FACF21AFB9204008FA782 /* Build configuration list for PBXNativeTarget "BluxExampleTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				607FACF31AFB9204008FA782 /* Debug */,
