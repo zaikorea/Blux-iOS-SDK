@@ -11,7 +11,7 @@ import UserNotifications
 @objc
 public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate {
     @objc public static let shared = BluxNotificationCenter()
-
+    
     /// Called when notification is clicked
     @objc public func userNotificationCenter(
         _: UNUserNotificationCenter,
@@ -126,8 +126,17 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
         }
 
         // Present WebView (Do not open default browser)
-        let webViewController = WebViewController(
-            content: .url(url))
+        let webViewController = WebViewController(content: .url(url))
+        
+        
+        webViewController.addMessageHandler(
+             for: "close",
+             handler: { [weak webViewController] _ in
+                 guard let webViewController else { return }
+                 webViewController.dismiss(animated: false)
+             }
+         )
+        
         let navigationController = UINavigationController(
             rootViewController: webViewController)
         navigationController.modalPresentationStyle = .fullScreen
