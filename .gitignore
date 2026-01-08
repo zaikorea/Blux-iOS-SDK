@@ -34,3 +34,6 @@ Carthage/Build
 # `pod install` in .travis.yml
 #
 # Pods/
+
+# Auto-generated bundle version (CFBundleVersion)
+Example/BundleVersion.xcconfig
