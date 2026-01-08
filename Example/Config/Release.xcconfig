@@ -1,0 +1,6 @@
+// Release configuration wrapper
+// Includes Pods config and auto-generated bundle version (CFBundleVersion)
+
+#include "../BundleVersion.xcconfig"
+#include "../Pods/Target Support Files/Pods-BluxExample/Pods-BluxExample.release.xcconfig"
+
