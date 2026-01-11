@@ -7,6 +7,9 @@ import WebKit
 class InappService {
     private static var webViewQueue: [() -> Void] = []
     private static var isWebViewPresented = false
+    
+    // 현재 표시 중인 배너 윈도우
+    private static var currentBannerWindow: BannerWindow?
 
     private static var isAppActive: Bool = true
     private static var isNetworkReachable: Bool = true
@@ -138,6 +141,15 @@ class InappService {
             completion()
         }
     }
+    
+    private static func dismissBannerWindow(completion: (() -> Void)? = nil) {
+        currentBannerWindow?.dismiss {
+            currentBannerWindow = nil
+            isWebViewPresented = false
+            processWebViewQueue()
+            completion?()
+        }
+    }
 
     private static func presentInappWebview(
         _ notificationId: String,
@@ -167,6 +179,89 @@ class InappService {
                     )
                 )
 
+                // resize 핸들러 (배너용) - BannerWindow로 전환
+                var didSwitchToBanner = false  // 중복 실행 방지 플래그
+                
+                webviewController.addMessageHandler(
+                    for: "resize",
+                    handler: { data in
+                        // 이미 BannerWindow로 전환했으면 무시
+                        guard !didSwitchToBanner else { return }
+                        
+                        // height 파싱 (CGFloat 또는 Int 또는 Double)
+                        let height: CGFloat?
+                        if let h = data["height"] as? CGFloat {
+                            height = h
+                        } else if let h = data["height"] as? Int {
+                            height = CGFloat(h)
+                        } else if let h = data["height"] as? Double {
+                            height = CGFloat(h)
+                        } else {
+                            height = nil
+                        }
+                        
+                        guard let height = height, let location = data["location"] as? String else {
+                            return
+                        }
+                        
+                        // 플래그 설정 (중복 실행 방지)
+                        didSwitchToBanner = true
+                        
+                        Logger.verbose("INAPP: switching to BannerWindow - height: \(height), location: \(location)")
+                        
+                        DispatchQueue.main.async {
+                            // 기존 모달 dismiss (애니메이션 없이)
+                            webviewController.dismiss(animated: false) {
+                                // BannerWindow 생성 (HTML 로드 후 자체적으로 resize 처리)
+                                let bannerWindow = BannerWindow(htmlString: htmlString, baseURL: baseURL)
+                                currentBannerWindow = bannerWindow
+                                
+                                // 초기 크기로 바로 표시 (BannerWindow 내부 resize로 업데이트됨)
+                                bannerWindow.updateLayout(height: height, location: location)
+                                
+                                // hide 핸들러 등록
+                                bannerWindow.addMessageHandler(for: "hide") { hideData in
+                                    if let daysToHide = hideData["days_to_hide"] as? Int, daysToHide > 0 {
+                                        let dateToHide = Calendar.current.date(byAdding: .day, value: daysToHide, to: Date())
+                                        if let dateToHide = dateToHide {
+                                            let dateFormatter = ISO8601DateFormatter()
+                                            UserDefaults.standard.set(dateFormatter.string(from: dateToHide), forKey: inappId)
+                                        }
+                                    }
+                                    dismissBannerWindow()
+                                }
+                                
+                                // link 핸들러 등록
+                                bannerWindow.addMessageHandler(for: "link") { linkData in
+                                    if let urlString = linkData["url"] as? String,
+                                       let url = URL(string: urlString),
+                                       let scheme = url.scheme {
+                                        switch scheme {
+                                        case "http", "https":
+                                            createInappOpened(notificationId)
+                                            dismissBannerWindow {
+                                                DispatchQueue.main.async {
+                                                    if let topController = UIViewController.getTopViewController(),
+                                                       topController.view.window != nil {
+                                                        let newWebViewController = WebViewController(content: .url(url))
+                                                        let navigationController = UINavigationController(rootViewController: newWebViewController)
+                                                        navigationController.modalPresentationStyle = .fullScreen
+                                                        topController.present(navigationController, animated: true, completion: nil)
+                                                    }
+                                                }
+                                            }
+                                        default:
+                                            dismissBannerWindow {
+                                                UIApplication.shared.open(url, options: [:])
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                )
+                
                 webviewController.addMessageHandler(
                     for: "hide",
                     handler: { data in
