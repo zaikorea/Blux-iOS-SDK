@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double Pods_BluxNotificationServiceExtenstionVersionNumber;
-FOUNDATION_EXPORT const unsigned char Pods_BluxNotificationServiceExtenstionVersionString[];
+FOUNDATION_EXPORT double Pods_BluxExampleVersionNumber;
+FOUNDATION_EXPORT const unsigned char Pods_BluxExampleVersionString[];
 
