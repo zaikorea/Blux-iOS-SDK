@@ -18,6 +18,9 @@ DerivedData
 *.hmap
 *.ipa
 
+# VSCode
+.vscode/
+
 # Bundler
 .bundle
 
