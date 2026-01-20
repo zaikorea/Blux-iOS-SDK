@@ -1,4 +1,6 @@
 import Foundation
+import UIKit
+import UserNotifications
 
 @objc open class NotificationReceivedEvent: NSObject {
     @objc public var notification: BluxNotification
