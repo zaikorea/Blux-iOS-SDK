@@ -27,7 +27,7 @@
 			containerPortal = 607FACC81AFB9204008FA782 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 607FACCF1AFB9204008FA782;
-			remoteInfo = BluxClient;
+			remoteInfo = BluxExample;
 		};
 		ED88E76A2C0F40A30082EA44 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -114,7 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
-				607FACD21AFB9204008FA782 /* Example for BluxClient */,
+				607FACD21AFB9204008FA782 /* BluxExample */,
 				607FACE81AFB9204008FA782 /* Tests */,
 				ED88E7662C0F40A30082EA44 /* BluxNotificationServiceExtension */,
 				ED88E7852D0F40A30082EA44 /* Config */,
@@ -145,7 +145,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		607FACD21AFB9204008FA782 /* Example for BluxClient */ = {
+		607FACD21AFB9204008FA782 /* BluxExample */ = {
 			isa = PBXGroup;
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
@@ -156,8 +156,8 @@
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 				78926C502C48FCB800F605C4 /* ViewController.swift */,
 			);
-			name = "Example for BluxClient";
-			path = BluxClient;
+			name = "BluxExample";
+			path = BluxExample;
 			sourceTree = "<group>";
 		};
 		607FACD31AFB9204008FA782 /* Supporting Files */ = {
@@ -253,7 +253,7 @@
 				ED88E76B2C0F40A30082EA44 /* PBXTargetDependency */,
 			);
 			name = BluxExample;
-			productName = BluxClient;
+			productName = BluxExample;
 			productReference = 607FACD01AFB9204008FA782 /* BluxExample.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -323,7 +323,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "BluxClient" */;
+			buildConfigurationList = 607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "BluxExample" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -607,7 +607,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6RFZ8SZ44U;
-				INFOPLIST_FILE = BluxClient/Info.plist;
+				INFOPLIST_FILE = BluxExample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
@@ -629,7 +629,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6RFZ8SZ44U;
-				INFOPLIST_FILE = BluxClient/Info.plist;
+				INFOPLIST_FILE = BluxExample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
@@ -769,7 +769,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "BluxClient" */ = {
+		607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "BluxExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				607FACED1AFB9204008FA782 /* Debug */,
