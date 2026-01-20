@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import UIKit
+import UserNotifications
 
 struct CRMEventsBody: Codable {
     let notification_id: String

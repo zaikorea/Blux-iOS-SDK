@@ -5,6 +5,10 @@
 //  Copyright © 2024 Blux. All rights reserved.
 //
 
+import Foundation
+import UIKit
+import UserNotifications
+
 // Used to convert userProperties and customUserProperties to Codable
 enum CustomValue: Codable {
     case string(String)

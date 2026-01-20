@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 enum DeviceService {
     /// Get system information from device
