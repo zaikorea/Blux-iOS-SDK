@@ -19,7 +19,7 @@
                BlueprintIdentifier = "ED88E7642C0F40A30082EA44"
                BuildableName = "BluxNotificationServiceExtension.appex"
                BlueprintName = "BluxNotificationServiceExtension"
-               ReferencedContainer = "container:BluxClient.xcodeproj">
+               ReferencedContainer = "container:BluxExample.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -33,7 +33,7 @@
                BlueprintIdentifier = "607FACCF1AFB9204008FA782"
                BuildableName = "BluxExample.app"
                BlueprintName = "BluxExample"
-               ReferencedContainer = "container:BluxClient.xcodeproj">
+               ReferencedContainer = "container:BluxExample.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -64,7 +64,7 @@
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
             BuildableName = "BluxExample.app"
             BlueprintName = "BluxExample"
-            ReferencedContainer = "container:BluxClient.xcodeproj">
+            ReferencedContainer = "container:BluxExample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -83,7 +83,7 @@
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
             BuildableName = "BluxExample.app"
             BlueprintName = "BluxExample"
-            ReferencedContainer = "container:BluxClient.xcodeproj">
+            ReferencedContainer = "container:BluxExample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
