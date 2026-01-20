@@ -1,6 +1,0 @@
-framework module BluxClient {
-  umbrella header "BluxClient-umbrella.h"
-
-  export *
-  module * { export * }
-}
