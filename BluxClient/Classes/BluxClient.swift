@@ -62,7 +62,7 @@ enum CustomValue: Codable {
 struct UpdatePropertiesBody: Codable {
     var userProperties: [String: CustomValue]?
     var customUserProperties: [String: CustomValue]?
-    
+
     enum CodingKeys: String, CodingKey {
         case userProperties = "user_properties"
         case customUserProperties = "custom_user_properties"
@@ -124,7 +124,7 @@ struct UpdatePropertiesBody: Codable {
             case .success:
                 // 초기화 완료 - 대기 중인 이벤트들 처리 시작
                 EventQueue.shared.setInitialized()
-                
+
                 let eventRequest = EventRequest()
                 eventRequest.events.append(Event(eventType: "visit"))
                 self.sendEvent(eventRequest)
@@ -267,6 +267,10 @@ struct UpdatePropertiesBody: Codable {
             "marketing_notification_email_consent": userProperties.marketingNotificationEmailConsent,
             "marketing_notification_push_consent": userProperties.marketingNotificationPushConsent,
             "marketing_notification_kakao_consent": userProperties.marketingNotificationKakaoConsent,
+            "nighttime_notification_consent": userProperties.nighttimeNotificationConsent,
+            "is_all_notification_blocked": userProperties.isAllNotificationBlocked,
+            "age": userProperties.age,
+            "gender": userProperties.gender?.rawValue,
         ]
 
         setUserPropertiesData(userProperties: userPropertiesDict)
