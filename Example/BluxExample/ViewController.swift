@@ -8,7 +8,7 @@ import BluxClient
 import UIKit
 
 class ViewController: UIViewController {
-    let userId = "luna"
+    let userId = "team"
 
     // MARK: - UI (Programmatic)
 
@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     private let eventTypeTextField = UITextField()
     private let keyTextField = UITextField()
     private let valueTextField = UITextField()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -137,11 +137,11 @@ class ViewController: UIViewController {
         button.heightAnchor.constraint(equalToConstant: 60).isActive = true // 기존 storyboard 버튼 높이(60)와 통일
         return button
     }
-    
+
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
-    
+
     // MARK: - Actions
 
     @objc func sendCustomEventTapped() {
@@ -149,15 +149,16 @@ class ViewController: UIViewController {
             print("Event Type is empty")
             return
         }
-        
+
         do {
             var builder = AddCustomEvent.Builder(eventType: eventType)
-            
+
             if let key = keyTextField.text, !key.isEmpty,
-               let value = valueTextField.text, !value.isEmpty {
+               let value = valueTextField.text, !value.isEmpty
+            {
                 builder = builder.customEventProperties([key: .string(value)])
             }
-            
+
             let eventRequest = try builder.build()
             BluxClient.sendEvent(eventRequest)
             print("Custom Event Sent: \(eventType)")
@@ -175,15 +176,24 @@ class ViewController: UIViewController {
     }
 
     @objc func SetUserProperties() {
-        BluxClient.setUserProperties(userProperties: UserProperties(phoneNumber: "01089200854", emailAddress: "luna@blux.ai"))
+        BluxClient.setUserProperties(userProperties: UserProperties(
+            phoneNumber: "01012345678",
+            emailAddress: "team@blux.ai",
+            marketingNotificationConsent: true,
+            marketingNotificationSmsConsent: true,
+            marketingNotificationEmailConsent: true,
+            marketingNotificationPushConsent: true,
+            marketingNotificationKakaoConsent: true,
+            nighttimeNotificationConsent: true,
+            isAllNotificationBlocked: false,
+            age: 100,
+            gender: .female
+        ))
     }
 
     @objc func SetCustomUserProperties() {
         do {
             let customProperties: [String: Any] = [
-                "phone_number": "01089200854",
-                "email_address": "luna@blux.ai",
-                "age": 30,
                 "is_active": true,
                 "height": 5.9,
                 "hobbies": ["reading", "gaming"],
@@ -194,7 +204,7 @@ class ViewController: UIViewController {
         }
     }
 
-        @IBAction func SendLikeEvent(_: Any) {
+    @IBAction func SendLikeEvent(_: Any) {
         do {
             let eventRequest = try AddLikeEvent.Builder(itemId: "TEST_ITEM_1").build()
             BluxClient.sendEvent(eventRequest)
@@ -202,8 +212,6 @@ class ViewController: UIViewController {
             print(error.localizedDescription)
         }
     }
-
-
 
     @objc func SendCartaddEvent() {
         do {

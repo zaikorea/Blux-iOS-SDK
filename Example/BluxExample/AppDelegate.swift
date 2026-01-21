@@ -28,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 Logger.verbose("BluxClient.initialize error: \(error)")
             } else {
                 Logger.verbose("BluxClient.initialize success")
-                BluxClient.signIn(userId: "luna")
+                BluxClient.signIn(userId: "team")
             }
         }
 
