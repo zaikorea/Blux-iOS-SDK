@@ -7,9 +7,12 @@ import WebKit
 class InappService {
     private static var webViewQueue: [() -> Void] = []
     private static var isWebViewPresented = false
-    
+
     // 현재 표시 중인 배너 윈도우
     private static var currentBannerWindow: BannerWindow?
+
+    // 현재 표시 중인 WebViewController (fullscreen/popup용)
+    private static weak var currentWebViewController: WebViewController?
 
     private static var isAppActive: Bool = true
     private static var isNetworkReachable: Bool = true
@@ -136,6 +139,7 @@ class InappService {
         // Note: dismiss(animated:completion:)의 completion은 UIKit에서 메인 스레드 호출 보장
         // processWebViewQueue()도 메인 스레드 가드가 있으므로 안전함
         webviewController.dismiss(animated: false) {
+            currentWebViewController = nil
             isWebViewPresented = false
             processWebViewQueue()
             completion()
@@ -148,6 +152,24 @@ class InappService {
             isWebViewPresented = false
             processWebViewQueue()
             completion?()
+        }
+    }
+
+    /// 현재 표시 중인 인앱 메시지를 프로그래밍 방식으로 닫습니다.
+    /// Custom HTML 인앱에서 async 핸들러 완료 후 수동으로 닫을 때 사용합니다.
+    static func dismissCurrentInApp() {
+        DispatchQueue.main.async {
+            // 배너 윈도우가 있으면 닫기
+            if currentBannerWindow != nil {
+                dismissBannerWindow()
+                return
+            }
+
+            // WebViewController가 있으면 닫기
+            if let webViewController = currentWebViewController {
+                dismissWebView(webViewController)
+                currentWebViewController = nil
+            }
         }
     }
 
@@ -257,6 +279,23 @@ class InappService {
                                         }
                                     }
                                 }
+
+                                // custom_action 핸들러 등록 (배너용)
+                                bannerWindow.addMessageHandler(for: "custom_action") { actionData in
+                                    let actionId = actionData["action_id"] as? String ?? ""
+                                    let data = actionData["data"] as? [String: Any] ?? [:]
+                                    let shouldDismiss = actionData["should_dismiss"] as? Bool ?? true
+
+                                    if let handler = EventHandlers.inAppCustomAction {
+                                        handler(actionId, data)
+                                    } else {
+                                        Logger.verbose("INAPP: no InAppCustomActionHandler registered for action: \(actionId)")
+                                    }
+
+                                    if shouldDismiss {
+                                        dismissBannerWindow()
+                                    }
+                                }
                             }
                         }
                     }
@@ -333,10 +372,36 @@ class InappService {
                     }
                 )
 
+                // Custom HTML 인앱에서 BluxBridge.triggerAction() 호출 시 처리
+                webviewController.addMessageHandler(
+                    for: "custom_action",
+                    handler: { data in
+                        let actionId = data["action_id"] as? String ?? ""
+                        let actionData = data["data"] as? [String: Any] ?? [:]
+                        let shouldDismiss = data["should_dismiss"] as? Bool ?? true
+
+                        // 핸들러가 등록되어 있으면 호출
+                        if let handler = EventHandlers.inAppCustomAction {
+                            handler(actionId, actionData)
+                        } else {
+                            Logger.verbose("INAPP: no InAppCustomActionHandler registered for action: \(actionId)")
+                        }
+
+                        // shouldDismiss가 true면 인앱 닫기
+                        if shouldDismiss {
+                            dismissWebView(webviewController)
+                        }
+                    }
+                )
+
                 createReceived(notificationId)
                 Logger.verbose("INAPP: Presenting inapp webview.")
                 webviewController.view.backgroundColor = .clear
                 webviewController.modalPresentationStyle = .overFullScreen
+
+                // 현재 WebViewController 추적 (dismissCurrentInApp에서 사용)
+                currentWebViewController = webviewController
+
                 topController.present(
                     webviewController, animated: false, completion: nil
                 )

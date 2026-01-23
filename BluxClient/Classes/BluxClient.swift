@@ -354,6 +354,49 @@ struct UpdatePropertiesBody: Codable {
         }
     }
 
+    /// Custom HTML 인앱 메시지에서 BluxBridge.triggerAction() 호출 시 실행될 핸들러를 등록합니다.
+    ///
+    /// 사용 예시:
+    /// ```swift
+    /// BluxClient.setInAppCustomActionHandler { actionId, data in
+    ///     if actionId == "share" {
+    ///         // 공유 로직 구현
+    ///     } else if actionId == "navigate" {
+    ///         // 화면 이동 로직 구현
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// - Parameter callback: 액션 ID와 데이터를 받는 클로저
+    public static func setInAppCustomActionHandler(
+        callback: @escaping (_ actionId: String, _ data: [String: Any]) -> Void
+    ) {
+        EventHandlers.inAppCustomAction = callback
+        Logger.verbose("InAppCustomActionHandler has been registered.")
+    }
+
+    /// 현재 표시 중인 인앱 메시지를 프로그래밍 방식으로 닫습니다.
+    ///
+    /// Custom HTML 인앱에서 async 핸들러 완료 후 수동으로 닫을 때 사용합니다.
+    ///
+    /// 사용 예시:
+    /// ```swift
+    /// BluxClient.setInAppCustomActionHandler { actionId, data in
+    ///     if actionId == "share" {
+    ///         Task {
+    ///             await shareContent(data)
+    ///             BluxClient.dismissInApp() // async 작업 완료 후 수동으로 닫기
+    ///         }
+    ///     }
+    /// }
+    ///
+    /// // HTML에서 shouldDismiss: false로 호출
+    /// // BluxBridge.triggerAction('share', { url: '...' }, false);
+    /// ```
+    public static func dismissInApp() {
+        InappService.dismissCurrentInApp()
+    }
+
     @objc public static func setAPIStage(_ stage: String) {
         let uppercasedStage = stage.uppercased()
         if uppercasedStage == "PROD" {
