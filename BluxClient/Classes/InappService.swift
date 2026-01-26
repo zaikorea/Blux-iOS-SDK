@@ -286,10 +286,12 @@ class InappService {
                                     let data = actionData["data"] as? [String: Any] ?? [:]
                                     let shouldDismiss = actionData["should_dismiss"] as? Bool ?? true
 
-                                    if let handler = EventHandlers.inAppCustomAction {
-                                        handler(actionId, data)
-                                    } else {
+                                    if EventHandlers.inAppCustomActionHandlers.isEmpty {
                                         Logger.verbose("INAPP: no InAppCustomActionHandler registered for action: \(actionId)")
+                                    } else {
+                                        for (_, handler) in EventHandlers.inAppCustomActionHandlers {
+                                            handler(actionId, data)
+                                        }
                                     }
 
                                     if shouldDismiss {
@@ -380,11 +382,13 @@ class InappService {
                         let actionData = data["data"] as? [String: Any] ?? [:]
                         let shouldDismiss = data["should_dismiss"] as? Bool ?? true
 
-                        // 핸들러가 등록되어 있으면 호출
-                        if let handler = EventHandlers.inAppCustomAction {
-                            handler(actionId, actionData)
-                        } else {
+                        // 등록된 모든 핸들러 호출
+                        if EventHandlers.inAppCustomActionHandlers.isEmpty {
                             Logger.verbose("INAPP: no InAppCustomActionHandler registered for action: \(actionId)")
+                        } else {
+                            for (_, handler) in EventHandlers.inAppCustomActionHandlers {
+                                handler(actionId, actionData)
+                            }
                         }
 
                         // shouldDismiss가 true면 인앱 닫기
