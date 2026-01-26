@@ -355,24 +355,35 @@ struct UpdatePropertiesBody: Codable {
     }
 
     /// Custom HTML 인앱 메시지에서 BluxBridge.triggerAction() 호출 시 실행될 핸들러를 등록합니다.
+    /// 여러 핸들러를 등록할 수 있으며, 등록 순서대로 실행됩니다.
     ///
     /// 사용 예시:
     /// ```swift
-    /// BluxClient.setInAppCustomActionHandler { actionId, data in
+    /// let unsubscribe = BluxClient.addInAppCustomActionHandler { actionId, data in
     ///     if actionId == "share" {
     ///         // 공유 로직 구현
     ///     } else if actionId == "navigate" {
     ///         // 화면 이동 로직 구현
     ///     }
     /// }
+    ///
+    /// // 핸들러 제거
+    /// unsubscribe()
     /// ```
     ///
     /// - Parameter callback: 액션 ID와 데이터를 받는 클로저
-    public static func setInAppCustomActionHandler(
+    /// - Returns: 핸들러를 제거하는 unsubscribe 함수
+    public static func addInAppCustomActionHandler(
         callback: @escaping (_ actionId: String, _ data: [String: Any]) -> Void
-    ) {
-        EventHandlers.inAppCustomAction = callback
-        Logger.verbose("InAppCustomActionHandler has been registered.")
+    ) -> () -> Void {
+        let id = UUID()
+        EventHandlers.inAppCustomActionHandlers.append((id: id, handler: callback))
+        Logger.verbose("InAppCustomActionHandler has been registered with id: \(id).")
+
+        return {
+            EventHandlers.inAppCustomActionHandlers.removeAll { $0.id == id }
+            Logger.verbose("InAppCustomActionHandler has been removed with id: \(id).")
+        }
     }
 
     /// 현재 표시 중인 인앱 메시지를 프로그래밍 방식으로 닫습니다.
