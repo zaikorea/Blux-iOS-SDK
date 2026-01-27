@@ -1,6 +1,7 @@
 use_frameworks!
 
 platform :ios, '13.0'
+project 'BluxExample.xcodeproj'
 
 target 'BluxExample' do
   pod 'BluxClient', :path => '../'
