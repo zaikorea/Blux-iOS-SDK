@@ -298,6 +298,12 @@ class InappService {
                                         dismissBannerWindow()
                                     }
                                 }
+
+                                // inapp_opened 핸들러 등록 (배너용) - custom HTML data-blux-click 클릭 추적
+                                bannerWindow.addMessageHandler(for: "inapp_opened") { _ in
+                                    createInappOpened(notificationId)
+                                    // 인앱을 닫지 않음 - 클릭 추적만 수행
+                                }
                             }
                         }
                     }
@@ -395,6 +401,15 @@ class InappService {
                         if shouldDismiss {
                             dismissWebView(webviewController)
                         }
+                    }
+                )
+
+                // inapp_opened 핸들러 - custom HTML data-blux-click 클릭 추적
+                webviewController.addMessageHandler(
+                    for: "inapp_opened",
+                    handler: { _ in
+                        createInappOpened(notificationId)
+                        // 인앱을 닫지 않음 - 클릭 추적만 수행
                     }
                 )
 
