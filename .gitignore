@@ -18,8 +18,16 @@ DerivedData
 *.hmap
 *.ipa
 
+# VSCode
+.vscode/
+
 # Bundler
 .bundle
+
+# Swift Package Manager
+.build/
+.swiftpm/
+.swiftpm-cache/
 
 # Add this line if you want to avoid checking in source code from Carthage dependencies.
 # Carthage/Checkouts
@@ -33,7 +41,7 @@ Carthage/Build
 # Note: if you ignore the Pods directory, make sure to uncomment
 # `pod install` in .travis.yml
 #
-# Pods/
+Pods/
 
 # Auto-generated bundle version (CFBundleVersion)
 Example/BundleVersion.xcconfig
