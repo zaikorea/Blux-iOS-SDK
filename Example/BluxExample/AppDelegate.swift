@@ -32,6 +32,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
+        // Custom HTML 인앱 액션 핸들러 등록
+        _ = BluxClient.addInAppCustomActionHandler { actionId, data in
+            // dismiss 애니메이션 완료 후 alert 표시 (0.3초 지연)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                let dataString = data.map { "\($0.key): \($0.value)" }.joined(separator: ", ")
+                let message = "actionId: \(actionId)\ndata: {\(dataString)}"
+
+                let alert = UIAlertController(
+                    title: "Custom Action",
+                    message: message,
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let rootVC = windowScene.windows.first?.rootViewController {
+                    var topVC = rootVC
+                    while let presented = topVC.presentedViewController {
+                        topVC = presented
+                    }
+                    topVC.present(alert, animated: true)
+                }
+            }
+        }
+
         // Swizzling Disabled
         UNUserNotificationCenter.current().delegate = self
 
