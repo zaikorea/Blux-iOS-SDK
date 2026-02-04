@@ -6,6 +6,7 @@
 
 import BluxClient
 import UIKit
+import WebKit
 
 class ViewController: UIViewController {
     let userId = "team"
@@ -110,6 +111,10 @@ class ViewController: UIViewController {
 
         stackView.addArrangedSubview(makeButton(title: "Send Like", action: #selector(sendLikeEvent)))
         stackView.addArrangedSubview(makeButton(title: "Send Cartadd", action: #selector(sendCartaddEvent)))
+
+        // WebView
+        addSectionTitle("WebView")
+        stackView.addArrangedSubview(makeButton(title: "Open WebView", action: #selector(openWebView)))
     }
 
     private func addSectionTitle(_ text: String) {
@@ -243,7 +248,76 @@ class ViewController: UIViewController {
         }
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
+    @objc func openWebView() {
+        guard let url = makeWebViewURL() else { return }
+        let webViewVC = WebSdkBridgeViewController(url: url)
+        let nav = UINavigationController(rootViewController: webViewVC)
+        present(nav, animated: true)
+    }
+
+    private func makeWebViewURL() -> URL? {
+        var components = URLComponents(string: "https://stg.sdk-demo.blux.ai")
+        components?.queryItems = [
+            URLQueryItem(name: "application_id", value: AppDelegate.applicationId),
+            URLQueryItem(name: "api_key", value: AppDelegate.apiKey),
+            URLQueryItem(name: "stage", value: AppDelegate.stage),
+            URLQueryItem(name: "platform", value: "ios"),
+        ]
+        return components?.url
+    }
+}
+
+// MARK: - WebSdkBridgeViewController
+
+class WebSdkBridgeViewController: UIViewController {
+    private let url: URL
+    private var webView: WKWebView!
+
+    init(url: URL) {
+        self.url = url
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .systemBackground
+
+        title = "WebView"
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .done,
+            target: self,
+            action: #selector(close)
+        )
+
+        setupWebView()
+        webView.load(URLRequest(url: url))
+    }
+
+    private func setupWebView() {
+        webView = WKWebView(frame: .zero)
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(webView)
+
+        NSLayoutConstraint.activate([
+            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
+        BluxWebSdkBridge.attach(to: webView)
+    }
+
+    @objc private func close() {
+        dismiss(animated: true)
+    }
+
+    deinit {
+        BluxWebSdkBridge.detach(from: webView)
     }
 }

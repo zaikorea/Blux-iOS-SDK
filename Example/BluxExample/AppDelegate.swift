@@ -15,13 +15,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     static let applicationId = "6932742fb4bedc9b2239055a"
     static let apiKey = "hLKj8_0kilv1HxX3Dp59rs3xbKYeDTcijzgg3aWQ"
+    static let stage = "prod"
 
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication
             .LaunchOptionsKey: Any]?
     ) -> Bool {
-        BluxClient.setAPIStage("prod")
+        BluxClient.setAPIStage(Self.stage)
 
         // Custom HTML 인앱 액션 핸들러 등록
         _ = BluxClient.addInAppCustomActionHandler { actionId, data in
