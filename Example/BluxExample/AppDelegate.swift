@@ -15,26 +15,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     let applicationId = "69327634beb1da48e4278ed6"
     let apiKey = "RicSIM9zJTFZawchFbl12et6R_u6aLkgEwERnk8t"
+    static let stage = "stg"
 
     func application(
         _: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication
+        didFinishLaunchingWithOptions _: [UIApplication
             .LaunchOptionsKey: Any]?
     ) -> Bool {
-        BluxClient.setAPIStage("stg")
-
-        BluxClient.initialize(launchOptions, bluxApplicationId: applicationId, bluxAPIKey: apiKey, requestPermissionOnLaunch: true) { error in
-            if let error = error {
-                Logger.verbose("BluxClient.initialize error: \(error)")
-            } else {
-                Logger.verbose("BluxClient.initialize success")
-                BluxClient.signIn(userId: "team")
-            }
-        }
+        BluxClient.setAPIStage(Self.stage)
 
         // Custom HTML 인앱 액션 핸들러 등록
         _ = BluxClient.addInAppCustomActionHandler { actionId, data in
-            // dismiss 애니메이션 완료 후 alert 표시 (0.3초 지연)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 let dataString = data.map { "\($0.key): \($0.value)" }.joined(separator: ", ")
                 let message = "actionId: \(actionId)\ndata: {\(dataString)}"
@@ -47,7 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
 
                 if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let rootVC = windowScene.windows.first?.rootViewController {
+                   let rootVC = windowScene.windows.first?.rootViewController
+                {
                     var topVC = rootVC
                     while let presented = topVC.presentedViewController {
                         topVC = presented
