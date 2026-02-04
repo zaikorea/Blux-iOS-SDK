@@ -409,22 +409,8 @@ struct UpdatePropertiesBody: Codable {
     }
 
     @objc public static func setAPIStage(_ stage: String) {
-        let uppercasedStage = stage.uppercased()
-        if uppercasedStage == "PROD" {
-            HTTPClient.shared.setAPIStage(HTTPClient.APIBaseURLByStage.prod)
-            return
-        } else if uppercasedStage == "STG" {
-            HTTPClient.shared.setAPIStage(HTTPClient.APIBaseURLByStage.stg)
-            return
-        } else if uppercasedStage == "DEV" {
-            HTTPClient.shared.setAPIStage(HTTPClient.APIBaseURLByStage.dev)
-            return
-        } else if uppercasedStage == "LOCAL" {
-            HTTPClient.shared.setAPIStage(HTTPClient.APIBaseURLByStage.local)
-            return
-        }
-
-        Logger.verbose("Invalid stage string")
+        let parsed = Stage.from(stage)
+        HTTPClient.shared.setAPIStage(parsed.apiBaseURL)
     }
 
     static func hasPermissionForNotifications(

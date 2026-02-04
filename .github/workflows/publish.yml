@@ -1,0 +1,29 @@
+name: Publish (validate tag)
+
+on:
+  push:
+    tags:
+      - "*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag name to validate (optional; defaults to ref)"
+        required: false
+        type: string
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate tag and podspec version
+        run: |
+          chmod +x scripts/publish.sh
+          TAG_INPUT="${{ inputs.tag }}"
+          if [ -n "$TAG_INPUT" ]; then
+            scripts/publish.sh "$TAG_INPUT"
+          else
+            scripts/publish.sh "${GITHUB_REF_NAME}"
+          fi

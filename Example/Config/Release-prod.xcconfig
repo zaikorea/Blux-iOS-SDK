@@ -1,0 +1,9 @@
+// Release-prod configuration wrapper
+// Includes Secrets (API Key), Pods config and auto-generated bundle version (CFBundleVersion)
+
+#include? "Secrets.xcconfig"
+#define BLUX_API_KEY $(BLUX_API_KEY_PROD)
+BLUX_SDK_STAGE = prod
+
+#include "../BundleVersion.xcconfig"
+#include "../Pods/Target Support Files/Pods-BluxExample/Pods-BluxExample.release-prod.xcconfig"

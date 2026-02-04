@@ -13,16 +13,23 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    static let applicationId = "6932742fb4bedc9b2239055a"
-    static let apiKey = "hLKj8_0kilv1HxX3Dp59rs3xbKYeDTcijzgg3aWQ"
-    static let stage = "prod"
-
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication
             .LaunchOptionsKey: Any]?
     ) -> Bool {
-        BluxClient.setAPIStage(Self.stage)
+        let applicationId = Credentials.applicationId
+        let apiKey = Credentials.apiKey
+        BluxClient.setAPIStage(Credentials.sdkStage)
+
+        BluxClient.initialize(launchOptions, bluxApplicationId: applicationId, bluxAPIKey: apiKey, requestPermissionOnLaunch: true) { error in
+            if let error = error {
+                Logger.verbose("BluxClient.initialize error: \(error)")
+            } else {
+                Logger.verbose("BluxClient.initialize success")
+                BluxClient.signIn(userId: "team")
+            }
+        }
 
         // Custom HTML 인앱 액션 핸들러 등록
         _ = BluxClient.addInAppCustomActionHandler { actionId, data in
