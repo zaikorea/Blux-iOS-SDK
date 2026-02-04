@@ -13,8 +13,8 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    let applicationId = "66fac6b03e71e06835703c25"
-    let apiKey = "Is5r2sK-HBQe4sX343twQopcccevFm0Ci6nu9tA9"
+    let applicationId = "6932742fb4bedc9b2239055a"
+    let apiKey = "hLKj8_0kilv1HxX3Dp59rs3xbKYeDTcijzgg3aWQ"
 
     func application(
         _: UIApplication,
