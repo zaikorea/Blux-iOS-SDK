@@ -13,8 +13,8 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    let applicationId = "69327634beb1da48e4278ed6"
-    let apiKey = "RicSIM9zJTFZawchFbl12et6R_u6aLkgEwERnk8t"
+    static let applicationId = "69327634beb1da48e4278ed6"
+    static let apiKey = "RicSIM9zJTFZawchFbl12et6R_u6aLkgEwERnk8t"
     static let stage = "stg"
 
     func application(
