@@ -21,8 +21,14 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '13.0'
   s.swift_version = '5.0'
 
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  # Stage 설정: 환경변수 BLUX_STAGE (기본값: prod)
+  # 배포 시 scripts/publish.sh에서 자동 설정됨
+  stage = (ENV['BLUX_STAGE'] || 'prod').downcase
+  swift_flags = stage == 'prod' ? '' : "-D BLUX_#{stage.upcase}"
+
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+    'OTHER_SWIFT_FLAGS' => "$(inherited) #{swift_flags}".strip,
+    'SWIFT_VERSION' => '5.0',
+  }
 end

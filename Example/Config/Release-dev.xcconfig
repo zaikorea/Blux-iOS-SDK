@@ -1,0 +1,11 @@
+// Release-dev configuration wrapper
+// Includes Pods config and auto-generated bundle version (CFBundleVersion)
+
+#include? "Secrets.xcconfig"
+BLUX_API_KEY = $(BLUX_API_KEY_DEV)
+BLUX_STAGE = dev
+
+#include "../BundleVersion.xcconfig"
+#include "../Pods/Target Support Files/Pods-BluxExample/Pods-BluxExample.release-dev.xcconfig"
+
+SWIFT_VERSION = 5.0

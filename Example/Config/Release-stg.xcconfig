@@ -1,0 +1,11 @@
+// Release-stg configuration wrapper
+// Includes Pods config and auto-generated bundle version (CFBundleVersion)
+
+#include? "Secrets.xcconfig"
+BLUX_API_KEY = $(BLUX_API_KEY_STG)
+BLUX_STAGE = stg
+
+#include "../BundleVersion.xcconfig"
+#include "../Pods/Target Support Files/Pods-BluxExample/Pods-BluxExample.release-stg.xcconfig"
+
+SWIFT_VERSION = 5.0
