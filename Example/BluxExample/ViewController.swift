@@ -63,18 +63,23 @@ class ViewController: UIViewController {
     }
 
     private func setupUI() {
+        // Setup
+        addSectionTitle("Setup")
+        stackView.addArrangedSubview(makeButton(title: "Initialize", action: #selector(initialize)))
+
+        // User
         addSectionTitle("User")
 
         let authStack = UIStackView()
         authStack.axis = .horizontal
         authStack.spacing = 10
         authStack.distribution = .fillEqually
-        authStack.addArrangedSubview(makeButton(title: "SignIn", action: #selector(SignIn)))
-        authStack.addArrangedSubview(makeButton(title: "SignOut", action: #selector(SignOut)))
+        authStack.addArrangedSubview(makeButton(title: "SignIn", action: #selector(signIn)))
+        authStack.addArrangedSubview(makeButton(title: "SignOut", action: #selector(signOut)))
         stackView.addArrangedSubview(authStack)
 
-        stackView.addArrangedSubview(makeButton(title: "Set User Properties", action: #selector(SetUserProperties)))
-        stackView.addArrangedSubview(makeButton(title: "Set Custom User Properties", action: #selector(SetCustomUserProperties)))
+        stackView.addArrangedSubview(makeButton(title: "Set User Properties", action: #selector(setUserProperties)))
+        stackView.addArrangedSubview(makeButton(title: "Set Custom User Properties", action: #selector(setCustomUserProperties)))
 
         addSectionTitle("Events")
 
@@ -101,10 +106,10 @@ class ViewController: UIViewController {
         kvStack.addArrangedSubview(valueTextField)
         stackView.addArrangedSubview(kvStack)
 
-        stackView.addArrangedSubview(makeButton(title: "Send Custom Event", action: #selector(sendCustomEventTapped)))
+        stackView.addArrangedSubview(makeButton(title: "Send Custom Event", action: #selector(sendCustomEvent)))
 
-        stackView.addArrangedSubview(makeButton(title: "Send Like", action: #selector(SendLikeEvent)))
-        stackView.addArrangedSubview(makeButton(title: "Send Cartadd", action: #selector(SendCartaddEvent)))
+        stackView.addArrangedSubview(makeButton(title: "Send Like", action: #selector(sendLikeEvent)))
+        stackView.addArrangedSubview(makeButton(title: "Send Cartadd", action: #selector(sendCartaddEvent)))
     }
 
     private func addSectionTitle(_ text: String) {
@@ -144,7 +149,60 @@ class ViewController: UIViewController {
 
     // MARK: - Actions
 
-    @objc func sendCustomEventTapped() {
+    @objc func initialize() {
+        BluxClient.initialize(
+            nil,
+            bluxApplicationId: AppDelegate.applicationId,
+            bluxAPIKey: AppDelegate.apiKey,
+            requestPermissionOnLaunch: true
+        ) { [weak self] error in
+            DispatchQueue.main.async {
+                let message = error == nil ? "Initialize 성공" : "Initialize 실패: \(error!.localizedDescription)"
+                let alert = UIAlertController(title: "Blux", message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                self?.present(alert, animated: true)
+            }
+        }
+    }
+
+    @objc func signIn() {
+        BluxClient.signIn(userId: userId)
+    }
+
+    @objc func signOut() {
+        BluxClient.signOut()
+    }
+
+    @objc func setUserProperties() {
+        BluxClient.setUserProperties(userProperties: UserProperties(
+            phoneNumber: "01012345678",
+            emailAddress: "team@blux.ai",
+            marketingNotificationConsent: true,
+            marketingNotificationSmsConsent: true,
+            marketingNotificationEmailConsent: true,
+            marketingNotificationPushConsent: true,
+            marketingNotificationKakaoConsent: true,
+            nighttimeNotificationConsent: true,
+            isAllNotificationBlocked: false,
+            age: 100,
+            gender: .female
+        ))
+    }
+
+    @objc func setCustomUserProperties() {
+        do {
+            let customProperties: [String: Any] = [
+                "is_active": true,
+                "height": 5.9,
+                "hobbies": ["reading", "gaming"],
+            ]
+            try BluxClient.setCustomUserProperties(customUserProperties: customProperties)
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+
+    @objc func sendCustomEvent() {
         guard let eventType = eventTypeTextField.text, !eventType.isEmpty else {
             print("Event Type is empty")
             return
@@ -167,44 +225,7 @@ class ViewController: UIViewController {
         }
     }
 
-    @objc func SignIn() {
-        BluxClient.signIn(userId: userId)
-    }
-
-    @objc func SignOut() {
-        BluxClient.signOut()
-    }
-
-    @objc func SetUserProperties() {
-        BluxClient.setUserProperties(userProperties: UserProperties(
-            phoneNumber: "01012345678",
-            emailAddress: "team@blux.ai",
-            marketingNotificationConsent: true,
-            marketingNotificationSmsConsent: true,
-            marketingNotificationEmailConsent: true,
-            marketingNotificationPushConsent: true,
-            marketingNotificationKakaoConsent: true,
-            nighttimeNotificationConsent: true,
-            isAllNotificationBlocked: false,
-            age: 100,
-            gender: .female
-        ))
-    }
-
-    @objc func SetCustomUserProperties() {
-        do {
-            let customProperties: [String: Any] = [
-                "is_active": true,
-                "height": 5.9,
-                "hobbies": ["reading", "gaming"],
-            ]
-            try BluxClient.setCustomUserProperties(customUserProperties: customProperties)
-        } catch {
-            print(error.localizedDescription)
-        }
-    }
-
-    @IBAction func SendLikeEvent(_: Any) {
+    @objc func sendLikeEvent() {
         do {
             let eventRequest = try AddLikeEvent.Builder(itemId: "TEST_ITEM_1").build()
             BluxClient.sendEvent(eventRequest)
@@ -213,7 +234,7 @@ class ViewController: UIViewController {
         }
     }
 
-    @objc func SendCartaddEvent() {
+    @objc func sendCartaddEvent() {
         do {
             let eventRequest = try AddCartaddEvent.Builder(itemId: "TEST_ITEM_1").build()
             BluxClient.sendEvent(eventRequest)
