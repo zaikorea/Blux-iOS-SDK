@@ -158,8 +158,8 @@ class ViewController: UIViewController {
     @objc func initialize() {
         BluxClient.initialize(
             nil,
-            bluxApplicationId: AppDelegate.applicationId,
-            bluxAPIKey: AppDelegate.apiKey,
+            bluxApplicationId: Credentials.getApplicationId(stage: StageHelper.getStage()),
+            bluxAPIKey: Credentials.apiKey,
             requestPermissionOnLaunch: true
         ) { [weak self] error in
             DispatchQueue.main.async {
@@ -287,9 +287,9 @@ class ViewController: UIViewController {
     private func makeWebViewURL() -> URL? {
         var components = URLComponents(string: "https://stg.sdk-demo.blux.ai")
         components?.queryItems = [
-            URLQueryItem(name: "application_id", value: AppDelegate.applicationId),
-            URLQueryItem(name: "api_key", value: AppDelegate.apiKey),
-            URLQueryItem(name: "stage", value: AppDelegate.stage),
+            URLQueryItem(name: "application_id", value: Credentials.getApplicationId(stage: StageHelper.getStage())),
+            URLQueryItem(name: "api_key", value: Credentials.apiKey),
+            URLQueryItem(name: "stage", value: StageHelper.getStage().rawValue),
             URLQueryItem(name: "platform", value: "ios"),
         ]
         return components?.url

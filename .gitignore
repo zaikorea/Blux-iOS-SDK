@@ -45,3 +45,6 @@ Pods/
 
 # Auto-generated bundle version (CFBundleVersion)
 Example/BundleVersion.xcconfig
+
+# Example secrets (do not commit)
+Example/Config/Secrets.xcconfig
