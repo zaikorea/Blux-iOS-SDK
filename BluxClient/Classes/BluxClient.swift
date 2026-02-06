@@ -410,6 +410,7 @@ struct UpdatePropertiesBody: Codable {
 
     @objc public static func setAPIStage(_ stage: String) {
         let parsed = Stage.from(stage)
+        Stage.current = parsed
         HTTPClient.shared.setAPIStage(parsed.apiBaseURL)
     }
 

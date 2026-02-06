@@ -1,12 +1,12 @@
 import Foundation
 
-enum Stage: String, CaseIterable {
+public enum Stage: String, CaseIterable {
     case local = "local"
     case dev = "dev"
     case stg = "stg"
     case prod = "prod"
 
-    static func from(_ value: String?) -> Stage {
+    public static func from(_ value: String?) -> Stage {
         guard let value else {
             Logger.error("Stage.from: value is nil, falling back to PROD")
             return .prod
@@ -20,19 +20,26 @@ enum Stage: String, CaseIterable {
         return .prod
     }
 
-    static var defaultForBuild: Stage {
-#if BLUX_LOCAL
-        return .local
-#elseif BLUX_DEV
-        return .dev
-#elseif BLUX_STG
-        return .stg
-#else
-        return .prod
-#endif
-    }
-
-    static var current: Stage { defaultForBuild }
+    /// 1. Info.plist의 "BluxStage" 값 확인
+    /// 2. 없으면 컴파일 플래그 확인 (BLUX_LOCAL, BLUX_DEV, BLUX_STG)
+    /// 3. 기본값 prod
+    public static var current: Stage = {
+        // Info.plist에서 먼저 확인
+        if let stageString = Bundle.main.object(forInfoDictionaryKey: "BluxStage") as? String,
+           !stageString.isEmpty {
+            return Stage.from(stageString)
+        }
+        // 컴파일 플래그 확인
+        #if BLUX_LOCAL
+            return .local
+        #elseif BLUX_DEV
+            return .dev
+        #elseif BLUX_STG
+            return .stg
+        #else
+            return .prod
+        #endif
+    }()
 
     var apiBaseURL: HTTPClient.APIBaseURLByStage {
         switch self {

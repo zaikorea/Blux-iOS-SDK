@@ -29,21 +29,9 @@ final class HTTPClient {
         case dev = "https://api.blux.ai/dev"
         case stg = "https://api.blux.ai/stg"
         case prod = "https://api.blux.ai/prod"
-
-        static var `default`: APIBaseURLByStage {
-#if BLUX_LOCAL
-            return .local
-#elseif BLUX_DEV
-            return .dev
-#elseif BLUX_STG
-            return .stg
-#else
-            return .prod
-#endif
-        }
     }
 
-    private var API_BASE_URL: String = APIBaseURLByStage.default.rawValue
+    private var API_BASE_URL: String = Stage.current.apiBaseURL.rawValue
 
     // MARK: - Private Methods
 

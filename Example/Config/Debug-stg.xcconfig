@@ -2,8 +2,10 @@
 // Includes Pods config and auto-generated bundle version (CFBundleVersion)
 
 #include? "Secrets.xcconfig"
-#define BLUX_API_KEY $(BLUX_API_KEY_STG)
-BLUX_SDK_STAGE = stg
+BLUX_API_KEY = $(BLUX_API_KEY_STG)
+BLUX_STAGE = stg
 
 #include "../BundleVersion.xcconfig"
 #include "../Pods/Target Support Files/Pods-BluxExample/Pods-BluxExample.debug-stg.xcconfig"
+
+SWIFT_VERSION = 5.0

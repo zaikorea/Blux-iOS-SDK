@@ -18,18 +18,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication
             .LaunchOptionsKey: Any]?
     ) -> Bool {
-        let applicationId = Credentials.applicationId
-        let apiKey = Credentials.apiKey
-        BluxClient.setAPIStage(Credentials.sdkStage)
-
-        BluxClient.initialize(launchOptions, bluxApplicationId: applicationId, bluxAPIKey: apiKey, requestPermissionOnLaunch: true) { error in
-            if let error = error {
-                Logger.verbose("BluxClient.initialize error: \(error)")
-            } else {
-                Logger.verbose("BluxClient.initialize success")
-                BluxClient.signIn(userId: "team")
-            }
-        }
+        // TODO: 지워
+        print("@@@@@ AppDelegate: applicationId=\(Credentials.getApplicationId(stage: Stage.current)), apiKey=\(Credentials.apiKey), stage=\(Stage.current.rawValue)")
+        BluxClient.setAPIStage(Stage.current.rawValue)
 
         // Custom HTML 인앱 액션 핸들러 등록
         _ = BluxClient.addInAppCustomActionHandler { actionId, data in

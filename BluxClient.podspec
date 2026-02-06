@@ -21,43 +21,14 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '13.0'
   s.swift_version = '5.0'
 
-  version = s.version.to_s
-
-  # Android와 동일하게 "버전 이름"으로 stg/prod 배포를 구분합니다.
-  #
-  # stg 태그 형식:
-  # - x.y.z-internal.N
-  # - x.y.z-wip-name.N
-  #
-  # prod 태그 형식:
-  # - x.y.z
-  # - x.y.z-alpha.N
-  # - x.y.z-beta.N
-  # - x.y.z-rc.N
-  is_stg = !!(version =~ /^\d+\.\d+\.\d+-(internal|wip-[a-z]+)\.[1-9]\d*$/)
-  is_prod = !!(version =~ /^\d+\.\d+\.\d+(-((alpha|beta|rc)\.[1-9]\d*))?$/)
-
-  swift_conditions = ['$(inherited)']
-  if !is_stg && !is_prod
-    raise <<~MSG
-      Invalid pod version: '#{version}'
-
-      Expected:
-        stg:  x.y.z-internal.N, x.y.z-wip-name.N (name: [a-z]+, N: [1-9][0-9]*)
-        prod: x.y.z, x.y.z-alpha.N, x.y.z-beta.N, x.y.z-rc.N (N: [1-9][0-9]*)
-    MSG
-  elsif is_stg
-    swift_conditions += ['BLUX_STG']
-  else
-    # 고객사 영향 방지: 기본은 prod로 컴파일
-    swift_conditions += ['BLUX_PROD']
-  end
+  # Stage 설정: 환경변수 BLUX_STAGE (기본값: prod)
+  # 배포 시 scripts/publish.sh에서 자동 설정됨
+  stage = (ENV['BLUX_STAGE'] || 'prod').downcase
+  swift_flags = stage == 'prod' ? '' : "-D BLUX_#{stage.upcase}"
 
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'SWIFT_ACTIVE_COMPILATION_CONDITIONS' => swift_conditions.join(' '),
+    'OTHER_SWIFT_FLAGS' => "$(inherited) #{swift_flags}".strip,
+    'SWIFT_VERSION' => '5.0',
   }
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
 end

@@ -4,7 +4,25 @@ set -euo pipefail
 PODSPEC_PATH="${PODSPEC_PATH:-BluxClient.podspec}"
 TAG="${1:-${GITHUB_REF_NAME:-${TRAVIS_TAG:-}}}"
 
-STG_RE='^[0-9]+\.[0-9]+\.[0-9]+-(internal|wip-[a-z]+)\.[1-9][0-9]*$'
+# stg 태그 형식 (Android와 동일):
+# - x.y.z-internal.YYYYMMDD.COMMIT_HASH  (공용 테스트, GitHub Actions 자동 생성)
+# - x.y.z-GITHUB_USERNAME.YYYYMMDD.COMMIT_HASH  (개인 테스트, 수동 생성)
+#
+# 참고:
+# - YYYYMMDD: 8자리 날짜
+# - COMMIT_HASH: 7~40자리 커밋 해시 (소문자 hex)
+# - GITHUB_USERNAME: 소문자 영숫자와 하이픈 (internal 제외)
+STG_INTERNAL_RE='^[0-9]+\.[0-9]+\.[0-9]+-internal\.[0-9]{8}\.[a-f0-9]{7,40}$'
+STG_PERSONAL_RE='^[0-9]+\.[0-9]+\.[0-9]+-[a-z0-9][a-z0-9-]*\.[0-9]{8}\.[a-f0-9]{7,40}$'
+
+# prod 태그 형식 (Android와 동일):
+# - x.y.z
+# - x.y.z-alpha.N
+# - x.y.z-beta.N
+# - x.y.z-rc.N
+#
+# 참고:
+# - N은 1부터 시작, 선행 0 없음
 PROD_RE='^[0-9]+\.[0-9]+\.[0-9]+(-((alpha|beta|rc)\.[1-9][0-9]*))?$'
 
 fail() {
@@ -12,20 +30,37 @@ fail() {
   exit 1
 }
 
+is_stg_tag() {
+  local v="$1"
+  if [[ "${v}" =~ ${STG_INTERNAL_RE} ]]; then
+    return 0
+  fi
+  # personal 태그: internal이 아닌 것만 허용
+  if [[ "${v}" =~ ${STG_PERSONAL_RE} ]] && [[ ! "${v}" =~ -internal\. ]]; then
+    return 0
+  fi
+  return 1
+}
+
+is_prod_tag() {
+  local v="$1"
+  [[ "${v}" =~ ${PROD_RE} ]]
+}
+
 if [[ -z "${TAG}" ]]; then
   fail "tag is empty (pass as arg or set GITHUB_REF_NAME/TRAVIS_TAG)"
 fi
 
 STAGE=""
-if [[ "${TAG}" =~ ${STG_RE} ]]; then
+if is_stg_tag "${TAG}"; then
   STAGE="stg"
-elif [[ "${TAG}" =~ ${PROD_RE} ]]; then
+elif is_prod_tag "${TAG}"; then
   STAGE="prod"
 else
   echo "ERROR: Invalid tag name: '${TAG}'" >&2
   echo "" >&2
   echo "Expected:" >&2
-  echo "  stg:  x.y.z-internal.N, x.y.z-wip-name.N (name: [a-z]+, N: [1-9][0-9]*)" >&2
+  echo "  stg:  x.y.z-internal.YYYYMMDD.COMMIT_HASH, x.y.z-GITHUB_USERNAME.YYYYMMDD.COMMIT_HASH" >&2
   echo "  prod: x.y.z, x.y.z-alpha.N, x.y.z-beta.N, x.y.z-rc.N (N: [1-9][0-9]*)" >&2
   exit 1
 fi
@@ -51,7 +86,8 @@ fi
 
 echo "OK: tag='${TAG}' stage='${STAGE}' podspec='${PODSPEC_VERSION}'"
 
-# 실제 배포는 여기서 하지 않습니다(추가 요청 시 반영).
-# - CocoaPods trunk push
-# - git push --tags
-# - GitHub Release 생성
+# CocoaPods 배포
+echo "Publishing to CocoaPods (stage=${STAGE})..."
+BLUX_STAGE="${STAGE}" pod trunk push "${PODSPEC_PATH}" --allow-warnings
+
+echo "Done!"
