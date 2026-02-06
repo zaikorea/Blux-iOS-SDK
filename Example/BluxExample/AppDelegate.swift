@@ -13,28 +13,19 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    let applicationId = "66fac6b03e71e06835703c25"
-    let apiKey = "Is5r2sK-HBQe4sX343twQopcccevFm0Ci6nu9tA9"
+    static let applicationId = "6932742fb4bedc9b2239055a"
+    static let apiKey = "hLKj8_0kilv1HxX3Dp59rs3xbKYeDTcijzgg3aWQ"
+    static let stage = "prod"
 
     func application(
         _: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication
+        didFinishLaunchingWithOptions _: [UIApplication
             .LaunchOptionsKey: Any]?
     ) -> Bool {
-        BluxClient.setAPIStage("prod")
-
-        BluxClient.initialize(launchOptions, bluxApplicationId: applicationId, bluxAPIKey: apiKey, requestPermissionOnLaunch: true) { error in
-            if let error = error {
-                Logger.verbose("BluxClient.initialize error: \(error)")
-            } else {
-                Logger.verbose("BluxClient.initialize success")
-                BluxClient.signIn(userId: "team")
-            }
-        }
+        BluxClient.setAPIStage(Self.stage)
 
         // Custom HTML 인앱 액션 핸들러 등록
         _ = BluxClient.addInAppCustomActionHandler { actionId, data in
-            // dismiss 애니메이션 완료 후 alert 표시 (0.3초 지연)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 let dataString = data.map { "\($0.key): \($0.value)" }.joined(separator: ", ")
                 let message = "actionId: \(actionId)\ndata: {\(dataString)}"
@@ -47,7 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
 
                 if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let rootVC = windowScene.windows.first?.rootViewController {
+                   let rootVC = windowScene.windows.first?.rootViewController
+                {
                     var topVC = rootVC
                     while let presented = topVC.presentedViewController {
                         topVC = presented
