@@ -111,6 +111,7 @@ class ViewController: UIViewController {
 
         stackView.addArrangedSubview(makeButton(title: "Send Like", action: #selector(sendLikeEvent)))
         stackView.addArrangedSubview(makeButton(title: "Send Cartadd", action: #selector(sendCartaddEvent)))
+        stackView.addArrangedSubview(makeButton(title: "Send Order", action: #selector(sendOrderEvent)))
 
         // WebView
         addSectionTitle("WebView")
@@ -242,6 +243,38 @@ class ViewController: UIViewController {
     @objc func sendCartaddEvent() {
         do {
             let eventRequest = try AddCartaddEvent.Builder(itemId: "TEST_ITEM_1").build()
+            BluxClient.sendEvent(eventRequest)
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+
+    @objc func sendOrderEvent() {
+        do {
+            let eventRequest = try AddOrderEvent.Builder()
+                .orderId("order-example-\(Int(Date().timeIntervalSince1970))")
+                .orderAmount(3000)
+                .paidAmount(3000)
+                .customEventProperties([
+                    "source": .string("example_app"),
+                    "channel": .string("ios"),
+                    "order_count": .int(42),
+                    "discount_rate": .double(0.15),
+                    "is_test": .bool(true),
+                ])
+                .addItem(id: "item-1", price: 1000, quantity: 1, customEventProperties: [
+                    "size": .string("L"),
+                    "color": .string("navy"),
+                    "weight_kg": .double(0.5),
+                    "is_gift": .bool(false),
+                ])
+                .addItem(id: "item-2", price: 2000, quantity: 1, customEventProperties: [
+                    "option": .string("premium"),
+                    "stock": .int(100),
+                    "on_sale": .bool(true),
+                ])
+                .addItem(id: "item-3", price: 0, quantity: 2)
+                .build()
             BluxClient.sendEvent(eventRequest)
         } catch {
             print(error.localizedDescription)
