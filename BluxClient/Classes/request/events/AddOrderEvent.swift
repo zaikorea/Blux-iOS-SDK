@@ -20,11 +20,20 @@ public class AddOrderEvent: EventRequest {
         public var id: String
         public var price: Double
         public var quantity: Int
+        public var customEventProperties: [String: CustomEventValue]?
 
-        init(id: String, price: Double, quantity: Int) {
+        enum CodingKeys: String, CodingKey {
+            case id
+            case price
+            case quantity
+            case customEventProperties = "custom_event_properties"
+        }
+
+        init(id: String, price: Double, quantity: Int, customEventProperties: [String: CustomEventValue]? = nil) {
             self.id = id
             self.price = price
             self.quantity = quantity
+            self.customEventProperties = customEventProperties
         }
     }
 
@@ -37,8 +46,8 @@ public class AddOrderEvent: EventRequest {
 
         public init() {}
 
-        public func addItem(id: String, price: Double, quantity: Int) -> Builder {
-            items.append(Item(id: id, price: price, quantity: quantity))
+        public func addItem(id: String, price: Double, quantity: Int, customEventProperties: [String: CustomEventValue]? = nil) -> Builder {
+            items.append(Item(id: id, price: price, quantity: quantity, customEventProperties: customEventProperties))
             return self
         }
 
