@@ -20,17 +20,18 @@ public enum Stage: String, CaseIterable {
         return .prod
     }
 
+    // MARK: - Stage Management
+
+    /// 빌드 시점의 기본 스테이지
     /// 1. Info.plist의 "BluxStage" 값 확인
     /// 2. 없으면 컴파일 플래그 확인 (BLUX_LOCAL, BLUX_DEV, BLUX_STG)
     /// 3. 기본값 prod
-    public static var current: Stage = {
-        // Info.plist에서 먼저 확인
+    private static let defaultStage: Stage = {
         if let stageString = Bundle.main.object(forInfoDictionaryKey: "BluxStage") as? String,
            !stageString.isEmpty
         {
             return Stage.from(stageString)
         }
-        // 컴파일 플래그 확인
         #if BLUX_LOCAL
             return .local
         #elseif BLUX_DEV
@@ -41,6 +42,33 @@ public enum Stage: String, CaseIterable {
             return .prod
         #endif
     }()
+
+    /// 런타임 오버라이드
+    private static var overrideStage: Stage?
+
+    /// 현재 스테이지 (오버라이드가 있으면 오버라이드, 없으면 빌드 시점 기본값)
+    public static var current: Stage {
+        overrideStage ?? defaultStage
+    }
+
+    // MARK: - Stage Switching (internal only)
+
+    /// 런타임에 스테이지를 변경합니다.
+    /// 빌드 시점 기본 스테이지가 prod인 경우 동작하지 않습니다.
+    @discardableResult
+    static func setStage(_ stage: Stage) -> Bool {
+        guard defaultStage != .prod else { return false }
+        overrideStage = stage
+        HTTPClient.shared.setStage(stage)
+        return true
+    }
+
+    /// 런타임에 변경된 스테이지를 빌드 시점의 스테이지로 되돌립니다.
+    static func resetStage() {
+        guard defaultStage != .prod else { return }
+        overrideStage = nil
+        HTTPClient.shared.setStage(defaultStage)
+    }
 
     var apiBaseURL: HTTPClient.APIBaseURLByStage {
         switch self {

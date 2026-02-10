@@ -197,7 +197,7 @@ final class HTTPClient {
         task.resume()
     }
 
-    func setAPIStage(_ apiBaseUrl: APIBaseURLByStage) {
-        API_BASE_URL = apiBaseUrl.rawValue
+    func setStage(_ stage: Stage) {
+        API_BASE_URL = stage.apiBaseURL.rawValue
     }
 }
