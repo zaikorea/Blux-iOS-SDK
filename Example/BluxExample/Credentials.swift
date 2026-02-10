@@ -11,7 +11,15 @@ enum Credentials {
         }
     }
 
-    static var apiKey: String {
-        (Bundle.main.object(forInfoDictionaryKey: "BluxAPIKey") as? String) ?? ""
+    /// stage별 API key (Info.plist에서 BluxAPIKey{Stage} 키로 읽음)
+    static func getApiKey(stage: Stage) -> String {
+        let key: String
+        switch stage {
+        case .local: key = "BluxAPIKeyLocal"
+        case .dev:   key = "BluxAPIKeyDev"
+        case .stg:   key = "BluxAPIKeyStg"
+        case .prod:  key = "BluxAPIKeyProd"
+        }
+        return (Bundle.main.object(forInfoDictionaryKey: key) as? String) ?? ""
     }
 }

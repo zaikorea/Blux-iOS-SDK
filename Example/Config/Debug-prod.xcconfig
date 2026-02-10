@@ -1,8 +1,7 @@
 // Debug-prod configuration wrapper
-// Includes Secrets (API Key), Pods config and auto-generated bundle version (CFBundleVersion)
+// Includes Pods config and auto-generated bundle version (CFBundleVersion)
 
 #include? "Secrets.xcconfig"
-BLUX_API_KEY = $(BLUX_API_KEY_PROD)
 BLUX_STAGE = prod
 
 #include "../BundleVersion.xcconfig"

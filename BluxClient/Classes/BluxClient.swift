@@ -121,8 +121,16 @@ struct UpdatePropertiesBody: Codable {
         Logger.verbose("Initialize BluxClient with Application ID: \(bluxApplicationId).")
         SdkConfig.apiKeyInUserDefaults = bluxAPIKey
 
-        // If saved clientId is nil or different, reset deviceId to nil
+        // credentials가 변경된 경우 재초기화 허용 (stage 전환 후 재초기화 지원)
         let savedApplicationId = SdkConfig.clientIdInUserDefaults
+        let savedApiKey = SdkConfig.apiKeyInUserDefaults
+        let credentialsChanged = (savedApplicationId != nil && savedApplicationId != bluxApplicationId)
+            || (savedApiKey != nil && savedApiKey != bluxAPIKey)
+        if credentialsChanged {
+            isActivated = false
+        }
+
+        // If saved clientId is nil or different, reset deviceId to nil
         if savedApplicationId == nil || savedApplicationId != bluxApplicationId {
             SdkConfig.clientIdInUserDefaults = bluxApplicationId
             SdkConfig.deviceIdInUserDefaults = nil
@@ -426,12 +434,6 @@ struct UpdatePropertiesBody: Codable {
     /// ```
     public static func dismissInApp() {
         InappService.dismissCurrentInApp()
-    }
-
-    @objc public static func setAPIStage(_ stage: String) {
-        let parsed = Stage.from(stage)
-        Stage.current = parsed
-        HTTPClient.shared.setAPIStage(parsed.apiBaseURL)
     }
 
     static func hasPermissionForNotifications(

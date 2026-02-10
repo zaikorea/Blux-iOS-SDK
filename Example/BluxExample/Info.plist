@@ -4,8 +4,14 @@
 	<dict>
 		<key>BluxAppGroupName</key>
 		<string>group.ai.blux.example.nativeapp.blux</string>
-		<key>BluxAPIKey</key>
-		<string>$(BLUX_API_KEY)</string>
+		<key>BluxAPIKeyLocal</key>
+		<string>$(BLUX_API_KEY_LOCAL)</string>
+		<key>BluxAPIKeyDev</key>
+		<string>$(BLUX_API_KEY_DEV)</string>
+		<key>BluxAPIKeyStg</key>
+		<string>$(BLUX_API_KEY_STG)</string>
+		<key>BluxAPIKeyProd</key>
+		<string>$(BLUX_API_KEY_PROD)</string>
 		<key>BluxStage</key>
 		<string>$(BLUX_STAGE)</string>
 		<key>CFBundleDevelopmentRegion</key>
