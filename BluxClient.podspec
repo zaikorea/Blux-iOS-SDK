@@ -24,7 +24,7 @@ Pod::Spec.new do |s|
   # Stage 설정: 환경변수 BLUX_STAGE (기본값: prod)
   # 배포 시 scripts/publish.sh에서 자동 설정됨
   stage = (ENV['BLUX_STAGE'] || 'prod').downcase
-  swift_flags = stage == 'prod' ? '' : "-D BLUX_#{stage.upcase}"
+  swift_flags = stage == 'prod' ? '' : "-D BLUX_#{stage.upcase} -D ENABLE_STAGE_SWITCHING"
 
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',

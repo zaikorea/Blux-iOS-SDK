@@ -19,6 +19,7 @@ class ViewController: UIViewController {
     private let eventTypeTextField = UITextField()
     private let keyTextField = UITextField()
     private let valueTextField = UITextField()
+    private let stageLabel = UILabel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,6 +65,22 @@ class ViewController: UIViewController {
     }
 
     private func setupUI() {
+        // Stage Switcher
+        addSectionTitle("Stage")
+        updateStageLabel()
+        stageLabel.textAlignment = .center
+        stageLabel.font = .monospacedSystemFont(ofSize: 14, weight: .medium)
+        stackView.addArrangedSubview(stageLabel)
+
+        let stageStack = UIStackView()
+        stageStack.axis = .horizontal
+        stageStack.spacing = 8
+        stageStack.distribution = .fillEqually
+        for stage in Stage.allCases {
+            stageStack.addArrangedSubview(makeButton(title: stage.rawValue.uppercased(), action: #selector(switchStage(_:))))
+        }
+        stackView.addArrangedSubview(stageStack)
+
         // Setup
         addSectionTitle("Setup")
         stackView.addArrangedSubview(makeButton(title: "Initialize", action: #selector(initialize)))
@@ -153,13 +170,45 @@ class ViewController: UIViewController {
         view.endEditing(true)
     }
 
+    // MARK: - Stage Switching
+
+    @objc func switchStage(_ sender: UIButton) {
+        guard let title = sender.currentTitle,
+              let stage = Stage.allCases.first(where: { $0.rawValue.caseInsensitiveCompare(title) == .orderedSame })
+        else { return }
+
+        if StageHelper.setStage(stage) {
+            updateStageLabel()
+            let alert = UIAlertController(
+                title: "Stage Changed",
+                message: "\(stage.rawValue.uppercased())로 전환됨\nInitialize를 다시 눌러주세요.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+        } else {
+            let alert = UIAlertController(
+                title: "Stage Switch Failed",
+                message: "이 빌드에서는 stage 전환이 지원되지 않습니다 (prod 빌드).",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+        }
+    }
+
+    private func updateStageLabel() {
+        let stage = StageHelper.getStage()
+        stageLabel.text = "Current: \(stage.rawValue.uppercased()) | AppID: ...\(String(Credentials.getApplicationId(stage: stage).suffix(6)))"
+    }
+
     // MARK: - Actions
 
     @objc func initialize() {
         BluxClient.initialize(
             nil,
             bluxApplicationId: Credentials.getApplicationId(stage: StageHelper.getStage()),
-            bluxAPIKey: Credentials.apiKey,
+            bluxAPIKey: Credentials.getApiKey(stage: StageHelper.getStage()),
             requestPermissionOnLaunch: true
         ) { [weak self] error in
             DispatchQueue.main.async {
@@ -288,7 +337,7 @@ class ViewController: UIViewController {
         var components = URLComponents(string: "https://stg.sdk-demo.blux.ai")
         components?.queryItems = [
             URLQueryItem(name: "application_id", value: Credentials.getApplicationId(stage: StageHelper.getStage())),
-            URLQueryItem(name: "api_key", value: Credentials.apiKey),
+            URLQueryItem(name: "api_key", value: Credentials.getApiKey(stage: StageHelper.getStage())),
             URLQueryItem(name: "stage", value: StageHelper.getStage().rawValue),
             URLQueryItem(name: "platform", value: "ios"),
         ]

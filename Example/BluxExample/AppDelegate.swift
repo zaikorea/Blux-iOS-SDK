@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication
             .LaunchOptionsKey: Any]?
     ) -> Bool {
-        print("@@@@@ AppDelegate: stage=\(StageHelper.getStage().rawValue), applicationId=\(Credentials.getApplicationId(stage: StageHelper.getStage())), apiKey=\(Credentials.apiKey)")
+        print("@@@@@ AppDelegate: stage=\(StageHelper.getStage().rawValue), applicationId=\(Credentials.getApplicationId(stage: StageHelper.getStage())), apiKey=\(Credentials.getApiKey(stage: StageHelper.getStage()))")
 
         // Custom HTML 인앱 액션 핸들러 등록
         _ = BluxClient.addInAppCustomActionHandler { actionId, data in

@@ -20,17 +20,18 @@ public enum Stage: String, CaseIterable {
         return .prod
     }
 
+    // MARK: - Stage Management
+
+    /// 빌드 시점의 기본 스테이지
     /// 1. Info.plist의 "BluxStage" 값 확인
     /// 2. 없으면 컴파일 플래그 확인 (BLUX_LOCAL, BLUX_DEV, BLUX_STG)
     /// 3. 기본값 prod
-    public static var current: Stage = {
-        // Info.plist에서 먼저 확인
+    private static let defaultStage: Stage = {
         if let stageString = Bundle.main.object(forInfoDictionaryKey: "BluxStage") as? String,
            !stageString.isEmpty
         {
             return Stage.from(stageString)
         }
-        // 컴파일 플래그 확인
         #if BLUX_LOCAL
             return .local
         #elseif BLUX_DEV
@@ -41,6 +42,33 @@ public enum Stage: String, CaseIterable {
             return .prod
         #endif
     }()
+
+    /// 런타임 오버라이드 (stage 전환은 극히 드문 UI 액션이므로 별도 동기화 불필요)
+    private static var overrideStage: Stage?
+
+    /// 현재 스테이지 (오버라이드가 있으면 오버라이드, 없으면 빌드 시점 기본값)
+    public static var current: Stage {
+        overrideStage ?? defaultStage
+    }
+
+    // MARK: - Stage Switching (internal only)
+
+    #if ENABLE_STAGE_SWITCHING
+        /// 런타임에 스테이지를 변경합니다.
+        /// ENABLE_STAGE_SWITCHING 플래그가 설정된 빌드(local/dev/stg)에서만 동작합니다.
+        @discardableResult
+        static func setStage(_ stage: Stage) -> Bool {
+            overrideStage = stage
+            HTTPClient.shared.setStage(stage)
+            return true
+        }
+
+        /// 런타임에 변경된 스테이지를 빌드 시점의 스테이지로 되돌립니다.
+        static func resetStage() {
+            overrideStage = nil
+            HTTPClient.shared.setStage(defaultStage)
+        }
+    #endif
 
     var apiBaseURL: HTTPClient.APIBaseURLByStage {
         switch self {
