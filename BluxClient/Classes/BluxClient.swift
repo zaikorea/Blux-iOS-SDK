@@ -116,6 +116,8 @@ struct UpdatePropertiesBody: Codable {
         customDeviceId: String? = nil,
         completion: @escaping ((NSError?) -> Void) = { _ in }
     ) {
+        Logger.verbose("@@@@@ BluxClient.initialize: stage=\(Stage.current.rawValue), applicationId=\(bluxApplicationId), apiKey=\(bluxAPIKey)")
+
         SdkConfig.requestPermissionOnLaunch = requestPermissionOnLaunch
 
         Logger.verbose("Initialize BluxClient with Application ID: \(bluxApplicationId).")
