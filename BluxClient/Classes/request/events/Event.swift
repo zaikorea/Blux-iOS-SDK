@@ -57,14 +57,14 @@ public enum CustomEventValue: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
-        if let value = try? container.decode(String.self) {
-            self = .string(value)
-        } else if let value = try? container.decode(Bool.self) {
+        if let value = try? container.decode(Bool.self) {
             self = .bool(value)
-        } else if let value = try? container.decode(Double.self) {
-            self = .double(value)
         } else if let value = try? container.decode(Int.self) {
             self = .int(value)
+        } else if let value = try? container.decode(Double.self) {
+            self = .double(value)
+        } else if let value = try? container.decode(String.self) {
+            self = .string(value)
         } else if let value = try? container.decode([String].self) {
             self = .stringArray(value)
         } else {
@@ -73,6 +73,43 @@ public enum CustomEventValue: Codable {
                 DecodingError.Context(codingPath: container.codingPath, debugDescription: "Unsupported value")
             )
         }
+    }
+
+    public static func fromAny(_ rawValue: Any?) -> CustomEventValue? {
+        guard let rawValue else {
+            return nil
+        }
+
+        if let classifiedValue = NSNumberClassifier.classify(rawValue) {
+            switch classifiedValue {
+            case let .bool(value):
+                return .bool(value)
+            case let .int(value):
+                return .int(value)
+            case let .double(value):
+                return .double(value)
+            }
+        }
+
+        if let stringValue = rawValue as? String {
+            return .string(stringValue)
+        }
+
+        if let stringArrayValue = rawValue as? [String] {
+            return .stringArray(stringArrayValue)
+        }
+
+        return nil
+    }
+
+    static func dictionaryFromAny(_ dict: [String: Any]) -> [String: CustomEventValue] {
+        var result: [String: CustomEventValue] = [:]
+        for (key, value) in dict {
+            if let converted = fromAny(value) {
+                result[key] = converted
+            }
+        }
+        return result
     }
 }
 

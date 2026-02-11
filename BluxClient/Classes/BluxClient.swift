@@ -58,6 +58,39 @@ enum CustomValue: Codable {
     }
 }
 
+private extension CustomValue {
+    static func fromAny(_ rawValue: Any?) -> CustomValue? {
+        guard let rawValue else {
+            return nil
+        }
+
+        if rawValue is NSNull {
+            return .null
+        }
+
+        if let classifiedValue = NSNumberClassifier.classify(rawValue) {
+            switch classifiedValue {
+            case let .bool(value):
+                return .bool(value)
+            case let .int(value):
+                return .int(value)
+            case let .double(value):
+                return .double(value)
+            }
+        }
+
+        if let stringValue = rawValue as? String {
+            return .string(stringValue)
+        }
+
+        if let stringArrayValue = rawValue as? [String] {
+            return .stringArray(stringArrayValue)
+        }
+
+        return nil
+    }
+}
+
 // Used in setUserProperties, setCustomUserProperties (bluxUsersUpdateProperties API)
 struct UpdatePropertiesBody: Codable {
     var userProperties: [String: CustomValue]?
@@ -226,16 +259,8 @@ struct UpdatePropertiesBody: Codable {
         var processedProperties: [String: CustomValue] = [:]
 
         for (key, value) in userProperties {
-            if let stringValue = value as? String {
-                processedProperties[key] = .string(stringValue)
-            } else if let boolValue = value as? Bool {
-                processedProperties[key] = .bool(boolValue)
-            } else if let intValue = value as? Int {
-                processedProperties[key] = .int(intValue)
-            } else if let doubleValue = value as? Double {
-                processedProperties[key] = .double(doubleValue)
-            } else if let stringArrayValue = value as? [String] {
-                processedProperties[key] = .stringArray(stringArrayValue)
+            if let convertedValue = CustomValue.fromAny(value) {
+                processedProperties[key] = convertedValue
             }
         }
 
@@ -279,7 +304,7 @@ struct UpdatePropertiesBody: Codable {
 
     public static func setCustomUserProperties(
         customUserProperties: [String: Any?]
-    ) throws {
+    ) {
         guard
             let clientId = SdkConfig.clientIdInUserDefaults,
             let bluxId = SdkConfig.bluxIdInUserDefaults
@@ -288,21 +313,15 @@ struct UpdatePropertiesBody: Codable {
         var processedCustomProperties: [String: CustomValue] = [:]
 
         for (key, value) in customUserProperties {
-            if let stringValue = value as? String {
-                processedCustomProperties[key] = .string(stringValue)
-            } else if let boolValue = value as? Bool {
-                processedCustomProperties[key] = .bool(boolValue)
-            } else if let intValue = value as? Int {
-                processedCustomProperties[key] = .int(intValue)
-            } else if let doubleValue = value as? Double {
-                processedCustomProperties[key] = .double(doubleValue)
-            } else if let stringArrayValue = value as? [String] {
-                processedCustomProperties[key] = .stringArray(stringArrayValue)
+            if value == nil {
+                processedCustomProperties[key] = .null
+                continue
+            }
+
+            if let convertedValue = CustomValue.fromAny(value) {
+                processedCustomProperties[key] = convertedValue
             } else {
-                throw NSError(
-                    domain: "", code: -1,
-                    userInfo: [NSLocalizedDescriptionKey: "Unsupported type"]
-                )
+                Logger.error("SetCustomUserProperties: unsupported type for key=\(key). This key is ignored.")
             }
         }
 
