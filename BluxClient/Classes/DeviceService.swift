@@ -32,10 +32,12 @@ enum DeviceService {
 
     static func initializeDevice(
         deviceId: String?,
+        customDeviceId: String? = nil,
         completion: @escaping (Result<BluxDeviceResponse, Error>) -> Void = { _ in }
     ) {
         let body = getBluxDeviceInfo()
         body.deviceId = deviceId
+        body.customDeviceId = customDeviceId
 
         guard let clientId = SdkConfig.clientIdInUserDefaults else {
             completion(.failure(NSError(domain: "DeviceService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Client ID not found"])))

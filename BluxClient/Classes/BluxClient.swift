@@ -80,6 +80,7 @@ struct UpdatePropertiesBody: Codable {
         bluxApplicationId: String,
         bluxAPIKey: String,
         requestPermissionOnLaunch: Bool = true,
+        customDeviceId: String? = nil,
         completion: @escaping ((NSError?) -> Void) = { _ in }
     ) {
         SdkConfig.requestPermissionOnLaunch = requestPermissionOnLaunch
@@ -119,7 +120,7 @@ struct UpdatePropertiesBody: Codable {
                 : "Blux Device ID does not exist, create new one."
         )
 
-        DeviceService.initializeDevice(deviceId: savedDeviceId) { result in
+        DeviceService.initializeDevice(deviceId: savedDeviceId, customDeviceId: customDeviceId) { result in
             switch result {
             case .success:
                 // 초기화 완료 - 대기 중인 이벤트들 처리 시작
