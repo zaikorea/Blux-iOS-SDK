@@ -26,7 +26,8 @@ enum DeviceService {
             languageCode: languageCode,
             countryCode: Locale.current.regionCode,
             sdkType: SdkConfig.sdkType.rawValue,
-            sessionId: SdkConfig.sessionId
+            sessionId: SdkConfig.sessionId,
+            appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         )
     }
 
