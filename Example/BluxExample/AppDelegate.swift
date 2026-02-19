@@ -13,9 +13,9 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    static let applicationId = "6932742fb4bedc9b2239055a"
-    static let apiKey = "hLKj8_0kilv1HxX3Dp59rs3xbKYeDTcijzgg3aWQ"
-    static let stage = "prod"
+    static let applicationId = "69327634beb1da48e4278ed6"
+    static let apiKey = "RicSIM9zJTFZawchFbl12et6R_u6aLkgEwERnk8t"
+    static let stage = "stg"
 
     func application(
         _: UIApplication,
