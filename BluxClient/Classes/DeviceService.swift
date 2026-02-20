@@ -26,16 +26,19 @@ enum DeviceService {
             languageCode: languageCode,
             countryCode: Locale.current.regionCode,
             sdkType: SdkConfig.sdkType.rawValue,
-            sessionId: SdkConfig.sessionId
+            sessionId: SdkConfig.sessionId,
+            appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         )
     }
 
     static func initializeDevice(
         deviceId: String?,
+        customDeviceId: String? = nil,
         completion: @escaping (Result<BluxDeviceResponse, Error>) -> Void = { _ in }
     ) {
         let body = getBluxDeviceInfo()
         body.deviceId = deviceId
+        body.customDeviceId = customDeviceId
 
         guard let clientId = SdkConfig.clientIdInUserDefaults else {
             completion(.failure(NSError(domain: "DeviceService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Client ID not found"])))

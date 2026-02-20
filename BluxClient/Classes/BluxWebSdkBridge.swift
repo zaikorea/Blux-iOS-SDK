@@ -152,11 +152,7 @@ private extension BluxWebSdkBridge {
             }
         }
 
-        do {
-            try BluxClient.setCustomUserProperties(customUserProperties: sanitized)
-        } catch {
-            Logger.error("BluxWebSdkBridge.setCustomUserProperties: \(error)")
-        }
+        BluxClient.setCustomUserProperties(customUserProperties: sanitized)
     }
 
     func handleSendEvent(_ payload: Any?) {
@@ -190,15 +186,11 @@ private extension BluxWebSdkBridge {
         }
 
         if let customDict = dict["custom_event_properties"] as? [String: Any] {
-            if let custom: [String: CustomEventValue] = decode(customDict) {
-                event.setCustomEventProperties(custom)
-            }
+            event.setCustomEventProperties(CustomEventValue.dictionaryFromAny(customDict))
         }
 
         if let internalDict = dict["internal_event_properties"] as? [String: Any] {
-            if let internalProps: [String: CustomEventValue] = decode(internalDict) {
-                event.setInternalEventProperties(internalProps)
-            }
+            event.setInternalEventProperties(CustomEventValue.dictionaryFromAny(internalDict))
         }
 
         return event

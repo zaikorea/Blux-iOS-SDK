@@ -196,16 +196,12 @@ class ViewController: UIViewController {
     }
 
     @objc func setCustomUserProperties() {
-        do {
-            let customProperties: [String: Any] = [
-                "is_active": true,
-                "height": 5.9,
-                "hobbies": ["reading", "gaming"],
-            ]
-            try BluxClient.setCustomUserProperties(customUserProperties: customProperties)
-        } catch {
-            print(error.localizedDescription)
-        }
+        let customProperties: [String: Any] = [
+            "is_active": true,
+            "height": 5.9,
+            "hobbies": ["reading", "gaming"],
+        ]
+        BluxClient.setCustomUserProperties(customUserProperties: customProperties)
     }
 
     @objc func sendCustomEvent() {
