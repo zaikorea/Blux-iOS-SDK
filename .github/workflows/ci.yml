@@ -17,7 +17,6 @@ concurrency:
 
 jobs:
   check-pod-lock-freshness:
-    name: Check CocoaPods lock freshness
     runs-on: macos-26
     steps:
       - name: Checkout
