@@ -110,12 +110,12 @@ jobs:
             echo "Pods lock files are in sync."
           fi
 
-      - name: Build Example app (compile check)
+      - name: Build Example app
         run: |
           set -o pipefail
           xcodebuild -workspace Example/BluxExample.xcworkspace -scheme BluxExample -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 
-      - name: Build Swift package for iOS (SPM)
+      - name: Build Swift package (SPM)
         run: |
           set -o pipefail
           rm -rf .ci-spm-build
