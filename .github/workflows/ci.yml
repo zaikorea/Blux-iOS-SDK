@@ -1,0 +1,130 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-pod-lock-freshness:
+    name: Check CocoaPods lock freshness
+    runs-on: macos-26
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "26.0.1"
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.7"
+          bundler-cache: true
+
+      - name: Ensure CocoaPods version
+        run: |
+          CURRENT_POD_VERSION="$(bundle exec pod --version || true)"
+          echo "Current CocoaPods version: $CURRENT_POD_VERSION"
+          if [ "$CURRENT_POD_VERSION" != "1.16.2" ]; then
+            echo "Unexpected CocoaPods version. Expected 1.16.2."
+            exit 1
+          fi
+
+      - name: Check CocoaPods lock freshness
+        working-directory: Example
+        run: |
+          bundle exec pod install --repo-update
+          if ! git diff --exit-code -- Podfile.lock; then
+            echo "Podfile.lock is stale. Please run 'pod install --repo-update' locally and commit updated lockfile."
+            exit 1
+          fi
+
+  build:
+    runs-on: macos-26
+    timeout-minutes: 45
+    needs: check-pod-lock-freshness
+    env:
+      COCOAPODS_DISABLE_STATS: "true"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "26.0.1"
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.7"
+          bundler-cache: true
+
+      - name: Ensure CocoaPods version
+        run: |
+          CURRENT_POD_VERSION="$(bundle exec pod --version || true)"
+          echo "Current CocoaPods version: $CURRENT_POD_VERSION"
+          if [ "$CURRENT_POD_VERSION" != "1.16.2" ]; then
+            echo "Unexpected CocoaPods version. Expected 1.16.2."
+            exit 1
+          fi
+
+      - name: Show tool versions
+        run: |
+          xcodebuild -version
+          ruby --version
+          bundle exec pod --version
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            Example/Pods
+          key: ${{ runner.os }}-cocoapods-${{ hashFiles('Example/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cocoapods-
+
+      - name: Install CocoaPods
+        working-directory: Example
+        run: bundle exec pod install --deployment
+
+      - name: Ensure CocoaPods lock sync
+        working-directory: Example
+        run: |
+          if [ ! -f "Pods/Manifest.lock" ] || ! diff Podfile.lock Pods/Manifest.lock > /dev/null; then
+            echo "Pods lock mismatch detected. Running pod install..."
+            bundle exec pod install --deployment
+          else
+            echo "Pods lock files are in sync."
+          fi
+
+      - name: Build Example app (compile check)
+        run: |
+          set -o pipefail
+          xcodebuild -workspace Example/BluxExample.xcworkspace -scheme BluxExample -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+
+      - name: Build Swift package for iOS (SPM)
+        run: |
+          set -o pipefail
+          rm -rf .ci-spm-build
+          mkdir -p .ci-spm-build
+          cp Package.swift .ci-spm-build/
+          cp -R BluxClient .ci-spm-build/
+          cd .ci-spm-build
+          xcodebuild -scheme BluxClient -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build
+
+      - name: Lint podspec
+        run: bundle exec pod lib lint BluxClient.podspec --allow-warnings --skip-tests --verbose
