@@ -50,7 +50,7 @@ jobs:
         id: version
         run: |
           # 버전 SSoT: SdkConfig.swift의 sdkVersion
-          # 생성되는 태그: (BASE_VERSION patch+1)-internal.YYYYMMDD.COMMIT_HASH
+          # 생성되는 태그: BASE_VERSION-internal.YYYYMMDD.COMMIT_HASH
           SDK_CONFIG_PATH="BluxClient/Classes/SdkConfig.swift"
           BASE_VERSION=$(ruby -ne 'if $_ =~ /sdkVersion\s*=\s*"([^"]+)"/; puts $1; exit; end' "$SDK_CONFIG_PATH")
 
@@ -59,10 +59,9 @@ jobs:
             exit 1
           fi
 
-          NEXT_BASE_VERSION=$(echo "$BASE_VERSION" | awk -F. 'BEGIN{OFS="."} {$NF=$NF+1; print $0}')
           DATE=$(date +%Y%m%d)
           COMMIT_HASH="$(git rev-parse --short HEAD)"
-          TAG="${NEXT_BASE_VERSION}-internal.${DATE}.${COMMIT_HASH}"
+          TAG="${BASE_VERSION}-internal.${DATE}.${COMMIT_HASH}"
 
           echo "base_version=$BASE_VERSION" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
