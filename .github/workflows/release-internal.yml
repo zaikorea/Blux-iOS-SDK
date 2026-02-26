@@ -95,7 +95,7 @@ jobs:
           TAG="${{ steps.version.outputs.tag }}"
           SDK_CONFIG_PATH="BluxClient/Classes/SdkConfig.swift"
 
-          ruby -pi -e "gsub(/^(\s*static var sdkVersion\s*=\s*)\".+\"/, %Q(\\1\"${TAG}\"))" "$SDK_CONFIG_PATH"
+          ruby -pi -e "gsub(/^(\s*static var sdkVersion\s*=\s*)\".+\"/, %Q(\\\\1\"${TAG}\"))" "$SDK_CONFIG_PATH"
 
           UPDATED=$(ruby -ne 'if $_ =~ /sdkVersion\s*=\s*"([^"]+)"/; puts $1; exit; end' "$SDK_CONFIG_PATH")
           if [ "$UPDATED" != "$TAG" ]; then
