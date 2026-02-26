@@ -9,10 +9,10 @@
 #   ./scripts/release-personal.sh           # GitHub username 자동 감지
 #   ./scripts/release-personal.sh johndoe   # username 직접 지정
 #
-# 생성되는 태그: (BASE_VERSION patch+1)-USERNAME.YYYYMMDD.COMMIT_HASH
-# 예: BASE_VERSION=0.6.11 → 0.6.12-johndoe.20260225.abc1234
+# 생성되는 태그: BASE_VERSION-USERNAME.YYYYMMDD.COMMIT_HASH
+# 예: BASE_VERSION=0.0.0 → 0.0.0-johndoe.20260225.abc1234
 #
-# 버전 SSoT: SdkConfig.swift의 sdkVersion (최신 프로덕션 버전)
+# 버전 SSoT: SdkConfig.swift의 sdkVersion
 # podspec은 SdkConfig.swift에서 버전을 읽으므로, SdkConfig.swift만 변경하면 됨
 
 set -euo pipefail
@@ -89,8 +89,6 @@ if [ -z "$BASE_VERSION" ]; then
     die "Failed to parse sdkVersion from $SDK_CONFIG_PATH"
 fi
 
-NEXT_BASE_VERSION=$(echo "$BASE_VERSION" | awk -F. 'BEGIN{OFS="."} {$NF=$NF+1; print $0}')
-
 # GitHub username 자동 감지 (gh CLI 사용) 또는 git config에서 추출
 if [ -z "$GITHUB_USERNAME" ]; then
     if command -v gh &> /dev/null && gh auth status &> /dev/null 2>&1; then
@@ -111,7 +109,7 @@ fi
 DATE=$(date +%Y%m%d)
 COMMIT_HASH=$(git rev-parse --short HEAD)
 
-TAG="${NEXT_BASE_VERSION}-${GITHUB_USERNAME}.${DATE}.${COMMIT_HASH}"
+TAG="${BASE_VERSION}-${GITHUB_USERNAME}.${DATE}.${COMMIT_HASH}"
 
 validate_tag "$TAG"
 

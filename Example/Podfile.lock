@@ -1,5 +1,5 @@
 PODS:
-  - BluxClient (0.6.11)
+  - BluxClient (0.0.0)
 
 DEPENDENCIES:
   - BluxClient (from `../`)
@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  BluxClient: 9e266d423d51c3f6d810217174fe9c362b4f50a6
+  BluxClient: 7b0606e5c6665235d4318f28d0074463872274a1
 
 PODFILE CHECKSUM: d004a92b388fd621686b00714837a748b785f544
 
