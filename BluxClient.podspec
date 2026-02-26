@@ -8,7 +8,10 @@
 
 Pod::Spec.new do |s|
   s.name             = 'BluxClient'
-  s.version          = '0.6.11'
+
+  # pod trunk push 시 평가 → JSON으로 변환되어 CDN에 배포됨
+  sdk_config = File.read(File.join(__dir__, 'BluxClient', 'Classes', 'SdkConfig.swift'))
+  s.version          = sdk_config[/sdkVersion\s*=\s*"([^"]+)"/, 1]
   s.summary          = 'Blux iOS SDK.'
 
   s.homepage         = 'https://github.com/zaikorea/Blux-iOS-SDK.git'
