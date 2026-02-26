@@ -54,7 +54,6 @@ jobs:
   build:
     runs-on: macos-26
     timeout-minutes: 45
-    needs: check-pod-lock-freshness
     env:
       COCOAPODS_DISABLE_STATS: "true"
     steps:
