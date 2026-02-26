@@ -1,0 +1,118 @@
+name: Internal Release
+
+# main 브랜치에 push될 때마다 자동으로 internal 배포
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    runs-on: macos-26
+    timeout-minutes: 30
+    permissions:
+      contents: write # 태그 생성 및 푸시 권한
+    env:
+      COCOAPODS_DISABLE_STATS: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 전체 히스토리 (태그 확인용)
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "26.0.1"
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.7"
+          bundler-cache: true
+
+      - name: Ensure CocoaPods version
+        run: |
+          CURRENT_POD_VERSION="$(bundle exec pod --version || true)"
+          echo "Current CocoaPods version: $CURRENT_POD_VERSION"
+          if [ "$CURRENT_POD_VERSION" != "1.16.2" ]; then
+            echo "Unexpected CocoaPods version. Expected 1.16.2."
+            exit 1
+          fi
+
+      - name: Show tool versions
+        run: |
+          xcodebuild -version
+          ruby --version
+          bundle exec pod --version
+
+      - name: Get base version
+        id: version
+        run: |
+          # 버전 SSoT: SdkConfig.swift의 sdkVersion
+          # 생성되는 태그: (BASE_VERSION patch+1)-internal.YYYYMMDD.COMMIT_HASH
+          SDK_CONFIG_PATH="BluxClient/Classes/SdkConfig.swift"
+          BASE_VERSION=$(ruby -ne 'if $_ =~ /sdkVersion\s*=\s*"([^"]+)"/; puts $1; exit; end' "$SDK_CONFIG_PATH")
+
+          if [ -z "$BASE_VERSION" ]; then
+            echo "Error: Failed to parse sdkVersion from $SDK_CONFIG_PATH"
+            exit 1
+          fi
+
+          NEXT_BASE_VERSION=$(echo "$BASE_VERSION" | awk -F. 'BEGIN{OFS="."} {$NF=$NF+1; print $0}')
+          DATE=$(date +%Y%m%d)
+          COMMIT_HASH="$(git rev-parse --short HEAD)"
+          TAG="${NEXT_BASE_VERSION}-internal.${DATE}.${COMMIT_HASH}"
+
+          echo "base_version=$BASE_VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Generated tag: $TAG (base: $BASE_VERSION)"
+
+      - name: Create and push tag
+        id: tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          TAG="${{ steps.version.outputs.tag }}"
+
+          # 태그가 이미 존재하면 스킵
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists, skipping..."
+            echo "skipped=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          git tag "$TAG"
+          git push origin "$TAG"
+
+          echo "Created and pushed tag: $TAG"
+          echo "skipped=false" >> $GITHUB_OUTPUT
+
+      - name: Update sdkVersion
+        if: steps.tag.outputs.skipped != 'true'
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          SDK_CONFIG_PATH="BluxClient/Classes/SdkConfig.swift"
+
+          ruby -pi -e "gsub(/^(\s*static var sdkVersion\s*=\s*)\".+\"/, %Q(\\1\"${TAG}\"))" "$SDK_CONFIG_PATH"
+
+          UPDATED=$(ruby -ne 'if $_ =~ /sdkVersion\s*=\s*"([^"]+)"/; puts $1; exit; end' "$SDK_CONFIG_PATH")
+          if [ "$UPDATED" != "$TAG" ]; then
+            echo "Error: Failed to update sdkVersion. Expected: $TAG, Got: $UPDATED"
+            exit 1
+          fi
+
+          echo "Updated sdkVersion: ${{ steps.version.outputs.base_version }} → $TAG"
+
+      - name: Lint podspec
+        if: steps.tag.outputs.skipped != 'true'
+        run: |
+          BLUX_STAGE=stg bundle exec pod lib lint BluxClient.podspec --allow-warnings --skip-tests
+
+      - name: Publish to CocoaPods
+        if: steps.tag.outputs.skipped != 'true'
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+          BLUX_STAGE=stg bundle exec pod trunk push BluxClient.podspec --allow-warnings
