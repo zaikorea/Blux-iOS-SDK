@@ -1,0 +1,150 @@
+name: Production Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      pre_release:
+        description: "프리릴리스 타입 (정식 릴리스는 none)"
+        required: true
+        type: choice
+        options:
+          - none
+          - alpha
+          - beta
+          - rc
+        default: none
+      pre_release_number:
+        description: "프리릴리스 번호 (정식 릴리스 시 무시됨)"
+        required: false
+        type: string
+        default: "1"
+
+jobs:
+  release:
+    # release/x.y.z 브랜치에서만 실행
+    if: startsWith(github.ref_name, 'release/')
+    runs-on: macos-26
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      COCOAPODS_DISABLE_STATS: "true"
+
+    steps:
+      - name: Validate branch and construct version
+        id: version
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          BASE_VERSION="${BRANCH#release/}"
+
+          # x.y.z 형식 검증
+          if ! echo "$BASE_VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Error: Branch name must be 'release/x.y.z' (got: $BRANCH)"
+            exit 1
+          fi
+
+          PRE_RELEASE="${{ inputs.pre_release }}"
+          PRE_RELEASE_NUMBER="${{ inputs.pre_release_number }}"
+
+          if [ "$PRE_RELEASE" = "none" ]; then
+            TAG="$BASE_VERSION"
+          else
+            # pre-release 번호 검증: 1 이상, 선행 0 없음
+            if ! echo "$PRE_RELEASE_NUMBER" | grep -qE '^[1-9][0-9]*$'; then
+              echo "Error: pre_release_number must be a positive integer without leading zeros (got: $PRE_RELEASE_NUMBER)"
+              exit 1
+            fi
+            TAG="${BASE_VERSION}-${PRE_RELEASE}.${PRE_RELEASE_NUMBER}"
+          fi
+
+          # prod 태그 규칙 검증: x.y.z 또는 x.y.z-(alpha|beta|rc).N
+          if ! echo "$TAG" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-((alpha|beta|rc)\.[1-9][0-9]*))?$'; then
+            echo "Error: Invalid prod tag format: $TAG"
+            exit 1
+          fi
+
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "base_version=$BASE_VERSION" >> $GITHUB_OUTPUT
+          echo "pre_release=$PRE_RELEASE" >> $GITHUB_OUTPUT
+          echo "Version: $TAG"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check duplicate tag
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          if git rev-parse "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "Error: Tag $TAG already exists."
+            exit 1
+          fi
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "26.0.1"
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.7"
+          bundler-cache: true
+
+      - name: Ensure CocoaPods version
+        run: |
+          CURRENT_POD_VERSION="$(bundle exec pod --version || true)"
+          echo "Current CocoaPods version: $CURRENT_POD_VERSION"
+          if [ "$CURRENT_POD_VERSION" != "1.16.2" ]; then
+            echo "Unexpected CocoaPods version. Expected 1.16.2."
+            exit 1
+          fi
+
+      - name: Show tool versions
+        run: |
+          xcodebuild -version
+          ruby --version
+          bundle exec pod --version
+
+      - name: Update sdkVersion
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          SDK_CONFIG_PATH="BluxClient/Classes/SdkConfig.swift"
+
+          ruby -pi -e "gsub(/^(\s*static var sdkVersion\s*=\s*)\".+\"/, %Q(\\\\1\"${TAG}\"))" "$SDK_CONFIG_PATH"
+
+          UPDATED=$(ruby -ne 'if $_ =~ /sdkVersion\s*=\s*"([^"]+)"/; puts $1; exit; end' "$SDK_CONFIG_PATH")
+          if [ "$UPDATED" != "$TAG" ]; then
+            echo "Error: Failed to update sdkVersion. Expected: $TAG, Got: $UPDATED"
+            exit 1
+          fi
+
+          echo "Updated sdkVersion: $UPDATED"
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          TAG="${{ steps.version.outputs.tag }}"
+          git add BluxClient/Classes/SdkConfig.swift
+          git commit -m "$TAG"
+          git push origin HEAD
+
+      - name: Create and push tag
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          git tag "$TAG"
+          git push origin "$TAG"
+          echo "Created and pushed tag: $TAG"
+
+      - name: Lint podspec
+        run: |
+          BLUX_STAGE=prod bundle exec pod lib lint BluxClient.podspec --allow-warnings --skip-tests
+
+      - name: Publish to CocoaPods
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+          BLUX_STAGE=prod bundle exec pod trunk push BluxClient.podspec --allow-warnings
