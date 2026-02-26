@@ -14,8 +14,11 @@ public enum SdkType: String {
 }
 
 enum SdkConfig {
-    /// 최신 프로덕션 버전 (SSoT). 배포 스크립트/워크플로우 실행 시 풀 태그 버전으로 임시 변경됨.
-    static var sdkVersion = "0.6.11"
+    /// 버전 SSoT. 배포 스크립트/워크플로우에서 빌드 시 실제 버전으로 변경됩니다. 이 값은 직접 수정하지 않습니다.
+    /// - release-personal.sh: 로컬에서 임시 변경 (커밋 안 함)
+    /// - release-internal.yml: 워크플로우에서 임시 변경 (커밋 안 함)
+    /// - release-prod.yml: 워크플로우에서 release 브랜치에 커밋
+    static var sdkVersion = "0.0.1"
     static var sdkType: SdkType = .native
 
     static var bluxAppGroupNameKey = "BluxAppGroupName"
