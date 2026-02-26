@@ -14,6 +14,7 @@ public enum SdkType: String {
 }
 
 enum SdkConfig {
+    /// 최신 프로덕션 버전 (SSoT). 배포 스크립트/워크플로우 실행 시 풀 태그 버전으로 임시 변경됨.
     static var sdkVersion = "0.6.11"
     static var sdkType: SdkType = .native
 
@@ -28,7 +29,7 @@ enum SdkConfig {
 
     static var logLevel: LogLevel = .verbose
     static var requestPermissionOnLaunch: Bool = false
-    static var notificationUrlOpenOptions: NotificationUrlOpenOptions = NotificationUrlOpenOptions()
+    static var notificationUrlOpenOptions: NotificationUrlOpenOptions = .init()
 
     /// Save bluxId in user defaults (local storage)
     private static var bluxIdKey = "bluxId"
