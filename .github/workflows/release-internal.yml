@@ -3,7 +3,7 @@ name: Internal Release
 # main 브랜치에 push될 때마다 자동으로 internal 배포
 on:
   push:
-    branches: [main]
+    branches: [main, cristiano/release-internal-fix]
 
 jobs:
   release:
