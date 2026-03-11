@@ -32,7 +32,24 @@ enum SdkConfig {
 
     static var logLevel: LogLevel = .verbose
     static var requestPermissionOnLaunch: Bool = false
-    static var notificationUrlOpenOptions: NotificationUrlOpenOptions = .init()
+    private static var notificationUrlOpenOptionsKey = "bluxNotificationUrlOpenOptions"
+    static var notificationUrlOpenOptions: NotificationUrlOpenOptions {
+        set {
+            UserDefaults(suiteName: bluxSuiteName)?.set(
+                newValue.httpUrlOpenTarget.rawValue,
+                forKey: notificationUrlOpenOptionsKey
+            )
+        }
+        get {
+            guard let rawValue = UserDefaults(suiteName: bluxSuiteName)?
+                .object(forKey: notificationUrlOpenOptionsKey) as? Int,
+                let target = HttpUrlOpenTarget(rawValue: rawValue)
+            else {
+                return .init()
+            }
+            return NotificationUrlOpenOptions(httpUrlOpenTarget: target)
+        }
+    }
 
     /// Save bluxId in user defaults (local storage)
     private static var bluxIdKey = "bluxId"
