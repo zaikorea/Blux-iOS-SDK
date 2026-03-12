@@ -18,7 +18,7 @@ enum SdkConfig {
     /// - release-personal.sh: 로컬에서 임시 변경 (커밋 안 함)
     /// - release-internal.yml: 워크플로우에서 임시 변경 (커밋 안 함)
     /// - release-prod.yml: 워크플로우에서 release 브랜치에 커밋
-    static var sdkVersion = "0.6.12-rc.1"
+    static var sdkVersion = "0.6.12-rc.2"
     static var sdkType: SdkType = .native
 
     static var bluxAppGroupNameKey = "BluxAppGroupName"
