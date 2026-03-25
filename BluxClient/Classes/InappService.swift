@@ -209,37 +209,34 @@ class InappService {
                     handler: { data in
                         // 이미 BannerWindow로 전환했으면 무시
                         guard !didSwitchToBanner else { return }
-                        
-                        // height 파싱 (CGFloat 또는 Int 또는 Double)
-                        let height: CGFloat?
-                        if let h = data["height"] as? CGFloat {
-                            height = h
-                        } else if let h = data["height"] as? Int {
-                            height = CGFloat(h)
-                        } else if let h = data["height"] as? Double {
-                            height = CGFloat(h)
-                        } else {
-                            height = nil
-                        }
-                        
-                        guard let height = height, let location = data["location"] as? String else {
-                            return
-                        }
-                        
+
                         // 플래그 설정 (중복 실행 방지)
                         didSwitchToBanner = true
-                        
-                        Logger.verbose("INAPP: switching to BannerWindow - height: \(height), location: \(location)")
-                        
+
                         DispatchQueue.main.async {
                             // 기존 모달 dismiss (애니메이션 없이)
                             webviewController.dismiss(animated: false) {
                                 // BannerWindow 생성 (HTML 로드 후 자체적으로 resize 처리)
                                 let bannerWindow = BannerWindow(htmlString: htmlString, baseURL: baseURL)
                                 currentBannerWindow = bannerWindow
-                                
-                                // 초기 크기로 바로 표시 (BannerWindow 내부 resize로 업데이트됨)
-                                bannerWindow.updateLayout(height: height, location: location)
+
+                                if let location = data["location"] as? String {
+                                    // 기존 배너용 resize (location 기반)
+                                    let height: CGFloat?
+                                    if let h = data["height"] as? CGFloat { height = h }
+                                    else if let h = data["height"] as? Int { height = CGFloat(h) }
+                                    else if let h = data["height"] as? Double { height = CGFloat(h) }
+                                    else { height = nil }
+
+                                    if let height = height {
+                                        Logger.verbose("INAPP: switching to BannerWindow - height: \(height), location: \(location)")
+                                        bannerWindow.updateLayout(height: height, location: location)
+                                    }
+                                } else {
+                                    // Custom HTML 절대 위치 지정
+                                    Logger.verbose("INAPP: switching to BannerWindow with custom options")
+                                    bannerWindow.updateLayout(options: data)
+                                }
                                 
                                 // hide 핸들러 등록
                                 bannerWindow.addMessageHandler(for: "hide") { hideData in
