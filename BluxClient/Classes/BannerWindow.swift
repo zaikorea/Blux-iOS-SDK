@@ -126,6 +126,56 @@ final class BannerWindow: UIWindow {
         
     }
     
+    /// Custom HTML 절대 위치 지정 (safe area 적용 안 함)
+    func updateLayout(options: [String: Any]) {
+        let screenBounds = UIScreen.main.bounds
+
+        let width = parseNumber(options["width"]) ?? screenBounds.width
+        let height = parseNumber(options["height"]) ?? screenBounds.height
+
+        let x: CGFloat
+        if let left = parseNumber(options["left"]) {
+            x = left
+        } else if let right = parseNumber(options["right"]) {
+            x = screenBounds.width - width - right
+        } else {
+            x = (screenBounds.width - width) / 2
+        }
+
+        let y: CGFloat
+        if let top = parseNumber(options["top"]) {
+            y = top
+        } else if let bottom = parseNumber(options["bottom"]) {
+            y = screenBounds.height - height - bottom
+        } else {
+            y = 0
+        }
+
+        let newFrame = CGRect(x: x, y: y, width: width, height: height)
+
+        if isHidden {
+            frame = newFrame
+            alpha = 0
+            isHidden = false
+            makeKeyAndVisible()
+
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = 1
+            }
+        } else {
+            UIView.animate(withDuration: 0.2) {
+                self.frame = newFrame
+            }
+        }
+    }
+
+    private func parseNumber(_ value: Any?) -> CGFloat? {
+        if let v = value as? CGFloat { return v }
+        if let v = value as? Int { return CGFloat(v) }
+        if let v = value as? Double { return CGFloat(v) }
+        return nil
+    }
+
     private func getSafeAreaInsets() -> UIEdgeInsets {
         if #available(iOS 13.0, *) {
             return windowScene?.windows.first?.safeAreaInsets ?? .zero
@@ -212,15 +262,23 @@ extension BannerWindow: WKScriptMessageHandler {
         
         // resize 액션은 내부에서 직접 처리
         if action == "resize" {
-            if let height = data["height"] as? CGFloat,
-               let location = data["location"] as? String {
-                DispatchQueue.main.async {
-                    self.updateLayout(height: height, location: location)
+            if let location = data["location"] as? String {
+                // 기존 배너용 resize (location 기반)
+                let height: CGFloat?
+                if let h = data["height"] as? CGFloat { height = h }
+                else if let h = data["height"] as? Int { height = CGFloat(h) }
+                else if let h = data["height"] as? Double { height = CGFloat(h) }
+                else { height = nil }
+
+                if let height = height {
+                    DispatchQueue.main.async {
+                        self.updateLayout(height: height, location: location)
+                    }
                 }
-            } else if let height = data["height"] as? Int,
-                      let location = data["location"] as? String {
+            } else {
+                // Custom HTML 절대 위치 지정
                 DispatchQueue.main.async {
-                    self.updateLayout(height: CGFloat(height), location: location)
+                    self.updateLayout(options: data)
                 }
             }
             return
