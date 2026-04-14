@@ -25,7 +25,7 @@ final class HTTPClient {
     }
 
     enum APIBaseURLByStage: String {
-        case local = "http://localhost:9000/local"
+        case local = "http://localhost:3003/red/red"
         case dev = "https://api.blux.ai/dev"
         case stg = "https://api.blux.ai/stg"
         case prod = "https://api.blux.ai/prod"
