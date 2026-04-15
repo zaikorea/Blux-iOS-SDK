@@ -32,14 +32,9 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
                 Logger.verbose("No Client ID.")
                 ColdStartNotificationManager.coldStartNotification =
                     notification
-            } else if ColdStartNotificationManager.coldStartNotification?.id
-                == notification.id
-            {
-                // If the ID of coldStartNotification is the same as notificationId, it stops to avoid duplicate execution
-                Logger.verbose("ColdStartNotification exists. Skip didReceive.")
             } else {
                 Logger.verbose("Notification clicked.")
-                notification.trackOpened()
+                ColdStartNotificationManager.trackOpen(notification)
             }
 
             if let bluxDismissLaunchUrl = Bundle.main.object(
