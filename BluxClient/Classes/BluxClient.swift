@@ -128,6 +128,7 @@ struct UpdatePropertiesBody: Codable {
             || (savedApiKey != nil && savedApiKey != bluxAPIKey)
         if credentialsChanged {
             isActivated = false
+            ColdStartNotificationManager.reset()
         }
 
         // If saved clientId is nil or different, reset deviceId to nil
