@@ -119,16 +119,24 @@ struct UpdatePropertiesBody: Codable {
         SdkConfig.requestPermissionOnLaunch = requestPermissionOnLaunch
 
         Logger.verbose("Initialize BluxClient with Application ID: \(bluxApplicationId).")
-        SdkConfig.apiKeyInUserDefaults = bluxAPIKey
 
         // credentials가 변경된 경우 재초기화 허용 (stage 전환 후 재초기화 지원)
+        // 쓰기 전에 저장된 값을 먼저 읽어야 API key만 교체되는 경우도 감지 가능.
         let savedApplicationId = SdkConfig.clientIdInUserDefaults
         let savedApiKey = SdkConfig.apiKeyInUserDefaults
         let credentialsChanged = (savedApplicationId != nil && savedApplicationId != bluxApplicationId)
             || (savedApiKey != nil && savedApiKey != bluxAPIKey)
+        // 프로세스 내에서 initialize가 이미 호출된 상태에서 credential이 전환된 경우 식별 (isActivated 리셋 전 값 사용).
+        // 프로세스 첫 initialize 호출 시에는 launchOptions가 정당한 데이터이므로 구분이 필요.
+        let isInProcessCredentialSwitch = credentialsChanged && isActivated
+
+        SdkConfig.apiKeyInUserDefaults = bluxAPIKey
+
         if credentialsChanged {
             isActivated = false
             ColdStartNotificationManager.reset()
+            // 이전 credential 세션에서 대기 중이던 클릭이 새 credential로 재전달되지 않도록 초기화한다.
+            EventHandlers.unhandledNotification = nil
         }
 
         // If saved clientId is nil or different, reset deviceId to nil
@@ -144,8 +152,10 @@ struct UpdatePropertiesBody: Codable {
             return
         }
 
+        // 프로세스 내 credential 전환 시 전달된 launchOptions는 이전 credential의 푸시 페이로드일 수 있으므로 재처리하지 않는다.
+        // (BluxNotification에는 credential 식별자가 없어 현재 credential 소속 여부를 판별할 수 없음.)
         ColdStartNotificationManager.setColdStartNotification(
-            launchOptions: launchOptions)
+            launchOptions: isInProcessCredentialSwitch ? nil : launchOptions)
 
         ColdStartNotificationManager.process()
 
@@ -232,6 +242,9 @@ struct UpdatePropertiesBody: Codable {
 
     /// Signout from the device
     @objc public static func signOut() {
+        // 이전 유저 세션에서 대기 중이던 클릭이 다음 유저로 재전달되지 않도록 초기화한다.
+        EventHandlers.unhandledNotification = nil
+
         guard
             let clientId = SdkConfig.clientIdInUserDefaults,
             let bluxId = SdkConfig.bluxIdInUserDefaults,
