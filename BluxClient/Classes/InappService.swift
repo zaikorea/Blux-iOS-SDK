@@ -173,6 +173,15 @@ class InappService {
         }
     }
 
+    /// 세션 경계(credential 변경, signOut)에서 대기 중인 인앱 큐 제거.
+    /// dismissCurrentInApp()이 현재 표시 중만 닫고 processWebViewQueue로 다음을 present하므로,
+    /// 큐까지 비워야 이전 세션 inapp이 새 세션에 표시되지 않는다.
+    static func clearInappQueue() {
+        DispatchQueue.main.async {
+            webViewQueue.removeAll()
+        }
+    }
+
     private static func presentInappWebview(
         _ notificationId: String,
         _ htmlString: String,

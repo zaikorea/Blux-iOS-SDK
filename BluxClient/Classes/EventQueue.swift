@@ -26,6 +26,14 @@ class EventQueue {
         }
     }
 
+    /// 세션 경계(credential 변경, signOut)에서 대기 중인 이벤트 태스크 제거.
+    /// isInitialized는 건드리지 않아 이후 신규 addEvent는 정상 처리된다.
+    func clearPending() {
+        queue.async { [weak self] in
+            self?.eventsQueue.removeAll()
+        }
+    }
+
     /// 동기 작업용 (기존 호환)
     func addEvent(_ eventTask: @escaping () -> Void) {
         addEvent { done in

@@ -137,6 +137,13 @@ struct UpdatePropertiesBody: Codable {
             ColdStartNotificationManager.reset()
             // 이전 credential 세션에서 대기 중이던 클릭이 새 credential로 재전달되지 않도록 초기화한다.
             EventHandlers.unhandledNotification = nil
+            // 이전 세션에서 배칭된 이벤트가 새 세션의 bluxId로 전송되는 것을 막는다.
+            EventService.clearPendingBatch()
+            // 이전 세션에서 표시 중이던 인앱 메시지를 닫고 대기 큐도 비운다.
+            InappService.dismissCurrentInApp()
+            InappService.clearInappQueue()
+            // 대기 중인 이벤트 태스크를 drop해 새 credential 아래에서 실행되지 않도록 한다.
+            EventQueue.shared.clearPending()
         }
 
         // If saved clientId is nil or different, reset deviceId to nil
@@ -244,6 +251,13 @@ struct UpdatePropertiesBody: Codable {
     @objc public static func signOut() {
         // 이전 유저 세션에서 대기 중이던 클릭이 다음 유저로 재전달되지 않도록 초기화한다.
         EventHandlers.unhandledNotification = nil
+        // 이전 유저의 배칭된 이벤트가 signOut 이후 재발급되는 bluxId로 전송되는 것을 막는다.
+        EventService.clearPendingBatch()
+        // 이전 유저에게 표시 중이던 인앱 메시지를 닫고 대기 큐도 비운다.
+        InappService.dismissCurrentInApp()
+        InappService.clearInappQueue()
+        // 이전 유저의 대기 중인 이벤트 태스크를 drop해 새 anonymous identity로 실행되지 않도록 한다.
+        EventQueue.shared.clearPending()
 
         guard
             let clientId = SdkConfig.clientIdInUserDefaults,

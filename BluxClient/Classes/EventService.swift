@@ -62,6 +62,17 @@ class EventService {
         }
     }
 
+    /// 세션 전환 시 배치 버퍼 드레인 (credential 변경, signOut 등).
+    /// 이전 세션의 이벤트가 새 세션의 bluxId로 전송되어 attribution이 오염되는 것을 방지한다.
+    /// 이미 전송 시작된 batch는 막지 못함 (pending 버퍼만 비움).
+    static func clearPendingBatch() {
+        batchQueue.async {
+            pendingEvents.removeAll()
+            batchWorkItem?.cancel()
+            batchWorkItem = nil
+        }
+    }
+
     /// 배치 전송 실행 (batchQueue 내에서만 호출)
     private static func flushBatch() {
         let eventsToSend = pendingEvents
