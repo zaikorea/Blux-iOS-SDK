@@ -107,8 +107,11 @@ class EventService {
                     if case HTTPClient.HTTPError.invalidRequest = error {
                         return
                     }
-                    // 실패 시 지수 백오프
-                    let nextPollDelay = cachedPollDelayMs > 1000 * 60 * 60 * 24 ? cachedPollDelayMs : cachedPollDelayMs * 2
+                    // 실패 시 지수 백오프 (24h 미만 구간에서만 2배, 상한 1일)
+                    let dayCapMs = 1000 * 60 * 60 * 24
+                    let nextPollDelay = cachedPollDelayMs >= dayCapMs
+                        ? cachedPollDelayMs
+                        : min(cachedPollDelayMs * 2, dayCapMs)
                     cachedPollDelayMs = nextPollDelay
                     scheduleNextPoll(delayMs: nextPollDelay)
                     return
