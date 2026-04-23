@@ -19,9 +19,10 @@ final class HTTPClient {
         case DELETE
     }
 
-    private enum HTTPError: Error {
+    enum HTTPError: Error {
         case transportError(Error)
         case serverSideError(Int)
+        case invalidRequest
     }
 
     enum APIBaseURLByStage: String {
@@ -156,8 +157,10 @@ final class HTTPClient {
     func get<T: Codable>(
         path: String, completion: @escaping (T?, Error?) -> Void
     ) {
-        guard let request = createRequest(path: path)
-        else { return }
+        guard let request = createRequest(path: path) else {
+            completion(nil, HTTPError.invalidRequest)
+            return
+        }
 
         Logger.verbose("GET Request - path:\(path)")
         let task = createAsyncTask(request: request, completion: completion)
@@ -167,8 +170,10 @@ final class HTTPClient {
     func post<T: Codable, V: Codable>(
         path: String, body: T, completion: @escaping (V?, Error?) -> Void
     ) {
-        guard let request = createRequestWithBody(method: HTTPMethodWithBody.POST, path: path, body: body)
-        else { return }
+        guard let request = createRequestWithBody(method: HTTPMethodWithBody.POST, path: path, body: body) else {
+            completion(nil, HTTPError.invalidRequest)
+            return
+        }
 
         Logger.verbose("POST Request - path:\(path) body:\(body)")
         let task = createAsyncTask(request: request, completion: completion)
@@ -178,8 +183,10 @@ final class HTTPClient {
     func put<T: Codable, V: Codable>(
         path: String, body: T, completion: @escaping (V?, Error?) -> Void
     ) {
-        guard let request = createRequestWithBody(method: HTTPMethodWithBody.PUT, path: path, body: body)
-        else { return }
+        guard let request = createRequestWithBody(method: HTTPMethodWithBody.PUT, path: path, body: body) else {
+            completion(nil, HTTPError.invalidRequest)
+            return
+        }
 
         Logger.verbose("PUT Request - path:\(path) body:\(body)")
         let task = createAsyncTask(request: request, completion: completion)
@@ -189,8 +196,10 @@ final class HTTPClient {
     func patch<T: Codable, V: Codable>(
         path: String, body: T, completion: @escaping (V?, Error?) -> Void
     ) {
-        guard let request = createRequestWithBody(method: HTTPMethodWithBody.PATCH, path: path, body: body)
-        else { return }
+        guard let request = createRequestWithBody(method: HTTPMethodWithBody.PATCH, path: path, body: body) else {
+            completion(nil, HTTPError.invalidRequest)
+            return
+        }
 
         Logger.verbose("PATCH Request - path:\(path) body:\(body)")
         let task = createAsyncTask(request: request, completion: completion)

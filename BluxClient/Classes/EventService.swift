@@ -104,6 +104,9 @@ class EventService {
 
                 if let error = error {
                     Logger.error("Failed to send event request: \(error)")
+                    if case HTTPClient.HTTPError.invalidRequest = error {
+                        return
+                    }
                     // 실패 시 지수 백오프
                     let nextPollDelay = cachedPollDelayMs > 1000 * 60 * 60 * 24 ? cachedPollDelayMs : cachedPollDelayMs * 2
                     cachedPollDelayMs = nextPollDelay
