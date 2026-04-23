@@ -196,6 +196,7 @@ struct UpdatePropertiesBody: Codable {
                     requestPermissionForNotifications()
                 }
             case let .failure(error):
+                isActivated = false
                 Logger.error("Failed to initialize device: \(error).")
                 completion(error as NSError)
             }
