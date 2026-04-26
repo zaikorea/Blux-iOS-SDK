@@ -51,14 +51,17 @@ public final class BluxWebSdkBridge: NSObject {
 extension BluxWebSdkBridge: WKScriptMessageHandler {
     public func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
         guard message.name == BluxWebSdkBridge.handlerName else { return }
+        handle(scriptMessageBody: message.body)
+    }
 
+    func handle(scriptMessageBody body: Any) {
         let json: [String: Any]?
-        if let str = message.body as? String,
+        if let str = body as? String,
            let data = str.data(using: .utf8),
            let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         {
             json = obj
-        } else if let obj = message.body as? [String: Any] {
+        } else if let obj = body as? [String: Any] {
             json = obj
         } else {
             Logger.error("BluxWebSdkBridge: invalid message format")
