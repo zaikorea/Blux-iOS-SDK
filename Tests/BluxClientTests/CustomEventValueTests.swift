@@ -130,6 +130,27 @@ final class CustomEventValueTests: XCTestCase {
         XCTAssertEqual(arr, ["a", "b"])
     }
 
+    // NSNumber로 들어오는 true가 .int(1)로 분류되면 서버에 boolean이 0/1로 전달됨.
+    func testFromAnyBoolNSNumberStaysBool() {
+        guard case .bool(true)? = CustomEventValue.fromAny(NSNumber(value: true)) else {
+            XCTFail("NSNumber(true) must convert to .bool(true)")
+            return
+        }
+    }
+
+    func testFromAnyTrueLiteralIsBool() {
+        guard case .bool(true)? = CustomEventValue.fromAny(true) else {
+            XCTFail("true literal must convert to .bool(true)")
+            return
+        }
+    }
+
+    func testFromAnyIntLiteralStaysInt() {
+        if case .bool = CustomEventValue.fromAny(1) {
+            XCTFail("1 (Int literal) must NOT convert to .bool")
+        }
+    }
+
     func testFromAnyUnsupportedReturnsNil() {
         XCTAssertNil(CustomEventValue.fromAny([1, 2, 3]))
         XCTAssertNil(CustomEventValue.fromAny(["key": "value"]))

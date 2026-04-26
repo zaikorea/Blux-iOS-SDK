@@ -118,6 +118,19 @@ final class CustomValueTests: XCTestCase {
 
     // MARK: - Round-trip
 
+    // Bool은 Int보다 먼저 디코딩되어야 한다.
+    // (NSNumber로 들어오는 true/false가 .int(1)/.int(0)로 분류되면 서버에 boolean이 0/1로 전달됨)
+    func testDecodeBoolIsNotMisclassifiedAsInt() throws {
+        let value = try decoder.decode(CustomValue.self, from: "false".data(using: .utf8)!)
+        if case .int = value {
+            XCTFail("Bool false must NOT decode as .int")
+        }
+        guard case .bool(false) = value else {
+            XCTFail("Expected .bool(false), got \(value)")
+            return
+        }
+    }
+
     func testRoundTripAllVariants() throws {
         let cases: [CustomValue] = [
             .string("test"),
