@@ -158,6 +158,9 @@ final class BluxWebSdkBridgeTests: XCTestCase {
         XCTAssertNil(SdkConfig.apiKeyInUserDefaults)
     }
 
+    // customDeviceId 변종 테스트는 위 MARK 주석과 같은 이유(prod HTTP 도달)로 두지 않는다.
+    // forward 자체는 코드 inspection으로 보장 (BluxWebSdkBridge.swift handleInitialize).
+
     // MARK: - signIn
 
     func testSignInWithUserIdInvokesSDKWithoutCrash() {
