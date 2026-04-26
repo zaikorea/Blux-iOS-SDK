@@ -112,7 +112,14 @@ private extension BluxWebSdkBridge {
         }
 
         let requestPermission = (dict["requestPermissionOnLaunch"] as? Bool) ?? true
-        BluxClient.initialize(nil, bluxApplicationId: appId, bluxAPIKey: apiKey, requestPermissionOnLaunch: requestPermission)
+        let customDeviceId = dict["customDeviceId"] as? String
+        BluxClient.initialize(
+            nil,
+            bluxApplicationId: appId,
+            bluxAPIKey: apiKey,
+            requestPermissionOnLaunch: requestPermission,
+            customDeviceId: customDeviceId
+        )
     }
 
     func handleSignIn(_ payload: Any?) {
