@@ -16,10 +16,15 @@ final class EventServiceTests: XCTestCase {
         guardian = SdkStateGuard()
         guardian.clear()
         EventService.clearPendingBatch()
+        EventQueue.shared.setInitialized()
+        EventQueue.shared.clearPending()
     }
 
     override func tearDown() {
         EventService.clearPendingBatch()
+        // EventQueue.shared 싱글톤이라 이 파일이 setInitialized한 상태가 후속 테스트에 누수되면
+        // 영구 손상으로 이어질 수 있다. 대기 task를 비워서 다음 테스트가 깨끗한 상태로 진입하도록.
+        EventQueue.shared.clearPending()
         guardian.restore()
         guardian = nil
         super.tearDown()
@@ -82,5 +87,26 @@ final class EventServiceTests: XCTestCase {
         let evts = dict["events"] as! [[String: Any]]
         XCTAssertTrue(evts.isEmpty)
         XCTAssertEqual(dict["device_id"] as? String, "D-2")
+    }
+
+    // SdkConfig IDs가 nil인 상태에서 sendEvent가 호출되면 EventQueue 안에서 early return + done()이
+    // 호출되어 후속 task가 starvation되지 않아야 한다.
+    // (회귀: HTTPClient.invalidRequest 시 completion 미호출 → done 미호출 → EventQueue 영구 정지)
+    func testSendEventDoesNotStarveEventQueueWhenNoIds() {
+        EventQueue.shared.setInitialized()
+        EventQueue.shared.clearPending()
+
+        let drain = expectation(description: "drain")
+        EventQueue.shared.addEvent { drain.fulfill() }
+        wait(for: [drain], timeout: 2.0)
+
+        EventService.sendEvent([Event(eventType: "x")])
+
+        // 100ms batch window + EventQueue dispatch + invalidRequest 경로의 done() 호출. CI 여유로 0.6s.
+        let postBatch = expectation(description: "post-batch sentinel")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            EventQueue.shared.addEvent { postBatch.fulfill() }
+        }
+        wait(for: [postBatch], timeout: 5.0)
     }
 }

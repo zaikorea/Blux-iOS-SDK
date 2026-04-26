@@ -136,4 +136,18 @@ final class SdkConfigTests: XCTestCase {
         SdkConfig.notificationUrlOpenOptions = NotificationUrlOpenOptions(httpUrlOpenTarget: .none)
         XCTAssertEqual(SdkConfig.notificationUrlOpenOptions.httpUrlOpenTarget, .none)
     }
+
+    // 메모리에만 저장하면 콜드 스타트 시 default(.internalWebView)로 리셋된다.
+    // UserDefaults에 영속화되어 여러 read에서 보존되어야 한다.
+    func testNotificationUrlOpenOptionsPersistsAcrossReads() {
+        SdkConfig.notificationUrlOpenOptions = NotificationUrlOpenOptions(httpUrlOpenTarget: .externalBrowser)
+        for _ in 0..<3 {
+            XCTAssertEqual(SdkConfig.notificationUrlOpenOptions.httpUrlOpenTarget, .externalBrowser)
+        }
+    }
+
+    func testNotificationUrlOpenOptionsPersistsNoneTarget() {
+        SdkConfig.notificationUrlOpenOptions = NotificationUrlOpenOptions(httpUrlOpenTarget: HttpUrlOpenTarget.none)
+        XCTAssertEqual(SdkConfig.notificationUrlOpenOptions.httpUrlOpenTarget, HttpUrlOpenTarget.none)
+    }
 }

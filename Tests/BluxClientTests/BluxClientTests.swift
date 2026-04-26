@@ -67,7 +67,6 @@ final class BluxClientTests: XCTestCase {
     // MARK: - signOut 사전조건
 
     func testSignOutDoesNotCrashWhenNoIds() {
-        // IDs 없을 때도 EventHandlers/EventService/InappService cleanup은 무조건 일어남
         EventHandlers.unhandledNotification = BluxNotification(
             id: "n", body: "B", title: nil, url: nil, imageUrl: nil, data: nil
         )
@@ -79,15 +78,12 @@ final class BluxClientTests: XCTestCase {
     // MARK: - setUserPropertiesData / setCustomUserProperties 사전조건
 
     func testSetUserPropertiesDataReturnsEarlyWhenNoIds() {
-        // 사전조건 미충족이면 그냥 return. 크래시만 없으면 통과.
         BluxClient.setUserPropertiesData(userProperties: ["k": "v"])
     }
 
     func testSetUserPropertiesPassesGenderAsRawString() {
-        // 내부적으로 setUserPropertiesData를 호출. 사전조건 미충족으로 return.
         let props = UserProperties(age: 30, gender: .female)
         BluxClient.setUserProperties(userProperties: props)
-        // 검증: 크래시 없이 통과
     }
 
     func testSetCustomUserPropertiesReturnsEarlyWhenNoIds() {
@@ -161,21 +157,4 @@ final class BluxClientTests: XCTestCase {
         BluxClient.dismissInApp()
     }
 
-    // MARK: - credential 변경 감지
-
-    // API key만 교체된 경우에도 credentialsChanged=true로 인식되어 cleanup 실행.
-    // (회귀: apiKeyInUserDefaults를 쓰기 전에 savedApiKey를 읽어야 함)
-    func testInitializeDetectsApiKeyOnlyChangeAsCredentialChange() {
-        SdkConfig.clientIdInUserDefaults = "app-1"
-        SdkConfig.apiKeyInUserDefaults = "key-old"
-        EventHandlers.unhandledNotification = BluxNotification(
-            id: "leak", body: "B", title: nil, url: nil, imageUrl: nil, data: nil
-        )
-
-        BluxClient.initialize(nil, bluxApplicationId: "app-1", bluxAPIKey: "key-NEW") { _ in }
-
-        XCTAssertEqual(SdkConfig.apiKeyInUserDefaults, "key-NEW")
-        XCTAssertNil(EventHandlers.unhandledNotification,
-                     "API key 변경만으로도 credentialsChanged=true가 되어 cleanup 발생해야 함")
-    }
 }

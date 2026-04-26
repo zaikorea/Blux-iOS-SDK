@@ -70,6 +70,13 @@ final class CollectEventsResponseTests: XCTestCase {
         XCTAssertEqual(response.nextPollDelayMs, -1000)
     }
 
+    // 0초가 그대로 통과되어도 EventService 내부에서 max(_, 3000)으로 정규화된다.
+    func testDecodeZeroDelayPassesThrough() throws {
+        let json = "{\"nextPollDelayMs\":0}".data(using: .utf8)!
+        let response = try decoder.decode(CollectEventsResponse.self, from: json)
+        XCTAssertEqual(response.nextPollDelayMs, 0)
+    }
+
     func testDecodeIgnoresExtraFields() throws {
         let json = "{\"nextPollDelayMs\":1000,\"unknown\":\"value\"}".data(using: .utf8)!
         let response = try decoder.decode(CollectEventsResponse.self, from: json)
