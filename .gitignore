@@ -29,6 +29,11 @@ DerivedData
 .swiftpm/
 .swiftpm-cache/
 
+# Swift compiler intermediate outputs (when build is misrouted to repo root)
+*.d
+*.dia
+*.swiftdeps
+
 # Add this line if you want to avoid checking in source code from Carthage dependencies.
 # Carthage/Checkouts
 
