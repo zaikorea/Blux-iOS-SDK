@@ -38,7 +38,8 @@ enum DeviceService {
     ) {
         let body = getBluxDeviceInfo()
         body.deviceId = deviceId
-        body.customDeviceId = customDeviceId
+        let trimmedCustomDeviceId = customDeviceId?.trimmingCharacters(in: .whitespacesAndNewlines)
+        body.customDeviceId = (trimmedCustomDeviceId?.isEmpty == false) ? trimmedCustomDeviceId : nil
 
         guard let clientId = SdkConfig.clientIdInUserDefaults else {
             completion(.failure(NSError(domain: "DeviceService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Client ID not found"])))
