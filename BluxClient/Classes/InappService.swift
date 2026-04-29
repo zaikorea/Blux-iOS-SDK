@@ -267,16 +267,25 @@ class InappService {
                                         switch scheme {
                                         case "http", "https":
                                             createInappOpened(notificationId)
-                                            dismissBannerWindow {
-                                                DispatchQueue.main.async {
-                                                    if let topController = UIViewController.getTopViewController(),
-                                                       topController.view.window != nil {
-                                                        let newWebViewController = WebViewController(content: .url(url))
-                                                        let navigationController = UINavigationController(rootViewController: newWebViewController)
-                                                        navigationController.modalPresentationStyle = .fullScreen
-                                                        topController.present(navigationController, animated: true, completion: nil)
+                                            switch SdkConfig.inAppUrlOpenOptions.httpUrlOpenTarget {
+                                            case .internalWebView:
+                                                dismissBannerWindow {
+                                                    DispatchQueue.main.async {
+                                                        if let topController = UIViewController.getTopViewController(),
+                                                           topController.view.window != nil {
+                                                            let newWebViewController = WebViewController(content: .url(url))
+                                                            let navigationController = UINavigationController(rootViewController: newWebViewController)
+                                                            navigationController.modalPresentationStyle = .fullScreen
+                                                            topController.present(navigationController, animated: true, completion: nil)
+                                                        }
                                                     }
                                                 }
+                                            case .externalBrowser:
+                                                dismissBannerWindow {
+                                                    UIApplication.shared.open(url, options: [:])
+                                                }
+                                            case .none:
+                                                dismissBannerWindow()
                                             }
                                         default:
                                             dismissBannerWindow {
@@ -350,32 +359,39 @@ class InappService {
                             switch scheme {
                             case "http", "https":
                                 createInappOpened(notificationId)
-                                // 기존 웹뷰 닫기
-                                dismissWebView(webviewController) {
-                                    DispatchQueue.main.async {
-                                        if let topController =
-                                            UIViewController.getTopViewController(),
-                                            topController.view.window != nil
-                                        {
-                                            // 새로운 웹뷰 표시
-                                            let newWebViewController = WebViewController(
-                                                content: .url(url))
-                                            let navigationController =
-                                                UINavigationController(
-                                                    rootViewController: newWebViewController)
-                                            navigationController.modalPresentationStyle =
-                                                .fullScreen
+                                switch SdkConfig.inAppUrlOpenOptions.httpUrlOpenTarget {
+                                case .internalWebView:
+                                    dismissWebView(webviewController) {
+                                        DispatchQueue.main.async {
+                                            if let topController =
+                                                UIViewController.getTopViewController(),
+                                                topController.view.window != nil
+                                            {
+                                                let newWebViewController = WebViewController(
+                                                    content: .url(url))
+                                                let navigationController =
+                                                    UINavigationController(
+                                                        rootViewController: newWebViewController)
+                                                navigationController.modalPresentationStyle =
+                                                    .fullScreen
 
-                                            topController.present(
-                                                navigationController, animated: true,
-                                                completion: nil
-                                            )
-                                        } else {
-                                            Logger.error(
-                                                "INAPP: Top view controller is not in the window hierarchy."
-                                            )
+                                                topController.present(
+                                                    navigationController, animated: true,
+                                                    completion: nil
+                                                )
+                                            } else {
+                                                Logger.error(
+                                                    "INAPP: Top view controller is not in the window hierarchy."
+                                                )
+                                            }
                                         }
                                     }
+                                case .externalBrowser:
+                                    dismissWebView(webviewController) {
+                                        UIApplication.shared.open(url, options: [:])
+                                    }
+                                case .none:
+                                    dismissWebView(webviewController)
                                 }
                             default:
                                 dismissWebView(webviewController) {

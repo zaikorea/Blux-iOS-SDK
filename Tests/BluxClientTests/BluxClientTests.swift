@@ -48,6 +48,20 @@ final class BluxClientTests: XCTestCase {
         XCTAssertEqual(SdkConfig.notificationUrlOpenOptions.httpUrlOpenTarget, .none)
     }
 
+    // MARK: - setInAppUrlOpenOptions
+
+    func testSetInAppUrlOpenOptionsPersists() {
+        BluxClient.setInAppUrlOpenOptions(
+            InAppUrlOpenOptions(httpUrlOpenTarget: .externalBrowser)
+        )
+        XCTAssertEqual(SdkConfig.inAppUrlOpenOptions.httpUrlOpenTarget, .externalBrowser)
+
+        BluxClient.setInAppUrlOpenOptions(
+            InAppUrlOpenOptions(httpUrlOpenTarget: .none)
+        )
+        XCTAssertEqual(SdkConfig.inAppUrlOpenOptions.httpUrlOpenTarget, .none)
+    }
+
     // MARK: - signIn 사전조건
 
     func testSignInFailsFastWhenNoIds() {

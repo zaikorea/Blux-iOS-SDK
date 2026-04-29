@@ -216,6 +216,19 @@ final class RNFlutterBridgeContractTests: XCTestCase {
         XCTAssertEqual(SdkConfig.notificationUrlOpenOptions.httpUrlOpenTarget, HttpUrlOpenTarget.none)
     }
 
+    func testFlutter_InAppUrlOpenOptionsInitWithAllTargets() {
+        let opts1 = InAppUrlOpenOptions(httpUrlOpenTarget: .internalWebView)
+        let opts2 = InAppUrlOpenOptions(httpUrlOpenTarget: .externalBrowser)
+        let opts3 = InAppUrlOpenOptions(httpUrlOpenTarget: HttpUrlOpenTarget.none)
+
+        BluxClient.setInAppUrlOpenOptions(opts1)
+        XCTAssertEqual(SdkConfig.inAppUrlOpenOptions.httpUrlOpenTarget, .internalWebView)
+        BluxClient.setInAppUrlOpenOptions(opts2)
+        XCTAssertEqual(SdkConfig.inAppUrlOpenOptions.httpUrlOpenTarget, .externalBrowser)
+        BluxClient.setInAppUrlOpenOptions(opts3)
+        XCTAssertEqual(SdkConfig.inAppUrlOpenOptions.httpUrlOpenTarget, HttpUrlOpenTarget.none)
+    }
+
     // MARK: - Flutter: Event chain (BluxFlutterPlugin sendEvent 패턴)
 
     func testFlutter_EventChainWithSetEventProperties() throws {

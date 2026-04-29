@@ -213,6 +213,10 @@ struct UpdatePropertiesBody: Codable {
         SdkConfig.notificationUrlOpenOptions = options
     }
 
+    @objc public static func setInAppUrlOpenOptions(_ options: InAppUrlOpenOptions) {
+        SdkConfig.inAppUrlOpenOptions = options
+    }
+
     /// Set userId of the device
     @objc public static func signIn(userId: String, completion: @escaping ((NSError?) -> Void) = { _ in }) {
         guard

@@ -51,6 +51,25 @@ enum SdkConfig {
         }
     }
 
+    private static var inAppUrlOpenOptionsKey = "bluxInAppUrlOpenOptions"
+    static var inAppUrlOpenOptions: InAppUrlOpenOptions {
+        set {
+            UserDefaults(suiteName: bluxSuiteName)?.set(
+                newValue.httpUrlOpenTarget.rawValue,
+                forKey: inAppUrlOpenOptionsKey
+            )
+        }
+        get {
+            guard let rawValue = UserDefaults(suiteName: bluxSuiteName)?
+                .object(forKey: inAppUrlOpenOptionsKey) as? Int,
+                let target = HttpUrlOpenTarget(rawValue: rawValue)
+            else {
+                return .init()
+            }
+            return InAppUrlOpenOptions(httpUrlOpenTarget: target)
+        }
+    }
+
     /// Save bluxId in user defaults (local storage)
     private static var bluxIdKey = "bluxId"
     static var bluxIdInUserDefaults: String? {
