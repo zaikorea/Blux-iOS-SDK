@@ -31,6 +31,8 @@ final class PublicAPISurfaceTests: XCTestCase {
 
         let _: (NotificationUrlOpenOptions) -> Void = BluxClient.setNotificationUrlOpenOptions
 
+        let _: (InAppUrlOpenOptions) -> Void = BluxClient.setInAppUrlOpenOptions
+
         let _: () -> Void = BluxClient.dismissInApp
 
         let _: (@escaping (BluxNotification) -> Void) -> Void = BluxClient.setNotificationClickedHandler(callback:)

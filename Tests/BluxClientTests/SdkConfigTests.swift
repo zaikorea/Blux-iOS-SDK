@@ -4,20 +4,26 @@ import XCTest
 final class SdkConfigTests: XCTestCase {
     private var guardian: SdkStateGuard!
     private var savedNotificationUrlOpenOptions: NotificationUrlOpenOptions!
+    private var savedInAppUrlOpenOptions: InAppUrlOpenOptions!
     // SdkConfig 내부 private key와 동기화 필요 (default 동작 검증을 위해 키 자체를 제거)
     private let notificationUrlOpenOptionsUserDefaultsKey = "bluxNotificationUrlOpenOptions"
+    private let inAppUrlOpenOptionsUserDefaultsKey = "bluxInAppUrlOpenOptions"
 
     override func setUp() {
         super.setUp()
         guardian = SdkStateGuard()
         guardian.clear()
         savedNotificationUrlOpenOptions = SdkConfig.notificationUrlOpenOptions
+        savedInAppUrlOpenOptions = SdkConfig.inAppUrlOpenOptions
         UserDefaults(suiteName: SdkConfig.bluxSuiteName)?
             .removeObject(forKey: notificationUrlOpenOptionsUserDefaultsKey)
+        UserDefaults(suiteName: SdkConfig.bluxSuiteName)?
+            .removeObject(forKey: inAppUrlOpenOptionsUserDefaultsKey)
     }
 
     override func tearDown() {
         SdkConfig.notificationUrlOpenOptions = savedNotificationUrlOpenOptions
+        SdkConfig.inAppUrlOpenOptions = savedInAppUrlOpenOptions
         guardian.restore()
         guardian = nil
         super.tearDown()
@@ -149,5 +155,34 @@ final class SdkConfigTests: XCTestCase {
     func testNotificationUrlOpenOptionsPersistsNoneTarget() {
         SdkConfig.notificationUrlOpenOptions = NotificationUrlOpenOptions(httpUrlOpenTarget: HttpUrlOpenTarget.none)
         XCTAssertEqual(SdkConfig.notificationUrlOpenOptions.httpUrlOpenTarget, HttpUrlOpenTarget.none)
+    }
+
+    // MARK: - InAppUrlOpenOptions persistence
+
+    func testInAppUrlOpenOptionsDefaultIsInternalWebView() {
+        let options = SdkConfig.inAppUrlOpenOptions
+        XCTAssertEqual(options.httpUrlOpenTarget, .internalWebView)
+    }
+
+    func testInAppUrlOpenOptionsRoundTripExternalBrowser() {
+        SdkConfig.inAppUrlOpenOptions = InAppUrlOpenOptions(httpUrlOpenTarget: .externalBrowser)
+        XCTAssertEqual(SdkConfig.inAppUrlOpenOptions.httpUrlOpenTarget, .externalBrowser)
+    }
+
+    func testInAppUrlOpenOptionsRoundTripNone() {
+        SdkConfig.inAppUrlOpenOptions = InAppUrlOpenOptions(httpUrlOpenTarget: .none)
+        XCTAssertEqual(SdkConfig.inAppUrlOpenOptions.httpUrlOpenTarget, .none)
+    }
+
+    func testInAppUrlOpenOptionsPersistsAcrossReads() {
+        SdkConfig.inAppUrlOpenOptions = InAppUrlOpenOptions(httpUrlOpenTarget: .externalBrowser)
+        for _ in 0..<3 {
+            XCTAssertEqual(SdkConfig.inAppUrlOpenOptions.httpUrlOpenTarget, .externalBrowser)
+        }
+    }
+
+    func testInAppUrlOpenOptionsPersistsNoneTarget() {
+        SdkConfig.inAppUrlOpenOptions = InAppUrlOpenOptions(httpUrlOpenTarget: HttpUrlOpenTarget.none)
+        XCTAssertEqual(SdkConfig.inAppUrlOpenOptions.httpUrlOpenTarget, HttpUrlOpenTarget.none)
     }
 }
