@@ -114,7 +114,10 @@ jobs:
 
       - name: Publish to CocoaPods
         if: steps.tag.outputs.skipped != 'true'
-        env:
-          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-        run: |
-          BLUX_STAGE=stg bundle exec pod trunk push BluxClient.podspec --allow-warnings
+        uses: ./.github/actions/cocoapods-publish
+        with:
+          podspec: BluxClient.podspec
+          pod-name: BluxClient
+          tag: ${{ steps.version.outputs.tag }}
+          stage: stg
+          trunk-token: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
