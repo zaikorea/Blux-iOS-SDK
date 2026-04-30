@@ -147,7 +147,10 @@ jobs:
           BLUX_STAGE=prod bundle exec pod lib lint BluxClient.podspec --allow-warnings --skip-tests
 
       - name: Publish to CocoaPods
-        env:
-          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-        run: |
-          BLUX_STAGE=prod bundle exec pod trunk push BluxClient.podspec --allow-warnings
+        uses: ./.github/actions/cocoapods-publish
+        with:
+          podspec: BluxClient.podspec
+          pod-name: BluxClient
+          tag: ${{ steps.version.outputs.tag }}
+          stage: prod
+          trunk-token: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}

@@ -1,0 +1,76 @@
+name: Publish podspec to CocoaPods trunk
+description: |
+  Idempotent push:
+  - 이미 publish된 버전이면 push 자체를 skip
+  - push가 실패해도 trunk에 등록되어 있으면 success로 처리 (응답만 손실된 케이스)
+
+inputs:
+  podspec:
+    description: Path to podspec file
+    required: true
+  pod-name:
+    description: Pod name as listed on CocoaPods trunk
+    required: true
+  tag:
+    description: Version tag being published
+    required: true
+  stage:
+    description: BLUX_STAGE value (stg or prod)
+    required: true
+  trunk-token:
+    description: CocoaPods trunk authentication token
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Check if version already on trunk
+      id: precheck
+      shell: bash
+      env:
+        COCOAPODS_TRUNK_TOKEN: ${{ inputs.trunk-token }}
+        POD: ${{ inputs.pod-name }}
+        TAG: ${{ inputs.tag }}
+      run: |
+        ESCAPED="${TAG//./\\.}"
+        if bundle exec pod trunk info "$POD" 2>/dev/null \
+            | grep -qE "^[[:space:]]+- ${ESCAPED} \("; then
+          echo "Version $TAG is already on trunk. Skipping push."
+          echo "skip=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Push to trunk
+      if: steps.precheck.outputs.skip != 'true'
+      shell: bash
+      env:
+        COCOAPODS_TRUNK_TOKEN: ${{ inputs.trunk-token }}
+        BLUX_STAGE: ${{ inputs.stage }}
+        PODSPEC: ${{ inputs.podspec }}
+        POD: ${{ inputs.pod-name }}
+        TAG: ${{ inputs.tag }}
+      run: |
+        set +e
+        bundle exec pod trunk push "$PODSPEC" --allow-warnings
+        PUSH_EXIT=$?
+        set -e
+
+        if [ "$PUSH_EXIT" -eq 0 ]; then
+          exit 0
+        fi
+
+        # push가 실패로 끝났을 때, trunk가 실제로는 publish를 받았는지 검증.
+        # CDN 반영 지연을 고려해 잠시 대기 후 조회.
+        echo "::warning::pod trunk push reported failure (exit $PUSH_EXIT). Verifying actual trunk state..."
+        sleep 15
+
+        ESCAPED="${TAG//./\\.}"
+        if bundle exec pod trunk info "$POD" 2>/dev/null \
+            | grep -qE "^[[:space:]]+- ${ESCAPED} \("; then
+          echo "Version $TAG is on trunk despite push failure. Treating as success (response lost but publish landed)."
+          exit 0
+        fi
+
+        echo "::error::Version $TAG is not on trunk. Push truly failed."
+        exit "$PUSH_EXIT"
