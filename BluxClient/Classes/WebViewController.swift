@@ -14,6 +14,7 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
     private var webView: WKWebView!
     private var content: Content
     private let messageHandler = WebViewMessageHandler()
+    private var hasLoadedContent = false
 
     // Content 타입 정의: URL 또는 HTML 문자열
     enum Content {
@@ -130,8 +131,16 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
             navigationController?.navigationBar.barTintColor = .lightGray
         }
         navigationController?.navigationBar.prefersLargeTitles = false
+    }
 
-        // Content에 따라 로드
+    /// HTML 로드를 viewDidAppear까지 지연시켜, present 트랜지션이 끝난 뒤에만 webview가 메시지를
+    /// 보내도록 한다. 배너용 인앱은 webview의 runtime이 즉시 `resize`를 발사하는데, 만약 이 메시지가
+    /// `present` 트랜지션이 끝나기 전에 도착하면 `dismiss(animated: false)`가 무시되어 fullscreen
+    /// WebViewController + BannerWindow가 동시에 보이는 race가 발생한다.
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard !hasLoadedContent else { return }
+        hasLoadedContent = true
         loadContent()
     }
 
