@@ -7,6 +7,7 @@ enum EventHandlers {
     static var unhandledNotification: BluxNotification?
     static var notificationForegroundWillDisplay: ((NotificationReceivedEvent) -> Void)?
     static var notificationClicked: ((BluxNotification) -> Void)?
+    static var inAppClicked: ((BluxInApp) -> Void)?
     /// Custom HTML 인앱 메시지에서 BluxBridge.triggerAction() 호출 시 실행되는 핸들러 목록
     /// 복수의 핸들러 등록 가능, 등록 순서대로 실행
     static var inAppCustomActionHandlers: [(id: UUID, handler: InAppCustomActionHandler)] = []

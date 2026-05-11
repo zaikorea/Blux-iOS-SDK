@@ -415,6 +415,15 @@ struct UpdatePropertiesBody: Codable {
         }
     }
 
+    /// 인앱 메시지의 http/https 링크 클릭을 호스트 앱이 직접 처리하도록 콜백을 등록한다.
+    /// 등록되어 있으면 SDK는 URL 자동 오픈을 skip하고 콜백만 호출한다.
+    @objc public static func setInAppClickedHandler(
+        callback: @escaping (BluxInApp) -> Void
+    ) {
+        EventHandlers.inAppClicked = callback
+        Logger.verbose("InAppClickedHandler has been registered.")
+    }
+
     /// Custom HTML 인앱 메시지에서 BluxBridge.triggerAction() 호출 시 실행될 핸들러를 등록합니다.
     /// 여러 핸들러를 등록할 수 있으며, 등록 순서대로 실행됩니다.
     ///
