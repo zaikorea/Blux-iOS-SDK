@@ -9,4 +9,13 @@ import Foundation
         self.url = url == "" ? nil : url
         super.init()
     }
+
+    public func toDictionary() -> [String: Any?] {
+        let dict: [String: Any?] = [
+            "id": id,
+            "url": url,
+        ]
+
+        return dict
+    }
 }
