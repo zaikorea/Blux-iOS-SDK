@@ -38,6 +38,7 @@ final class SdkStateGuard {
         EventHandlers.unhandledNotification = nil
         EventHandlers.notificationClicked = nil
         EventHandlers.notificationForegroundWillDisplay = nil
+        EventHandlers.inAppClicked = nil
         EventHandlers.inAppCustomActionHandlers = []
 
         ColdStartNotificationManager.coldStartNotification = nil
@@ -57,6 +58,7 @@ final class SdkStateGuard {
         EventHandlers.unhandledNotification = nil
         EventHandlers.notificationClicked = nil
         EventHandlers.notificationForegroundWillDisplay = nil
+        EventHandlers.inAppClicked = nil
         EventHandlers.inAppCustomActionHandlers = []
 
         ColdStartNotificationManager.coldStartNotification = nil
