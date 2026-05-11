@@ -37,6 +37,8 @@ final class PublicAPISurfaceTests: XCTestCase {
 
         let _: (@escaping (BluxNotification) -> Void) -> Void = BluxClient.setNotificationClickedHandler(callback:)
 
+        let _: (@escaping (BluxInApp) -> Void) -> Void = BluxClient.setInAppClickedHandler(callback:)
+
         let _: (@escaping (NotificationReceivedEvent) -> Void) -> Void
             = BluxClient.setNotificationForegroundWillDisplayHandler(callback:)
 
@@ -70,6 +72,9 @@ final class PublicAPISurfaceTests: XCTestCase {
 
         // BluxNotification public init
         let _ = BluxNotification(id: "x", body: "y", title: nil, url: nil, imageUrl: nil, data: nil)
+
+        // BluxInApp public init
+        let _ = BluxInApp(id: "x", url: "https://example.com")
 
         // LogLevel cases
         let _: LogLevel = .verbose

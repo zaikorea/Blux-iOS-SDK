@@ -136,6 +136,36 @@ final class BluxClientTests: XCTestCase {
         XCTAssertNotNil(EventHandlers.notificationForegroundWillDisplay)
     }
 
+    // MARK: - setInAppClickedHandler
+
+    func testSetInAppClickedHandlerStoresHandler() {
+        EventHandlers.inAppClicked = nil
+        defer { EventHandlers.inAppClicked = nil }
+
+        var captured: BluxInApp?
+        BluxClient.setInAppClickedHandler { event in captured = event }
+        XCTAssertNotNil(EventHandlers.inAppClicked)
+
+        let event = BluxInApp(id: "nid_xyz", url: "https://example.com/p/9")
+        EventHandlers.inAppClicked?(event)
+        XCTAssertEqual(captured?.id, "nid_xyz")
+        XCTAssertEqual(captured?.url, "https://example.com/p/9")
+    }
+
+    func testSetInAppClickedHandlerReplacesPrevious() {
+        EventHandlers.inAppClicked = nil
+        defer { EventHandlers.inAppClicked = nil }
+
+        var firstCalled = 0
+        var secondCalled = 0
+        BluxClient.setInAppClickedHandler { _ in firstCalled += 1 }
+        BluxClient.setInAppClickedHandler { _ in secondCalled += 1 }
+
+        EventHandlers.inAppClicked?(BluxInApp(id: "n", url: "https://x"))
+        XCTAssertEqual(firstCalled, 0)
+        XCTAssertEqual(secondCalled, 1)
+    }
+
     // MARK: - addInAppCustomActionHandler
 
     func testAddInAppCustomActionHandlerReturnsUnsubscribeFunction() {

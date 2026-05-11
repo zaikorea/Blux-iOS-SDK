@@ -415,6 +415,21 @@ struct UpdatePropertiesBody: Codable {
         }
     }
 
+    /// 인앱 메시지의 http/https 링크 클릭을 호스트 앱이 직접 처리하도록 콜백을 등록한다.
+    ///
+    /// 등록되어 있으면 SDK는 클릭된 URL을 자동으로 열지 않고 콜백만 호출한다.
+    /// (클릭 트래킹과 인앱 dismiss는 정상 수행)
+    /// 등록되어 있지 않으면 기존 `setInAppUrlOpenOptions` 정책이 적용된다.
+    ///
+    /// Custom HTML 인앱의 `data-blux-click` / `BluxBridge.triggerAction()` 처리에는 영향이 없다.
+    /// Custom HTML에서 호스트 라우팅을 받고 싶다면 `addInAppCustomActionHandler` 를 사용한다.
+    @objc public static func setInAppClickedHandler(
+        callback: @escaping (BluxInApp) -> Void
+    ) {
+        EventHandlers.inAppClicked = callback
+        Logger.verbose("InAppClickedHandler has been registered.")
+    }
+
     /// Custom HTML 인앱 메시지에서 BluxBridge.triggerAction() 호출 시 실행될 핸들러를 등록합니다.
     /// 여러 핸들러를 등록할 수 있으며, 등록 순서대로 실행됩니다.
     ///

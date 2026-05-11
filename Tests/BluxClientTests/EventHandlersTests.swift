@@ -18,6 +18,7 @@ final class EventHandlersTests: XCTestCase {
         EventHandlers.unhandledNotification = nil
         EventHandlers.notificationForegroundWillDisplay = nil
         EventHandlers.notificationClicked = nil
+        EventHandlers.inAppClicked = nil
         EventHandlers.inAppCustomActionHandlers = []
     }
 
@@ -41,6 +42,20 @@ final class EventHandlersTests: XCTestCase {
         let n = BluxNotification(id: "x", body: "B", title: nil, url: nil, imageUrl: nil, data: nil)
         EventHandlers.notificationClicked?(n)
         XCTAssertEqual(captured?.id, "x")
+    }
+
+    func testInAppClickedSlotStartsNil() {
+        XCTAssertNil(EventHandlers.inAppClicked)
+    }
+
+    func testInAppClickedSlotStoresClosure() {
+        var captured: BluxInApp?
+        EventHandlers.inAppClicked = { event in captured = event }
+
+        let event = BluxInApp(id: "nid_1", url: "https://example.com/p/1")
+        EventHandlers.inAppClicked?(event)
+        XCTAssertEqual(captured?.id, "nid_1")
+        XCTAssertEqual(captured?.url, "https://example.com/p/1")
     }
 
     // MARK: - inAppCustomActionHandlers
