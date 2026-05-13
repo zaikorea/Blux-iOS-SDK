@@ -1,0 +1,10 @@
+// Release-local configuration wrapper for NSE
+// Includes Pods config and shares BLUX_STAGE with the main app target
+
+#include? "Secrets.xcconfig"
+BLUX_STAGE = local
+
+#include "../BundleVersion.xcconfig"
+#include "../Pods/Target Support Files/Pods-BluxNotificationServiceExtension/Pods-BluxNotificationServiceExtension.release-local.xcconfig"
+
+SWIFT_VERSION = 5.0
