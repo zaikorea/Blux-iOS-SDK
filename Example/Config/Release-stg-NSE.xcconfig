@@ -1,0 +1,10 @@
+// Release-stg configuration wrapper for NSE
+// Includes Pods config and shares BLUX_STAGE with the main app target
+
+#include? "Secrets.xcconfig"
+BLUX_STAGE = stg
+
+#include "../BundleVersion.xcconfig"
+#include "../Pods/Target Support Files/Pods-BluxNotificationServiceExtension/Pods-BluxNotificationServiceExtension.release-stg.xcconfig"
+
+SWIFT_VERSION = 5.0

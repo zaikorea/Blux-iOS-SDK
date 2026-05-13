@@ -43,8 +43,30 @@ public enum Stage: String, CaseIterable {
         #endif
     }()
 
-    /// 런타임 오버라이드
-    private static var overrideStage: Stage?
+    static let overrideStageKey = "bluxStageOverride"
+
+    private static var overrideStage: Stage? {
+        get {
+            let defaults = UserDefaults(suiteName: SdkConfig.bluxSuiteName)
+            // prod 빌드면 이전 non-prod 빌드의 stale 값을 무시 + cleanup.
+            guard defaultStage != .prod else {
+                defaults?.removeObject(forKey: overrideStageKey)
+                return nil
+            }
+            guard let raw = defaults?.string(forKey: overrideStageKey) else {
+                return nil
+            }
+            return Stage(rawValue: raw)
+        }
+        set {
+            let defaults = UserDefaults(suiteName: SdkConfig.bluxSuiteName)
+            if let newValue = newValue {
+                defaults?.set(newValue.rawValue, forKey: overrideStageKey)
+            } else {
+                defaults?.removeObject(forKey: overrideStageKey)
+            }
+        }
+    }
 
     /// 현재 스테이지 (오버라이드가 있으면 오버라이드, 없으면 빌드 시점 기본값)
     public static var current: Stage {

@@ -43,6 +43,8 @@ final class SdkStateGuard {
 
         ColdStartNotificationManager.coldStartNotification = nil
         ColdStartNotificationManager.reset()
+
+        UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.removeObject(forKey: Stage.overrideStageKey)
     }
 
     func restore() {
@@ -63,5 +65,7 @@ final class SdkStateGuard {
 
         ColdStartNotificationManager.coldStartNotification = nil
         ColdStartNotificationManager.reset()
+
+        UserDefaults(suiteName: SdkConfig.bluxSuiteName)?.removeObject(forKey: Stage.overrideStageKey)
     }
 }

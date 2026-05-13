@@ -4,6 +4,8 @@
 <dict>
 	<key>BluxAppGroupName</key>
 	<string>group.ai.blux.example.nativeapp.blux</string>
+	<key>BluxStage</key>
+	<string>$(BLUX_STAGE)</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionPointIdentifier</key>

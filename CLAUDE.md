@@ -31,6 +31,7 @@ iOS는 자동 등록 메커니즘이 없어 호스트 앱이 명시적으로 다
 2. **APNs entitlement** + Info.plist `UIBackgroundModes = [remote-notification]`.
 3. **NSE 타겟** + `BluxNotificationServiceExtensionHelper.shared.didReceive` 위임 ([Example/BluxNotificationServiceExtension/NotificationService.swift](Example/BluxNotificationServiceExtension/NotificationService.swift)).
 4. **AppDelegate 위임 4개 메서드** — `didFinishLaunchingWithOptions`에서 `BluxClient.initialize` + `UNUserNotificationCenter.current().delegate = self`, `didRegisterForRemoteNotificationsWithDeviceToken` → `BluxAppDelegate.shared`, `userNotificationCenter(_:didReceive:)` / `(_:willPresent:)` → `BluxNotificationCenter.shared`. swizzling은 의도적으로 안 씀 — 호스트가 자체 delegate 가질 때 chain 깨지는 사고 이력. ([Example/BluxExample/AppDelegate.swift](Example/BluxExample/AppDelegate.swift))
+5. **NSE Info.plist `BluxStage`** — non-prod 분기 빌드 사용 시 NSE Info.plist에도 main 앱과 같은 값 명시 ([Example/BluxNotificationServiceExtension/Info.plist](Example/BluxNotificationServiceExtension/Info.plist)). NSE는 별도 process라 main app의 `Stage.setStage` 호출이 안 보이고, Info.plist 없으면 NSE 내부 `Stage.current`가 default `.prod`로 fallback해 NSE의 `trackReceived` HTTP가 prod API로 향한다.
 
 ## 자주 깨지는 곳 (운영)
 

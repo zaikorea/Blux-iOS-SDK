@@ -81,4 +81,14 @@ final class StageTests: XCTestCase {
         StageSwitcher.resetStage()
         XCTAssertEqual(Stage.current, .prod)
     }
+
+    /// 같은 App Group을 공유한 이전 non-prod 빌드가 남긴 stale override가 prod 빌드의
+    /// Stage.current를 비-prod로 끌어가지 않아야 한다. 키도 호출 시점에 정리된다.
+    func testCurrentIgnoresAndClearsStaleOverrideWhenDefaultIsProd() {
+        let defaults = UserDefaults(suiteName: SdkConfig.bluxSuiteName)
+        defaults?.set("dev", forKey: Stage.overrideStageKey)
+
+        XCTAssertEqual(Stage.current, .prod)
+        XCTAssertNil(defaults?.string(forKey: Stage.overrideStageKey))
+    }
 }
