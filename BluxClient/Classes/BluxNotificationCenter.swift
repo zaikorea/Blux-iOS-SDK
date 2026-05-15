@@ -102,7 +102,7 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
             }
 
             let event = NotificationReceivedEvent(
-                UIApplication.shared, notification: bluxNotification,
+                notification: bluxNotification,
                 completionHandler: completionHandler
             )
 

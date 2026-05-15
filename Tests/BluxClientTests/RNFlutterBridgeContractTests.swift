@@ -15,7 +15,7 @@ import UIKit
 /// - `UserProperties(phoneNumber:..., gender:...)` 모든 옵셔널 init
 /// - `UserProperties.Gender(rawValue:)` ("male"/"female")
 /// - `HttpUrlOpenTarget` 멤버 (`.internalWebView`, `.externalBrowser`, `.none`)
-/// - `NotificationReceivedEvent.toDictionary()` / `display()`
+/// - `NotificationReceivedEvent.toDictionary()` / `display()` / `suppress()` / `onComplete`
 /// - `BluxNotification.toDictionary()`
 final class RNFlutterBridgeContractTests: XCTestCase {
     private var guardian: SdkStateGuard!
