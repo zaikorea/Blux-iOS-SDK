@@ -73,12 +73,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check duplicate tag
+      - name: Check tag state
+        id: tag_state
         run: |
           TAG="${{ steps.version.outputs.tag }}"
+          git fetch --tags origin --force --quiet || true
           if git rev-parse "refs/tags/$TAG" >/dev/null 2>&1; then
-            echo "Error: Tag $TAG already exists."
-            exit 1
+            echo "Tag $TAG already exists — resuming from publish step."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Setup Xcode
@@ -111,6 +115,7 @@ jobs:
           bundle exec pod --version
 
       - name: Update sdkVersion
+        if: steps.tag_state.outputs.exists != 'true'
         run: |
           TAG="${{ steps.version.outputs.tag }}"
           SDK_CONFIG_PATH="BluxClient/Classes/SdkConfig.swift"
@@ -126,6 +131,7 @@ jobs:
           echo "Updated sdkVersion: $UPDATED"
 
       - name: Commit version bump
+        if: steps.tag_state.outputs.exists != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -136,11 +142,16 @@ jobs:
           git push origin HEAD
 
       - name: Create and push tag
+        if: steps.tag_state.outputs.exists != 'true'
         run: |
           TAG="${{ steps.version.outputs.tag }}"
           git tag "$TAG"
           git push origin "$TAG"
           echo "Created and pushed tag: $TAG"
+
+      - name: Checkout existing tag for republish
+        if: steps.tag_state.outputs.exists == 'true'
+        run: git checkout "tags/${{ steps.version.outputs.tag }}"
 
       - name: Lint podspec
         run: |
