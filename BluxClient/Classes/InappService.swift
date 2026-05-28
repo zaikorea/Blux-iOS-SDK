@@ -264,9 +264,9 @@ class InappService {
                                     if let urlString = linkData["url"] as? String,
                                        let url = URL(string: urlString),
                                        let scheme = url.scheme {
+                                        createInappOpened(notificationId)
                                         switch scheme {
                                         case "http", "https":
-                                            createInappOpened(notificationId)
                                             if let clicked = EventHandlers.inAppClicked {
                                                 dismissBannerWindow {
                                                     clicked(BluxInApp(id: notificationId, url: urlString))
@@ -362,9 +362,9 @@ class InappService {
                            let url = URL(string: urlString),
                            let scheme = url.scheme
                         {
+                            createInappOpened(notificationId)
                             switch scheme {
                             case "http", "https":
-                                createInappOpened(notificationId)
                                 if let clicked = EventHandlers.inAppClicked {
                                     dismissWebView(webviewController) {
                                         clicked(BluxInApp(id: notificationId, url: urlString))
