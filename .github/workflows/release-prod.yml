@@ -77,9 +77,16 @@ jobs:
         id: tag_state
         run: |
           TAG="${{ steps.version.outputs.tag }}"
-          git fetch --tags origin --force --quiet || true
+          git fetch --tags origin --force --quiet
           if git rev-parse "refs/tags/$TAG" >/dev/null 2>&1; then
-            echo "Tag $TAG already exists — resuming from publish step."
+            # 태그가 가리키는 commit의 sdkVersion이 의도와 일치하는지 검증.
+            # 수동 태그 생성 / 잘못된 commit으로의 force-update 같은 운영 룰 위반 차단.
+            TAG_SDK_VERSION=$(git show "tags/$TAG:BluxClient/Classes/SdkConfig.swift" | ruby -ne 'if $_ =~ /sdkVersion\s*=\s*"([^"]+)"/; puts $1; exit; end')
+            if [ "$TAG_SDK_VERSION" != "$TAG" ]; then
+              echo "Error: Tag $TAG points to a commit with sdkVersion '$TAG_SDK_VERSION', expected '$TAG'."
+              exit 1
+            fi
+            echo "Tag $TAG already exists and matches expected sdkVersion — resuming from publish step."
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
