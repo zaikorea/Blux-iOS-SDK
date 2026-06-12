@@ -126,32 +126,13 @@ final class BannerWindow: UIWindow {
         
     }
     
-    /// Custom HTML 절대 위치 지정 (safe area 적용 안 함)
+    /// Custom HTML 절대 위치 지정
     func updateLayout(options: [String: Any]) {
-        let screenBounds = UIScreen.main.bounds
-
-        let width = parseNumber(options["width"]) ?? screenBounds.width
-        let height = parseNumber(options["height"]) ?? screenBounds.height
-
-        let x: CGFloat
-        if let left = parseNumber(options["left"]) {
-            x = left
-        } else if let right = parseNumber(options["right"]) {
-            x = screenBounds.width - width - right
-        } else {
-            x = (screenBounds.width - width) / 2
-        }
-
-        let y: CGFloat
-        if let top = parseNumber(options["top"]) {
-            y = top
-        } else if let bottom = parseNumber(options["bottom"]) {
-            y = screenBounds.height - height - bottom
-        } else {
-            y = 0
-        }
-
-        let newFrame = CGRect(x: x, y: y, width: width, height: height)
+        let newFrame = BannerWindow.absoluteFrame(
+            options: options,
+            screenBounds: UIScreen.main.bounds,
+            safeAreaInsets: getSafeAreaInsets()
+        )
 
         if isHidden {
             frame = newFrame
@@ -169,7 +150,50 @@ final class BannerWindow: UIWindow {
         }
     }
 
-    private func parseNumber(_ value: Any?) -> CGFloat? {
+    /// Absolute Position Mode의 frame 계산. safe area 안쪽을 기준 영역으로 삼고,
+    /// width/height 미지정 시 기준 영역에서 해당 축 마진을 뺀 값으로 자동 계산한다.
+    static func absoluteFrame(
+        options: [String: Any],
+        screenBounds: CGRect,
+        safeAreaInsets: UIEdgeInsets
+    ) -> CGRect {
+        let contentX = safeAreaInsets.left
+        let contentY = safeAreaInsets.top
+        let contentWidth = screenBounds.width - safeAreaInsets.left - safeAreaInsets.right
+        let contentHeight = screenBounds.height - safeAreaInsets.top - safeAreaInsets.bottom
+
+        let left = parseNumber(options["left"])
+        let right = parseNumber(options["right"])
+        let top = parseNumber(options["top"])
+        let bottom = parseNumber(options["bottom"])
+
+        let width = parseNumber(options["width"])
+            ?? max(0, contentWidth - (left ?? 0) - (right ?? 0))
+        let height = parseNumber(options["height"])
+            ?? max(0, contentHeight - (top ?? 0) - (bottom ?? 0))
+
+        let x: CGFloat
+        if let left = left {
+            x = contentX + left
+        } else if let right = right {
+            x = contentX + contentWidth - width - right
+        } else {
+            x = contentX + (contentWidth - width) / 2
+        }
+
+        let y: CGFloat
+        if let top = top {
+            y = contentY + top
+        } else if let bottom = bottom {
+            y = contentY + contentHeight - height - bottom
+        } else {
+            y = contentY
+        }
+
+        return CGRect(x: x, y: y, width: width, height: height)
+    }
+
+    private static func parseNumber(_ value: Any?) -> CGFloat? {
         if let v = value as? CGFloat { return v }
         if let v = value as? Int { return CGFloat(v) }
         if let v = value as? Double { return CGFloat(v) }
