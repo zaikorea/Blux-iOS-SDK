@@ -62,6 +62,17 @@ final class BannerWindowTests: XCTestCase {
         XCTAssertEqual(f.width, 0)
     }
 
+    func testLandscapeInsetsShiftHorizontalFrame() {
+        let f = BannerWindow.absoluteFrame(
+            options: ["height": 70, "bottom": 16, "left": 16, "right": 67],
+            screenBounds: CGRect(x: 0, y: 0, width: 852, height: 393),
+            safeAreaInsets: UIEdgeInsets(top: 0, left: 59, bottom: 21, right: 59)
+        )
+        XCTAssertEqual(f.origin.x, 59 + 16)
+        XCTAssertEqual(f.width, (852 - 59 - 59) - 16 - 67)
+        XCTAssertEqual(f.maxY, 393 - 21 - 16)
+    }
+
     // WKScriptMessage body의 숫자는 NSNumber(Double)로 들어올 수 있다.
     func testParsesDoubleValues() {
         let f = frame(["width": 320.5, "height": 60.0, "left": 16.5, "top": 0])

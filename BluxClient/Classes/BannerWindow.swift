@@ -92,7 +92,7 @@ final class BannerWindow: UIWindow {
     func updateLayout(height: CGFloat, location: String) {
         currentLocation = location
         
-        let screenBounds = UIScreen.main.bounds
+        let screenBounds = currentScreenBounds()
         let safeAreaInsets = getSafeAreaInsets()
         
         let bannerWidth = min(screenBounds.width * 0.9, BannerWindow.bannerMaxWidth)
@@ -130,7 +130,7 @@ final class BannerWindow: UIWindow {
     func updateLayout(options: [String: Any]) {
         let newFrame = BannerWindow.absoluteFrame(
             options: options,
-            screenBounds: UIScreen.main.bounds,
+            screenBounds: currentScreenBounds(),
             safeAreaInsets: getSafeAreaInsets()
         )
 
@@ -200,12 +200,25 @@ final class BannerWindow: UIWindow {
         return nil
     }
 
+    /// 자기 자신은 frame이 배너 크기라 inset이 0에 가까우므로 host window에서 읽는다
     private func getSafeAreaInsets() -> UIEdgeInsets {
         if #available(iOS 13.0, *) {
-            return windowScene?.windows.first?.safeAreaInsets ?? .zero
+            return windowScene?.windows
+                .first(where: { !($0 is BannerWindow) && !$0.isHidden })?
+                .safeAreaInsets ?? .zero
         } else {
-            return UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
+            return UIApplication.shared.windows
+                .first(where: { !($0 is BannerWindow) && !$0.isHidden })?
+                .safeAreaInsets ?? .zero
         }
+    }
+
+    /// inset과 같은 scene 좌표계의 bounds — iPad Split View 등 scene < 물리 화면 대응
+    private func currentScreenBounds() -> CGRect {
+        if #available(iOS 13.0, *), let scene = windowScene {
+            return scene.coordinateSpace.bounds
+        }
+        return UIScreen.main.bounds
     }
     
     /// 배너 닫기
