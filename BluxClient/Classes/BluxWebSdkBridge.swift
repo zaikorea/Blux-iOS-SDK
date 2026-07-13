@@ -138,13 +138,7 @@ private extension BluxWebSdkBridge {
             return
         }
 
-        do {
-            let data = try JSONSerialization.data(withJSONObject: dict)
-            let userProperties = try JSONDecoder().decode(UserProperties.self, from: data)
-            BluxClient.setUserProperties(userProperties: userProperties)
-        } catch {
-            Logger.error("BluxWebSdkBridge.setUserProperties: \(error)")
-        }
+        BluxClient.setUserPropertiesData(userProperties: dict)
     }
 
     func handleSetCustomUserProperties(_ payload: Any?) {
@@ -153,16 +147,7 @@ private extension BluxWebSdkBridge {
             return
         }
 
-        var sanitized: [String: Any?] = [:]
-        for (key, value) in dict {
-            if value is NSNull {
-                sanitized[key] = nil
-            } else {
-                sanitized[key] = value
-            }
-        }
-
-        BluxClient.setCustomUserProperties(customUserProperties: sanitized)
+        BluxClient.setCustomUserProperties(customUserProperties: dict)
     }
 
     func handleSendEvent(_ payload: Any?) {

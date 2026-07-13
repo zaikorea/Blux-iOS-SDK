@@ -1,6 +1,75 @@
 import XCTest
 @testable import BluxClient
 
+private final class UpdatePropertiesURLProtocol: URLProtocol {
+    private static let lock = NSLock()
+    private static var capturedBodyStorage: Data?
+    private static var requestExpectation: XCTestExpectation?
+
+    static func reset(expectation: XCTestExpectation? = nil) {
+        lock.lock()
+        capturedBodyStorage = nil
+        requestExpectation = expectation
+        lock.unlock()
+    }
+
+    static var capturedBody: Data? {
+        lock.lock()
+        defer { lock.unlock() }
+        return capturedBodyStorage
+    }
+
+    override class func canInit(with request: URLRequest) -> Bool {
+        request.url?.host == "localhost"
+            && request.url?.path.contains("/update-properties") == true
+    }
+
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        request
+    }
+
+    override func startLoading() {
+        let body = Self.readBody(from: request)
+
+        Self.lock.lock()
+        Self.capturedBodyStorage = body
+        let expectation = Self.requestExpectation
+        Self.lock.unlock()
+
+        let response = HTTPURLResponse(
+            url: request.url!,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: ["Content-Type": "application/json"]
+        )!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: Data("{}".utf8))
+        client?.urlProtocolDidFinishLoading(self)
+        expectation?.fulfill()
+    }
+
+    override func stopLoading() {}
+
+    private static func readBody(from request: URLRequest) -> Data? {
+        if let body = request.httpBody {
+            return body
+        }
+
+        guard let stream = request.httpBodyStream else { return nil }
+        stream.open()
+        defer { stream.close() }
+
+        var data = Data()
+        var buffer = [UInt8](repeating: 0, count: 1_024)
+        while true {
+            let count = stream.read(&buffer, maxLength: buffer.count)
+            guard count >= 0 else { return nil }
+            guard count > 0 else { return data }
+            data.append(contentsOf: buffer.prefix(count))
+        }
+    }
+}
+
 /// Web SDK(`@blux.ai/sdk-web`)의 `IosBridge`가 보내는 메시지를 iOS SDK가 정확히 처리하는지 검증.
 ///
 /// Web SDK가 보내는 형태(IosBridge.postMessage):
@@ -17,15 +86,24 @@ import XCTest
 final class BluxWebSdkBridgeTests: XCTestCase {
     private var guardian: SdkStateGuard!
     private var bridge: BluxWebSdkBridge!
+    private var originalStage: Stage!
 
     override func setUp() {
         super.setUp()
+        originalStage = Stage.current
         guardian = SdkStateGuard()
         guardian.clear()
+        HTTPClient.shared.setStage(.local)
+        UpdatePropertiesURLProtocol.reset()
+        XCTAssertTrue(URLProtocol.registerClass(UpdatePropertiesURLProtocol.self))
         bridge = BluxWebSdkBridge()
     }
 
     override func tearDown() {
+        URLProtocol.unregisterClass(UpdatePropertiesURLProtocol.self)
+        UpdatePropertiesURLProtocol.reset()
+        HTTPClient.shared.setStage(originalStage)
+        originalStage = nil
         guardian.restore()
         guardian = nil
         bridge = nil
@@ -209,7 +287,8 @@ final class BluxWebSdkBridgeTests: XCTestCase {
             ]
         ]
         bridge.handle(scriptMessageBody: body)
-        // 사이드이펙트 직접 검증 어려움. 디코딩 자체가 throw 안 하면 통과 (BluxClient는 IDs 없으니 early return)
+        // BluxClient IDs가 없어 direct setter가 early return한다. Bridge가 dictionary를
+        // 그대로 허용하고 크래시 없이 dispatch하는지만 검증한다.
     }
 
     func testSetUserPropertiesNonDictionaryIsNoop() {
@@ -220,13 +299,76 @@ final class BluxWebSdkBridgeTests: XCTestCase {
         bridge.handle(scriptMessageBody: "{\"action\":\"setUserProperties\"}")
     }
 
-    func testSetUserPropertiesInvalidSchemaIsNoop() {
-        // age는 Int여야 함. String이면 디코딩 실패하지만 bridge는 swallow
-        let body: [String: Any] = [
-            "action": "setUserProperties",
-            "payload": ["age": "not-a-number"]
-        ]
-        bridge.handle(scriptMessageBody: body)
+    func testSetUserPropertiesPreservesExplicitNullInRequestBody() throws {
+        let requestBody = try captureUpdatePropertiesBody {
+            bridge.handle(
+                scriptMessageBody: #"{"action":"setUserProperties","payload":{"phone_number":null}}"#
+            )
+        }
+
+        let properties = try XCTUnwrap(requestBody["user_properties"] as? [String: Any])
+        XCTAssertTrue(properties.keys.contains("phone_number"))
+        XCTAssertTrue(properties["phone_number"] is NSNull)
+    }
+
+    func testSetUserPropertiesDataDistinguishesSwiftNilAndExplicitNull() throws {
+        let requestBody = try captureUpdatePropertiesBody {
+            let properties: [String: Any?] = [
+                "email_address": nil,
+                "phone_number": NSNull()
+            ]
+            BluxClient.setUserPropertiesData(userProperties: properties)
+        }
+
+        let properties = try XCTUnwrap(requestBody["user_properties"] as? [String: Any])
+        XCTAssertFalse(properties.keys.contains("email_address"))
+        XCTAssertTrue(properties.keys.contains("phone_number"))
+        XCTAssertTrue(properties["phone_number"] is NSNull)
+    }
+
+    func testSetCustomUserPropertiesPreservesExplicitNullInRequestBody() throws {
+        let requestBody = try captureUpdatePropertiesBody {
+            bridge.handle(
+                scriptMessageBody: #"{"action":"setCustomUserProperties","payload":{"removed_key":null}}"#
+            )
+        }
+
+        let properties = try XCTUnwrap(requestBody["custom_user_properties"] as? [String: Any])
+        XCTAssertTrue(properties.keys.contains("removed_key"))
+        XCTAssertTrue(properties["removed_key"] is NSNull)
+    }
+
+    func testSetCustomUserPropertiesEncodesSwiftNilAndExplicitNull() throws {
+        let requestBody = try captureUpdatePropertiesBody {
+            let properties: [String: Any?] = [
+                "swift_nil": nil,
+                "foundation_null": NSNull()
+            ]
+            BluxClient.setCustomUserProperties(customUserProperties: properties)
+        }
+
+        let properties = try XCTUnwrap(requestBody["custom_user_properties"] as? [String: Any])
+        XCTAssertTrue(properties.keys.contains("swift_nil"))
+        XCTAssertTrue(properties["swift_nil"] is NSNull)
+        XCTAssertTrue(properties.keys.contains("foundation_null"))
+        XCTAssertTrue(properties["foundation_null"] is NSNull)
+    }
+
+    private func captureUpdatePropertiesBody(
+        action: () -> Void
+    ) throws -> [String: Any] {
+        SdkConfig.clientIdInUserDefaults = "test-client-id"
+        SdkConfig.bluxIdInUserDefaults = "test-blux-id"
+
+        let requestCaptured = expectation(description: "update-properties request captured")
+        UpdatePropertiesURLProtocol.reset(expectation: requestCaptured)
+        action()
+        wait(for: [requestCaptured], timeout: 2)
+
+        let data = try XCTUnwrap(UpdatePropertiesURLProtocol.capturedBody)
+        return try XCTUnwrap(
+            JSONSerialization.jsonObject(with: data) as? [String: Any]
+        )
     }
 
     // MARK: - setCustomUserProperties
@@ -239,15 +381,6 @@ final class BluxWebSdkBridgeTests: XCTestCase {
                 "loyalty_points": 100,
                 "tags": ["a", "b"]
             ]
-        ]
-        bridge.handle(scriptMessageBody: body)
-    }
-
-    func testSetCustomUserPropertiesSanitizesNSNullToNil() {
-        // Web SDK에서 null로 보낸 값이 NSNull로 변환되는데 bridge가 nil로 처리해야 함
-        let body: [String: Any] = [
-            "action": "setCustomUserProperties",
-            "payload": ["removed_key": NSNull()]
         ]
         bridge.handle(scriptMessageBody: body)
     }
