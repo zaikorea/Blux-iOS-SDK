@@ -112,7 +112,6 @@ final class BannerWindow: UIWindow {
             frame = newFrame
             alpha = 0
             isHidden = false
-            makeKeyAndVisible()
             
             UIView.animate(withDuration: 0.2) {
                 self.alpha = 1
@@ -138,7 +137,6 @@ final class BannerWindow: UIWindow {
             frame = newFrame
             alpha = 0
             isHidden = false
-            makeKeyAndVisible()
 
             UIView.animate(withDuration: 0.2) {
                 self.alpha = 1
@@ -229,7 +227,6 @@ final class BannerWindow: UIWindow {
             self.webView.stopLoading()
             self.webView.configuration.userContentController.removeScriptMessageHandler(forName: "NativeiOSInterface")
             self.isHidden = true
-            self.resignKey()
             completion?()
         }
     }
