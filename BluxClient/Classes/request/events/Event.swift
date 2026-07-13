@@ -1,5 +1,15 @@
 import Foundation
 
+public struct EventTracking: Codable, Equatable {
+    public let id: String
+    public let type: String
+
+    public init(id: String, type: String) {
+        self.id = id
+        self.type = type
+    }
+}
+
 public class EventProperties: Codable {
     public var itemId: String?
     public var section: String?
@@ -14,6 +24,8 @@ public class EventProperties: Codable {
     public var orderAmount: Double?
     public var paidAmount: Double?
     public var items: [AddOrderEvent.Item]?
+    public var searchQuery: String?
+    public var tracking: EventTracking?
 
     enum CodingKeys: String,
         CodingKey
@@ -31,6 +43,8 @@ public class EventProperties: Codable {
         case orderAmount = "order_amount"
         case paidAmount = "paid_amount"
         case items
+        case searchQuery = "search_query"
+        case tracking
     }
 }
 

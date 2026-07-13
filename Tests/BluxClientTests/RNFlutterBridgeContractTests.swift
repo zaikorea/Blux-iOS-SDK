@@ -76,7 +76,12 @@ final class RNFlutterBridgeContractTests: XCTestCase {
             "event_properties": [
                 "page": "home",
                 "prev_page": "splash",
-                "section": "hero"
+                "section": "hero",
+                "search_query": "running shoes",
+                "tracking": [
+                    "id": "tracking-1",
+                    "type": "recommendation"
+                ]
             ],
             "custom_event_properties": [
                 "scroll_depth": 0.5,
@@ -127,6 +132,11 @@ final class RNFlutterBridgeContractTests: XCTestCase {
         XCTAssertEqual(event.eventProperties.page, "home")
         XCTAssertEqual(event.eventProperties.prevSection, nil)
         XCTAssertEqual(event.eventProperties.section, "hero")
+        XCTAssertEqual(event.eventProperties.searchQuery, "running shoes")
+        XCTAssertEqual(
+            event.eventProperties.tracking,
+            EventTracking(id: "tracking-1", type: "recommendation")
+        )
         if case .double(let d)? = event.customEventProperties?["scroll_depth"] {
             XCTAssertEqual(d, 0.5, accuracy: 0.001)
         } else { XCTFail() }
@@ -237,7 +247,12 @@ final class RNFlutterBridgeContractTests: XCTestCase {
             "event_properties": [
                 "order_id": "O-1",
                 "order_amount": 100.0,
-                "paid_amount": 90.0
+                "paid_amount": 90.0,
+                "search_query": "checkout",
+                "tracking": [
+                    "id": "tracking-2",
+                    "type": "campaign"
+                ]
             ]
         ]
 
@@ -255,6 +270,11 @@ final class RNFlutterBridgeContractTests: XCTestCase {
         XCTAssertEqual(event.eventProperties.orderId, "O-1")
         XCTAssertEqual(event.eventProperties.orderAmount, 100)
         XCTAssertEqual(event.eventProperties.paidAmount, 90)
+        XCTAssertEqual(event.eventProperties.searchQuery, "checkout")
+        XCTAssertEqual(
+            event.eventProperties.tracking,
+            EventTracking(id: "tracking-2", type: "campaign")
+        )
     }
 
     func testFlutter_EventPropertiesDecodeFromEmptyDict() throws {

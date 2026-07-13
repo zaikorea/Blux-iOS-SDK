@@ -320,6 +320,118 @@ final class BluxWebSdkBridgeTests: XCTestCase {
         bridge.handle(scriptMessageBody: body)
     }
 
+    func testBuildEventsPreservesSearchQueryAndTracking() throws {
+        let events = bridge.buildEvents(from: [[
+            "event_type": "search",
+            "event_properties": [
+                "search_query": "running shoes",
+                "tracking": [
+                    "id": "tracking-1",
+                    "type": "recommendation"
+                ]
+            ]
+        ]])
+
+        let event = try XCTUnwrap(events.first)
+        XCTAssertEqual(events.count, 1)
+        XCTAssertEqual(event.eventProperties.searchQuery, "running shoes")
+        XCTAssertEqual(
+            event.eventProperties.tracking,
+            EventTracking(id: "tracking-1", type: "recommendation")
+        )
+
+        let data = try JSONEncoder().encode(event.eventProperties)
+        let encoded = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: data) as? [String: Any]
+        )
+        XCTAssertEqual(encoded["search_query"] as? String, "running shoes")
+        let tracking = try XCTUnwrap(encoded["tracking"] as? [String: Any])
+        XCTAssertEqual(tracking["id"] as? String, "tracking-1")
+        XCTAssertEqual(tracking["type"] as? String, "recommendation")
+    }
+
+    func testBuildEventsPreservesOrderAndDefaultsMissingQuantity() throws {
+        let events = bridge.buildEvents(from: [[
+            "event_type": "order",
+            "event_properties": [
+                "order_id": "order-1",
+                "order_amount": 120.0,
+                "paid_amount": 100.0,
+                "items": [
+                    ["id": "item-1", "price": 40.0, "quantity": 3],
+                    [
+                        "id": "item-2",
+                        "price": 80.0,
+                        "custom_event_properties": ["color": "blue"]
+                    ]
+                ]
+            ]
+        ]])
+
+        let event = try XCTUnwrap(events.first)
+        XCTAssertEqual(event.eventProperties.orderId, "order-1")
+        XCTAssertEqual(event.eventProperties.orderAmount, 120)
+        XCTAssertEqual(event.eventProperties.paidAmount, 100)
+
+        let items = try XCTUnwrap(event.eventProperties.items)
+        XCTAssertEqual(items.count, 2)
+        XCTAssertEqual(items[0].id, "item-1")
+        XCTAssertEqual(items[0].price, 40)
+        XCTAssertEqual(items[0].quantity, 3)
+        XCTAssertEqual(items[1].id, "item-2")
+        XCTAssertEqual(items[1].price, 80)
+        XCTAssertEqual(items[1].quantity, 1)
+        guard case .string("blue")? = items[1].customEventProperties?["color"] else {
+            XCTFail("item custom property was not preserved")
+            return
+        }
+
+        let data = try JSONEncoder().encode(event.eventProperties)
+        let encodedProperties = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: data) as? [String: Any]
+        )
+        let encodedItems = try XCTUnwrap(encodedProperties["items"] as? [[String: Any]])
+        XCTAssertEqual(encodedItems[0]["quantity"] as? Int, 3)
+        XCTAssertEqual(encodedItems[1]["quantity"] as? Int, 1)
+    }
+
+    func testBuildEventsDropsMalformedEventProperties() {
+        let events = bridge.buildEvents(from: [
+            [
+                "event_type": "order",
+                "event_properties": "not-an-object"
+            ],
+            [
+                "event_type": "order",
+                "event_properties": [
+                    "items": [["id": "item-1", "price": "invalid"]]
+                ]
+            ]
+        ])
+
+        XCTAssertTrue(events.isEmpty)
+    }
+
+    func testBuildEventsKeepsValidRequestInMixedBatch() throws {
+        let events = bridge.buildEvents(from: [
+            [
+                "event_type": "order",
+                "event_properties": [
+                    "items": [["id": "item-1", "price": "invalid"]]
+                ]
+            ],
+            [
+                "event_type": "search",
+                "event_properties": ["search_query": "valid query"]
+            ]
+        ])
+
+        let event = try XCTUnwrap(events.first)
+        XCTAssertEqual(events.count, 1)
+        XCTAssertEqual(event.eventType, "search")
+        XCTAssertEqual(event.eventProperties.searchQuery, "valid query")
+    }
+
     // MARK: - Web SDK full contract simulation
 
     /// IosBridge.postMessage가 실제로 만드는 JSON 형태를 그대로 재현.

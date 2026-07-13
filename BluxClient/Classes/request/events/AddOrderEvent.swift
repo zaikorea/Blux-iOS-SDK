@@ -35,6 +35,17 @@ public class AddOrderEvent: EventRequest {
             self.quantity = quantity
             self.customEventProperties = customEventProperties
         }
+
+        public required init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            id = try container.decode(String.self, forKey: .id)
+            price = try container.decode(Double.self, forKey: .price)
+            quantity = try container.decodeIfPresent(Int.self, forKey: .quantity) ?? 1
+            customEventProperties = try container.decodeIfPresent(
+                [String: CustomEventValue].self,
+                forKey: .customEventProperties
+            )
+        }
     }
 
     public class Builder {

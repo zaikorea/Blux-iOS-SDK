@@ -172,13 +172,13 @@ private extension BluxWebSdkBridge {
             return
         }
 
-        let events = requests.compactMap { buildEvent(from: $0) }
+        let events = buildEvents(from: requests)
         if !events.isEmpty {
             BluxClient.sendRequestData(events)
         }
     }
 
-    func buildEvent(from dict: [String: Any]) -> Event? {
+    func buildEvent(from dict: [String: Any], requestIndex: Int) -> Event? {
         guard let eventType = dict["event_type"] as? String, !eventType.isEmpty else {
             return nil
         }
@@ -189,10 +189,16 @@ private extension BluxWebSdkBridge {
             event.capturedAt = capturedAt
         }
 
-        if let propsDict = dict["event_properties"] as? [String: Any] {
-            if let props: EventProperties = decode(propsDict) {
-                event.setEventProperties(props)
+        if let rawProperties = dict["event_properties"] {
+            guard let propsDict = rawProperties as? [String: Any],
+                  let data = try? JSONSerialization.data(withJSONObject: propsDict),
+                  let props = try? JSONDecoder().decode(EventProperties.self, from: data)
+            else {
+                logInvalidEventProperties(index: requestIndex, eventType: eventType)
+                return nil
             }
+
+            event.setEventProperties(props)
         }
 
         if let customDict = dict["custom_event_properties"] as? [String: Any] {
@@ -206,8 +212,19 @@ private extension BluxWebSdkBridge {
         return event
     }
 
-    func decode<T: Decodable>(_ dict: [String: Any]) -> T? {
-        guard let data = try? JSONSerialization.data(withJSONObject: dict) else { return nil }
-        return try? JSONDecoder().decode(T.self, from: data)
+    func logInvalidEventProperties(index: Int, eventType: String) {
+        Logger.error(
+            "BluxWebSdkBridge.sendEvent: invalid event_properties"
+                + " index=\(index) event_type=\(eventType)"
+        )
+    }
+}
+
+@available(iOSApplicationExtension, unavailable)
+extension BluxWebSdkBridge {
+    func buildEvents(from requests: [[String: Any]]) -> [Event] {
+        requests.enumerated().compactMap { index, request in
+            buildEvent(from: request, requestIndex: index)
+        }
     }
 }

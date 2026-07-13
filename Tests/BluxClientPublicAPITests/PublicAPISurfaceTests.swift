@@ -46,7 +46,7 @@ final class PublicAPISurfaceTests: XCTestCase {
             = BluxClient.addInAppCustomActionHandler(callback:)
     }
 
-    func testPublicTypeMembersCompile() {
+    func testPublicTypeMembersCompile() throws {
         // Event public init과 mutable capturedAt
         let event = Event(eventType: "x")
         event.capturedAt = "2025-01-01T00:00:00.000Z"
@@ -59,7 +59,15 @@ final class PublicAPISurfaceTests: XCTestCase {
         // EventProperties는 wrapper SDK에서 JSONDecoder로만 생성하므로 직접 init() 검증은 하지 않는다.
         // (현재 EventProperties는 명시적 public init이 없어 wrapper 모듈에서 직접 init 불가.
         //  Codable witness를 통한 디코딩만 가능.)
-        let _ = try? JSONDecoder().decode(EventProperties.self, from: Data("{}".utf8))
+        let properties = try JSONDecoder().decode(EventProperties.self, from: Data("{}".utf8))
+        let _: (String, String) -> EventTracking = EventTracking.init(id:type:)
+        let tracking = EventTracking(id: "tracking-1", type: "recommendation")
+        let _: String = tracking.id
+        let _: String = tracking.type
+        properties.searchQuery = "shoes"
+        properties.tracking = tracking
+        let _: String? = properties.searchQuery
+        let _: EventTracking? = properties.tracking
 
         // UserProperties는 public init으로 wrapper SDK가 직접 생성한다 (Flutter 패턴).
         let _ = UserProperties()

@@ -20,6 +20,8 @@ final class EventPropertiesTests: XCTestCase {
         XCTAssertNil(props.orderAmount)
         XCTAssertNil(props.paidAmount)
         XCTAssertNil(props.items)
+        XCTAssertNil(props.searchQuery)
+        XCTAssertNil(props.tracking)
     }
 
     func testSnakeCaseEncoding() throws {
@@ -31,6 +33,8 @@ final class EventPropertiesTests: XCTestCase {
         props.prevPage = "pp"
         props.orderAmount = 1
         props.paidAmount = 2
+        props.searchQuery = "shoes"
+        props.tracking = EventTracking(id: "tracking-1", type: "recommendation")
 
         let data = try encoder.encode(props)
         let dict = try JSONSerialization.jsonObject(with: data) as! [String: Any]
@@ -42,6 +46,10 @@ final class EventPropertiesTests: XCTestCase {
         XCTAssertEqual(dict["prev_page"] as? String, "pp")
         XCTAssertEqual(dict["order_amount"] as? Double, 1)
         XCTAssertEqual(dict["paid_amount"] as? Double, 2)
+        XCTAssertEqual(dict["search_query"] as? String, "shoes")
+        let tracking = try XCTUnwrap(dict["tracking"] as? [String: Any])
+        XCTAssertEqual(tracking["id"] as? String, "tracking-1")
+        XCTAssertEqual(tracking["type"] as? String, "recommendation")
     }
 
     func testItemsEncodingShape() throws {
@@ -87,5 +95,51 @@ final class EventPropertiesTests: XCTestCase {
         XCTAssertEqual(decoded.itemId, "id")
         XCTAssertEqual(decoded.price, 1.5)
         XCTAssertEqual(decoded.position, 7)
+    }
+
+    func testCodingKeyContractRoundTrip() throws {
+        let expectedKeys: Set<String> = [
+            "item_id",
+            "section",
+            "prev_section",
+            "recommendation_id",
+            "price",
+            "order_id",
+            "rating",
+            "prev_page",
+            "page",
+            "position",
+            "order_amount",
+            "paid_amount",
+            "items",
+            "search_query",
+            "tracking"
+        ]
+        let fixture: [String: Any] = [
+            "item_id": "item-1",
+            "section": "featured",
+            "prev_section": "home",
+            "recommendation_id": "recommendation-1",
+            "price": 10.0,
+            "order_id": "order-1",
+            "rating": 5.0,
+            "prev_page": "landing",
+            "page": "detail",
+            "position": 1.0,
+            "order_amount": 10.0,
+            "paid_amount": 9.0,
+            "items": [["id": "item-1", "price": 10.0, "quantity": 1]],
+            "search_query": "shoes",
+            "tracking": ["id": "tracking-1", "type": "recommendation"]
+        ]
+
+        let input = try JSONSerialization.data(withJSONObject: fixture)
+        let properties = try decoder.decode(EventProperties.self, from: input)
+        let output = try encoder.encode(properties)
+        let encoded = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: output) as? [String: Any]
+        )
+
+        XCTAssertEqual(Set(encoded.keys), expectedKeys)
     }
 }
