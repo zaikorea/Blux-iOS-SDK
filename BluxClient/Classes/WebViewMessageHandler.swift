@@ -11,6 +11,10 @@ final class WebViewMessageHandler {
         handlers.removeValue(forKey: action)
     }
 
+    func removeAllHandlers() {
+        handlers.removeAll()
+    }
+
     func handleMessage(_ action: String, data: JSON) {
         if let handler = handlers[action] {
             handler(data)

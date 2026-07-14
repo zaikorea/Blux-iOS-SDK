@@ -11,6 +11,8 @@ import UIKit
 final class WebViewController: UIViewController, WKNavigationDelegate,
     WKScriptMessageHandler
 {
+    private static let scriptHandlerName = "NativeiOSInterface"
+
     private var webView: WKWebView!
     private var content: Content
     private let messageHandler = WebViewMessageHandler()
@@ -66,11 +68,31 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
         updateWebViewConstraints()
     }
 
+    /// 순환 참조 2개를 끊는다.
+    /// (1) userContentController가 self를 강하게 보유 (BannerWindow.dismiss와 동일 처리)
+    /// (2) messageHandler의 클로저들이 self를 캡처
+    /// 철거 후 재표시는 지원하지 않는다 — 호출부는 표시마다 VC를 새로 만든다.
+    func teardownWebView() {
+        webView.stopLoading()
+        webView.configuration.userContentController
+            .removeScriptMessageHandler(forName: Self.scriptHandlerName)
+        messageHandler.removeAllHandlers()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        // 다른 화면이 위에 덮인 경우가 아니라 "최종적으로 내려가는" 경우에만 철거한다.
+        guard isBeingDismissed || isMovingFromParent
+            || navigationController?.isBeingDismissed == true
+        else { return }
+        teardownWebView()
+    }
+
     override func loadView() {
         super.loadView()
 
         let userContentController = WKUserContentController()
-        userContentController.add(self, name: "NativeiOSInterface")
+        userContentController.add(self, name: Self.scriptHandlerName)
 
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = userContentController
@@ -199,7 +221,7 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
         didReceive message: WKScriptMessage
     ) {
         guard
-            message.name == "NativeiOSInterface",
+            message.name == Self.scriptHandlerName,
             let messageBody = message.body as? [String: Any]
         else { return }
 
