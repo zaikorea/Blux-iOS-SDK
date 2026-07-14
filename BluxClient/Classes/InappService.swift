@@ -458,6 +458,13 @@ class InappService {
                 topController.present(
                     webviewController, animated: false, completion: nil
                 )
+            } else {
+                // 표시할 화면이 없으면 (백그라운드 launch, scene 미활성 등) 이 인앱은 버리고
+                // 플래그를 복구해 파이프라인을 살린다 — 위 숨김 인앱 경로와 동일한 복구 패턴.
+                Logger.verbose(
+                    "INAPP: No top view controller to present on. Dropping inapp \(inappId).")
+                isWebViewPresented = false
+                processWebViewQueue()
             }
         }
     }
