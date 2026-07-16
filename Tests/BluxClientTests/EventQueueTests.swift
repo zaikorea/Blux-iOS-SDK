@@ -111,6 +111,34 @@ final class EventQueueTests: XCTestCase {
         wait(for: [exp], timeout: 15.0)
     }
 
+    // clearPending 후 추가된 태스크가 in-flight 태스크의 done 시점 위치 기반 제거로 사라지던 회귀 고정.
+    // clearPending → B 추가 → A done 블록이 같은 직렬 큐에 그 순서로 enqueue되므로 sleep 불필요.
+    func testTaskAddedAfterClearPendingRunsAfterInflightCompletes() throws {
+        let queue = EventQueue.shared
+
+        var inflightDone: (() -> Void)?
+        let inflightStarted = expectation(description: "inflight task started")
+
+        queue.addEvent { done in
+            inflightDone = done
+            inflightStarted.fulfill()
+        }
+        wait(for: [inflightStarted], timeout: 15)
+
+        queue.clearPending()
+
+        let nextTaskRan = expectation(description: "task added after clear ran")
+        queue.addEvent { done in
+            nextTaskRan.fulfill()
+            done()
+        }
+
+        let finishInflight = try XCTUnwrap(inflightDone)
+        finishInflight()
+
+        wait(for: [nextTaskRan], timeout: 15)
+    }
+
     // MARK: - shared 싱글톤
 
     func testSharedIsSingleton() {

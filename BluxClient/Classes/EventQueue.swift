@@ -55,17 +55,17 @@ class EventQueue {
             guard let self = self,
                   self.isInitialized,
                   !self.isProcessing,
-                  let nextTask = self.eventsQueue.first
+                  !self.eventsQueue.isEmpty
             else { return }
 
             self.isProcessing = true
+            // 실행 시작 = 큐에서 이탈. 이후 clearPending이 와도 실행 중 태스크와 무관하고,
+            // done 시점에 위치 기반 제거를 할 필요가 없다.
+            let nextTask = self.eventsQueue.removeFirst()
 
             nextTask { [weak self] in
                 guard let self = self else { return }
                 self.queue.async {
-                    if !self.eventsQueue.isEmpty {
-                        self.eventsQueue.removeFirst()
-                    }
                     self.isProcessing = false
                     self.processNext()
                 }
