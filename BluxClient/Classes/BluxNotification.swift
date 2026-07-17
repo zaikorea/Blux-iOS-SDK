@@ -56,7 +56,6 @@ struct BluxNotificationResponse: Codable {
     static func getBluxNotificationFromUserInfo(userInfo: [AnyHashable: Any]) -> BluxNotification? {
         let isBlux = userInfo["isBlux"] as? Bool
         if isBlux != true {
-            Logger.error("Not a notification from Blux.")
             return nil
         }
 
