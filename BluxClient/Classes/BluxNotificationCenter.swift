@@ -86,34 +86,40 @@ public class BluxNotificationCenter: NSObject, UNUserNotificationCenterDelegate 
             UNNotificationPresentationOptions
         ) -> Void
     ) {
-        if let bluxNotification =
+        guard let bluxNotification =
             BluxNotification.getBluxNotificationFromUNNotificationContent(
                 notification.request.content)
+        else {
+            // Blux로 위임된 non-Blux 알림은 처리하지 않고 포그라운드 표시도 요청하지 않는다.
+            // 타사 알림 표시 정책은 호스트가 Blux에 위임하기 전에 분기한다.
+            completionHandler([])
+            return
+        }
+
+        if let bluxDismissForegroundNotification = bluxNotification.data?[
+            "blux_dismiss_foreground_notification"
+        ] as? String,
+            bluxDismissForegroundNotification == "true"
         {
-            if let bluxDismissForegroundNotification = bluxNotification.data?[
-                "blux_dismiss_foreground_notification"
-            ] as? String,
-                bluxDismissForegroundNotification == "true"
-            {
-                Logger.verbose(
-                    "Foreground notification received was dismissed because blux_dismiss_foreground_notification is true."
-                )
-                return
-            }
-
-            let event = NotificationReceivedEvent(
-                notification: bluxNotification,
-                completionHandler: completionHandler
+            Logger.verbose(
+                "Foreground notification received was dismissed because blux_dismiss_foreground_notification is true."
             )
+            completionHandler([])
+            return
+        }
 
-            if let handler = EventHandlers.notificationForegroundWillDisplay {
-                Logger.verbose(
-                    "Handle foreground notification received with registered handler."
-                )
-                handler(event)
-            } else {
-                event.display()
-            }
+        let event = NotificationReceivedEvent(
+            notification: bluxNotification,
+            completionHandler: completionHandler
+        )
+
+        if let handler = EventHandlers.notificationForegroundWillDisplay {
+            Logger.verbose(
+                "Handle foreground notification received with registered handler."
+            )
+            handler(event)
+        } else {
+            event.display()
         }
     }
 
