@@ -89,10 +89,16 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        BluxNotificationCenter.shared.userNotificationCenter(
-            center, didReceive: response,
-            withCompletionHandler: completionHandler
-        )
+        if BluxNotification.getBluxNotificationFromUNNotificationContent(response.notification.request.content) != nil {
+            BluxNotificationCenter.shared.userNotificationCenter(
+                center, didReceive: response,
+                withCompletionHandler: completionHandler
+            )
+        } else {
+            // 다른 푸시 공급자를 사용한다면 다음 줄 대신 해당 공급자 handler에 위임하고,
+            // 그 handler가 completionHandler를 정확히 한 번 호출해야 한다.
+            completionHandler()
+        }
     }
 
     func userNotificationCenter(
@@ -102,9 +108,15 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             UNNotificationPresentationOptions
         ) -> Void
     ) {
-        BluxNotificationCenter.shared.userNotificationCenter(
-            center, willPresent: notification,
-            withCompletionHandler: completionHandler
-        )
+        if BluxNotification.getBluxNotificationFromUNNotificationContent(notification.request.content) != nil {
+            BluxNotificationCenter.shared.userNotificationCenter(
+                center, willPresent: notification,
+                withCompletionHandler: completionHandler
+            )
+        } else {
+            // 다른 푸시 공급자를 사용한다면 다음 줄 대신 해당 공급자 handler에 위임하고,
+            // 그 handler가 completionHandler를 정확히 한 번 호출해야 한다.
+            completionHandler([])
+        }
     }
 }
