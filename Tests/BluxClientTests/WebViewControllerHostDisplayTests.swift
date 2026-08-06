@@ -80,6 +80,22 @@ final class WebViewControllerHostDisplayTests: XCTestCase {
         XCTAssertFalse(navigation.isNavigationBarHidden)
     }
 
+    /// 다른 전체 화면(영상 등)에 덮였다 돌아와도 최초 URL이 아니라 현재 문서 기준 chrome을
+    /// 유지해야 한다. viewWillAppear는 재등장 때마다 불린다.
+    func testKeepsCurrentDocumentChromeWhenReappearing() {
+        let (controller, navigation) = present(contentURL: landing)
+        controller.webView(webView(showing: external), didCommit: nil)
+        XCTAssertFalse(navigation.isNavigationBarHidden)
+
+        controller.beginAppearanceTransition(false, animated: false)
+        controller.endAppearanceTransition()
+        controller.beginAppearanceTransition(true, animated: false)
+        controller.endAppearanceTransition()
+
+        XCTAssertFalse(navigation.isNavigationBarHidden)
+        XCTAssertEqual(controller.navigationItem.title, "example.com")
+    }
+
     // MARK: - helpers
 
     private func present(contentURL: URL) -> (WebViewController, UINavigationController) {
