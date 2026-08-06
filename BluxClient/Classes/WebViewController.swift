@@ -24,7 +24,8 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "xmark"), for: .normal)
         button.tintColor = .white
-        button.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        // 흰 아이콘 대비를 3:1 이상으로 유지하려면 0.4로는 부족하다.
+        button.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         button.layer.cornerRadius = 22
         button.accessibilityLabel = "Close"
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -33,10 +34,10 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
         return button
     }()
 
-    private var contentHost: String? {
+    private var contentURL: URL {
         switch content {
-        case let .url(url): return url.host
-        case let .htmlString(_, baseURL): return baseURL.host
+        case let .url(url): return url
+        case let .htmlString(_, baseURL): return baseURL
         }
     }
 
@@ -83,8 +84,8 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // 로드 완료를 기다리면 바가 보였다 사라지므로 최초 host로 먼저 결정한다.
-        applyChrome(for: contentHost)
+        // 로드 완료를 기다리면 바가 보였다 사라지므로 최초 URL로 먼저 결정한다.
+        applyChrome(for: contentURL)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -152,9 +153,8 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // 인앱 메시지는 호스트 앱 화면 위에 떠야 해서 배경이 비어야 하지만,
-        // 웹 페이지는 바를 감췄을 때 상태바 영역이 뚫려 보이지 않도록 불투명하게 채운다.
-        view.backgroundColor = navigationController != nil ? .white : .clear
+        // 뷰컨트롤러 배경 및 다크모드 영향 방지 (바를 감출 때만 applyChrome이 불투명하게 바꾼다)
+        view.backgroundColor = .clear
         overrideUserInterfaceStyle = .light
 
         if #available(iOS 14.0, *) {
@@ -192,12 +192,16 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
     }
 
     /// Blux 개인화 랜딩은 앱 자체 화면처럼 보이도록 내비게이션 바를 감추고 닫기 버튼만 남긴다.
-    /// 그 외 host에서는 바와 host 표시를 되살려 어느 사이트를 보고 있는지 알 수 있게 한다.
-    private func applyChrome(for host: String?) {
-        let hidesBar = Self.shouldHideHost(host ?? "")
+    /// 그 외 URL에서는 바와 host 표시를 되살려 어느 사이트를 보고 있는지 알 수 있게 한다.
+    private func applyChrome(for url: URL?) {
+        let isWebPage = navigationController != nil
+        let hidesBar = Self.isBluxLanding(url)
         navigationController?.setNavigationBarHidden(hidesBar, animated: false)
-        overlayCloseButton.isHidden = !(hidesBar && navigationController != nil)
-        navigationItem.title = hidesBar ? "" : host
+        overlayCloseButton.isHidden = !(hidesBar && isWebPage)
+        navigationItem.title = hidesBar ? "" : url?.host
+        // 바를 감출 때만 불투명하게 채운다. 바가 있으면 그것이 상태바 아래를 덮고,
+        // 인앱 메시지는 호스트 앱 화면 위에 떠야 하므로 비어 있어야 한다.
+        view.backgroundColor = hidesBar && isWebPage ? .white : .clear
         updateWebViewConstraints()
     }
 
@@ -254,21 +258,46 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
             return
         }
 
+        // 외부 사이트로 나가는 이동은 콘텐츠가 바뀌기 전에 바를 되살린다.
+        // 반대 방향(랜딩으로 진입)은 문서가 commit될 때까지 감추지 않는다.
+        if navigationAction.targetFrame?.isMainFrame == true, !Self.isBluxLanding(url) {
+            applyChrome(for: url)
+        }
+
         decisionHandler(.allow)
     }
 
-    // 유사 host 우회를 막기 위해 소문자 정규화 후 정확 일치로만 판정한다.
-    static func shouldHideHost(_ host: String) -> Bool {
-        ["landing.blux.ai", "dev.landing.blux.ai"].contains(host.lowercased())
+    private static let landingHosts: Set<String> = [
+        "landing.blux.ai", "dev.landing.blux.ai",
+    ]
+
+    /// host만 보면 `http://landing.blux.ai`처럼 origin이 다른 URL까지 통과하므로
+    /// scheme과 port를 포함해 판정한다. host는 유사 host 우회를 막기 위해 정확 일치로만 본다.
+    static func isBluxLanding(_ url: URL?) -> Bool {
+        guard let url,
+              url.scheme?.lowercased() == "https",
+              url.port == nil || url.port == 443,
+              let host = url.host?.lowercased()
+        else { return false }
+        return landingHosts.contains(host)
     }
 
-    // 이동이 시작되는 즉시 반영해, 외부 사이트를 여는 동안 host가 가려진 채로 남지 않게 한다.
-    func webView(_ webView: WKWebView, didStartProvisionalNavigation _: WKNavigation!) {
-        applyChrome(for: webView.url?.host)
+    /// 새 문서가 표시되기 시작하는 시점. 랜딩으로 들어갈 때 바를 감추는 것은 여기서만 한다 —
+    /// 이동을 시작한 시점에 감추면 아직 보이는 이전 페이지가 chrome 없이 노출된다.
+    func webView(_ webView: WKWebView, didCommit _: WKNavigation!) {
+        applyChrome(for: webView.url)
     }
 
     func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
-        applyChrome(for: webView.url?.host)
+        applyChrome(for: webView.url)
+    }
+
+    /// 이동이 실패하면 이전 문서가 그대로 남으므로 그 문서 기준으로 되돌린다.
+    func webView(
+        _ webView: WKWebView, didFailProvisionalNavigation _: WKNavigation!,
+        withError _: Error
+    ) {
+        applyChrome(for: webView.url)
     }
 
     func userContentController(
