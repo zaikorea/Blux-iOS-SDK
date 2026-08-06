@@ -211,9 +211,15 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
         decisionHandler(.allow)
     }
 
+    // Blux 개인화 랜딩 도메인은 앱 네이티브 화면처럼 보이도록 host를 표시하지 않는다.
+    // 유사 host 우회를 막기 위해 소문자 정규화 후 정확 일치로만 판정한다.
+    static func shouldHideHost(_ host: String) -> Bool {
+        ["landing.blux.ai", "dev.landing.blux.ai"].contains(host.lowercased())
+    }
+
     func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
         let host = webView.url?.host ?? ""
-        navigationItem.title = host
+        navigationItem.title = Self.shouldHideHost(host) ? "" : host
     }
 
     func userContentController(
