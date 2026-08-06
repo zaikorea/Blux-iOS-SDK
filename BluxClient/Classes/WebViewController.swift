@@ -17,6 +17,7 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
     private var content: Content
     private let messageHandler = WebViewMessageHandler()
     private var hasLoadedContent = false
+    private var hasAppliedInitialChrome = false
 
     /// 내비게이션 바를 감출 때 웹 콘텐츠 위에 띄우는 닫기 버튼.
     /// fullScreen present라 이 버튼이 사라지면 화면을 빠져나갈 방법이 없어진다.
@@ -85,6 +86,10 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // 로드 완료를 기다리면 바가 보였다 사라지므로 최초 URL로 먼저 결정한다.
+        // 다른 전체 화면(영상 등)에 덮였다 돌아올 때도 이 메서드가 불리는데, 그때 최초 URL로
+        // 되감으면 외부 페이지가 바 없이 노출된다. 이후 상태는 navigation 콜백이 관리한다.
+        guard !hasAppliedInitialChrome else { return }
+        hasAppliedInitialChrome = true
         applyChrome(for: contentURL)
     }
 
