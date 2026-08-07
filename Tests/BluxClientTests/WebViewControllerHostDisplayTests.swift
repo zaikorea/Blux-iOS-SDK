@@ -80,6 +80,22 @@ final class WebViewControllerHostDisplayTests: XCTestCase {
         XCTAssertFalse(navigation.isNavigationBarHidden)
     }
 
+    /// 반대 방향: 랜딩에서 외부로 나가려다 실패하면(조기 복구로 바가 이미 보여도)
+    /// 화면에 남은 랜딩 기준으로 다시 감춰야 한다. 실패 시 webView.url은 committed 문서다.
+    func testRehidesBarWhenExternalNavigationFailsOnLanding() {
+        let (controller, navigation) = present(contentURL: landing)
+        controller.webView(webView(showing: external), didCommit: nil)
+        XCTAssertFalse(navigation.isNavigationBarHidden)
+
+        controller.webView(
+            webView(showing: landing), didFailProvisionalNavigation: nil,
+            withError: URLError(.notConnectedToInternet)
+        )
+
+        XCTAssertTrue(navigation.isNavigationBarHidden)
+        XCTAssertEqual(controller.navigationItem.title, "")
+    }
+
     /// 다른 전체 화면(영상 등)에 덮였다 돌아와도 최초 URL이 아니라 현재 문서 기준 chrome을
     /// 유지해야 한다. viewWillAppear는 재등장 때마다 불린다.
     func testKeepsCurrentDocumentChromeWhenReappearing() {
