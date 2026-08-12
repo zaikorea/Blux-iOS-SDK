@@ -44,6 +44,8 @@ final class PublicAPISurfaceTests: XCTestCase {
 
         let _: (@escaping (String, [String: Any]) -> Void) -> () -> Void
             = BluxClient.addInAppCustomActionHandler(callback:)
+
+        let _: String? = BluxAppDelegate.shared.pushToken
     }
 
     func testPublicTypeMembersCompile() throws {
