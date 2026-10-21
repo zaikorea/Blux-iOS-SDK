@@ -48,6 +48,12 @@ final class PublicAPISurfaceTests: XCTestCase {
         let _: String? = BluxAppDelegate.shared.pushToken
     }
 
+    func testBluxUserPublicSignaturesCompile() {
+        // Flutter wrapper가 getBluxUser 응답을 만들 때 읽는다.
+        let _: () -> String? = BluxUser.getId
+        let _: () -> String? = BluxUser.getDeviceId
+    }
+
     func testPublicTypeMembersCompile() throws {
         // Event public init과 mutable capturedAt
         let event = Event(eventType: "x")
