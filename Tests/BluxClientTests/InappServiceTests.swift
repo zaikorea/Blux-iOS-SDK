@@ -16,12 +16,13 @@ final class InappServiceTests: XCTestCase {
             notificationId: "n",
             htmlString: "<html></html>",
             inappId: "i",
-            baseUrl: "https://cdn.blux.ai"
+            baseUrl: "https://cdn.blux.ai",
+            dismissOnPageTransition: nil
         )
 
         let exp = expectation(description: "no crash from background dispatch")
         DispatchQueue.global().async {
-            InappService.handleInappResponse(response)
+            InappService.handleInappResponse(response, pageTransitionCount: 0)
             exp.fulfill()
         }
         wait(for: [exp], timeout: 2.0)
@@ -40,8 +41,16 @@ final class InappServiceTests: XCTestCase {
             notificationId: "n",
             htmlString: "<html></html>",
             inappId: "i",
-            baseUrl: ""
+            baseUrl: "",
+            dismissOnPageTransition: nil
         )
-        InappService.handleInappResponse(response)
+        InappService.handleInappResponse(response, pageTransitionCount: 0)
+    }
+
+    // notifyPageTransition은 번호를 호출 스레드에서 바로 올린다. SDK 초기화 여부와 무관하다.
+    func testNotifyPageTransitionIncrementsCount() {
+        let before = InappService.currentPageTransitionCount
+        InappService.notifyPageTransition()
+        XCTAssertEqual(InappService.currentPageTransitionCount, before + 1)
     }
 }

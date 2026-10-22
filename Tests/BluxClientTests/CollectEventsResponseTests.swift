@@ -38,6 +38,23 @@ final class CollectEventsResponseTests: XCTestCase {
         XCTAssertEqual(response.inapp?.baseUrl, "https://cdn.blux.ai")
     }
 
+    // 서버는 dismiss_on_page_transition이 true인 인앱 메시지에만 이 키를 보낸다. 없으면 nil이다.
+    func testDecodeInappDismissOnPageTransition() throws {
+        let json = """
+        {
+          "inapp": {
+            "notificationId": "n1",
+            "htmlString": "<html></html>",
+            "inappId": "i1",
+            "baseUrl": "https://cdn.blux.ai",
+            "dismissOnPageTransition": true
+          }
+        }
+        """.data(using: .utf8)!
+        let response = try decoder.decode(CollectEventsResponse.self, from: json)
+        XCTAssertEqual(response.inapp?.dismissOnPageTransition, true)
+    }
+
     func testDecodeFullResponse() throws {
         let json = """
         {
