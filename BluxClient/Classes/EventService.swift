@@ -84,6 +84,9 @@ class EventService {
     }
 
     private static func performRequest(events: [Event]) {
+        // 요청을 만들 때의 페이지 번호. 응답이 오기 전에 페이지가 바뀌었는지 가린다.
+        let pageTransitionCount = InappService.currentPageTransitionCount
+
         // 폴링 타이머 리셋
         resetPollTimer()
 
@@ -120,7 +123,7 @@ class EventService {
                 if let response = response {
                     if let inapp = response.inapp {
                         DispatchQueue.main.async {
-                            InappService.handleInappResponse(inapp)
+                            InappService.handleInappResponse(inapp, pageTransitionCount: pageTransitionCount)
                         }
                     }
                     if let nextPollDelay = response.nextPollDelayMs {

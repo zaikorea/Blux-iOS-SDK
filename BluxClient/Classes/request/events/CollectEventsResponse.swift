@@ -6,12 +6,15 @@ struct InappDispatchResponse: Codable {
     let htmlString: String
     let inappId: String
     let baseUrl: String
+    /// true면 페이지 이동 때 닫는다. 서버는 true일 때만 보낸다.
+    let dismissOnPageTransition: Bool?
 
     enum CodingKeys: String, CodingKey {
         case notificationId
         case htmlString
         case inappId
         case baseUrl
+        case dismissOnPageTransition
     }
 }
 

@@ -97,6 +97,8 @@ private extension BluxWebSdkBridge {
             handleSetCustomUserProperties(payload)
         case "sendEvent":
             handleSendEvent(payload)
+        case "pageTransition":
+            BluxClient.notifyPageTransition()
         default:
             Logger.error("BluxWebSdkBridge: unknown action=\(action)")
         }

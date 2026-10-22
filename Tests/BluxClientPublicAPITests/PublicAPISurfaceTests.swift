@@ -35,6 +35,8 @@ final class PublicAPISurfaceTests: XCTestCase {
 
         let _: () -> Void = BluxClient.dismissInApp
 
+        let _: () -> Void = BluxClient.notifyPageTransition
+
         let _: (@escaping (BluxNotification) -> Void) -> Void = BluxClient.setNotificationClickedHandler(callback:)
 
         let _: (@escaping (BluxInApp) -> Void) -> Void = BluxClient.setInAppClickedHandler(callback:)

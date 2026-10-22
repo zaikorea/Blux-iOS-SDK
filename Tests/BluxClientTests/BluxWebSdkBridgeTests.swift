@@ -193,6 +193,12 @@ final class BluxWebSdkBridgeTests: XCTestCase {
         XCTAssertNotNil(EventHandlers.unhandledNotification)
     }
 
+    func testPageTransitionActionIncrementsPageTransitionCount() {
+        let before = InappService.currentPageTransitionCount
+        bridge.handle(scriptMessageBody: "{\"action\":\"pageTransition\"}")
+        XCTAssertEqual(InappService.currentPageTransitionCount, before + 1)
+    }
+
     func testUnknownActionIsIgnored() {
         EventHandlers.unhandledNotification = BluxNotification(
             id: "n", body: "B", title: nil, url: nil, imageUrl: nil, data: nil

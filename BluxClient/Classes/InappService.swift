@@ -14,6 +14,44 @@ class InappService {
     // 현재 표시 중인 WebViewController (fullscreen/popup용)
     private static weak var currentWebViewController: WebViewController?
 
+    // 페이지 번호. 페이지가 바뀔 때마다 1씩 올라간다.
+    private static var pageTransitionCount = 0
+    private static let pageTransitionLock = NSLock()
+
+    // 표시 중인 인앱 메시지의 설정값과 그 인앱 메시지를 요청할 때의 페이지 번호
+    private static var currentInappDismissOnPageTransition = false
+    private static var currentInappPageTransitionCount = 0
+
+    static var currentPageTransitionCount: Int {
+        pageTransitionLock.lock()
+        defer { pageTransitionLock.unlock() }
+        return pageTransitionCount
+    }
+
+    /// 페이지 번호는 바로 올리고, 닫기는 메인 스레드에서 한다.
+    static func notifyPageTransition() {
+        pageTransitionLock.lock()
+        pageTransitionCount += 1
+        pageTransitionLock.unlock()
+
+        DispatchQueue.main.async {
+            handlePageTransition()
+        }
+    }
+
+    /// 표시 중인 인앱 메시지가 설정을 켰고 이전 페이지에서 요청한 것이면 닫는다.
+    /// 이동 직후 새 페이지에서 뜬 인앱 메시지는 닫지 않도록 번호를 비교한다.
+    private static func handlePageTransition() {
+        let isPresenting = currentBannerWindow != nil || currentWebViewController != nil
+        guard isPresenting,
+              currentInappDismissOnPageTransition,
+              currentInappPageTransitionCount != currentPageTransitionCount
+        else { return }
+
+        Logger.verbose("INAPP: Dismissing inapp on page transition.")
+        dismissCurrentInApp()
+    }
+
     private static var isAppActive: Bool = true
     private static var isNetworkReachable: Bool = true
     private static var lifecycleObserversRegistered: Bool = false
@@ -85,7 +123,7 @@ class InappService {
 
     /// collect-events 응답에서 전달된 인앱 페이로드 처리
     /// inapp 객체가 있으면 표시 (shouldDisplay 필드 없이 객체 유무로 판단)
-    static func handleInappResponse(_ response: InappDispatchResponse) {
+    static func handleInappResponse(_ response: InappDispatchResponse, pageTransitionCount: Int) {
         // 화면/네트워크 상태 체크
         guard canDispatch else {
             Logger.verbose("INAPP: Cannot display inapp (app inactive or offline)")
@@ -97,20 +135,30 @@ class InappService {
             Logger.error("INAPP: Invalid baseUrl \(response.baseUrl)")
             return
         }
-        queueInappWebview(response.notificationId, response.htmlString, response.inappId, baseURL)
+        queueInappWebview(
+            response.notificationId, response.htmlString, response.inappId, baseURL,
+            dismissOnPageTransition: response.dismissOnPageTransition ?? false,
+            pageTransitionCount: pageTransitionCount
+        )
     }
 
     private static func queueInappWebview(
         _ notificationId: String,
         _ htmlString: String,
         _ inappId: String,
-        _ baseURL: URL
+        _ baseURL: URL,
+        dismissOnPageTransition: Bool,
+        pageTransitionCount: Int
     ) {
         // ⚠️ 스레드 안전성: 큐 조작은 반드시 메인 스레드에서 수행
         // handleInappResponse가 백그라운드 스레드에서 호출될 수 있으므로 메인 스레드로 강제
         DispatchQueue.main.async {
             let presentWebView = {
-                presentInappWebview(notificationId, htmlString, inappId, baseURL)
+                presentInappWebview(
+                    notificationId, htmlString, inappId, baseURL,
+                    dismissOnPageTransition: dismissOnPageTransition,
+                    pageTransitionCount: pageTransitionCount
+                )
             }
 
             webViewQueue.append(presentWebView)
@@ -147,8 +195,10 @@ class InappService {
     }
     
     private static func dismissBannerWindow(completion: (() -> Void)? = nil) {
-        currentBannerWindow?.dismiss {
-            currentBannerWindow = nil
+        // 닫는 애니메이션 중에 다시 불려도 다음 인앱 메시지를 한 번만 꺼내도록 바로 비운다.
+        guard let bannerWindow = currentBannerWindow else { return }
+        currentBannerWindow = nil
+        bannerWindow.dismiss {
             isWebViewPresented = false
             processWebViewQueue()
             completion?()
@@ -186,9 +236,21 @@ class InappService {
         _ notificationId: String,
         _ htmlString: String,
         _ inappId: String,
-        _ baseURL: URL
+        _ baseURL: URL,
+        dismissOnPageTransition: Bool,
+        pageTransitionCount requestPageTransitionCount: Int
     ) {
         DispatchQueue.main.async {
+            // 이전 페이지에서 요청한 인앱 메시지면 띄우지 않고 다음 것으로 넘어간다.
+            // 검사와 표시를 한 블록에서 해야 그 사이에 페이지 이동이 끼지 않는다.
+            if dismissOnPageTransition, requestPageTransitionCount != currentPageTransitionCount {
+                Logger.verbose(
+                    "INAPP: Inapp \(inappId) was requested before a page transition. Dropping.")
+                isWebViewPresented = false
+                processWebViewQueue()
+                return
+            }
+
             if let dateToHide = UserDefaults.standard.string(forKey: inappId) {
                 let dateToHideDate = ISO8601DateFormatter().date(from: dateToHide)
                 if let dateToHideDate = dateToHideDate {
@@ -225,6 +287,11 @@ class InappService {
                         DispatchQueue.main.async {
                             // 기존 모달 dismiss (애니메이션 없이)
                             webviewController.dismiss(animated: false) {
+                                // 모달을 내리는 동안 이미 닫혔으면 배너를 만들지 않는다.
+                                guard currentWebViewController === webviewController else { return }
+                                // 이제부터는 배너만 표시 중인 인앱 메시지로 본다.
+                                currentWebViewController = nil
+
                                 // BannerWindow 생성 (HTML 로드 후 자체적으로 resize 처리)
                                 let bannerWindow = BannerWindow(htmlString: htmlString, baseURL: baseURL)
                                 currentBannerWindow = bannerWindow
@@ -454,6 +521,8 @@ class InappService {
 
                 // 현재 WebViewController 추적 (dismissCurrentInApp에서 사용)
                 currentWebViewController = webviewController
+                currentInappDismissOnPageTransition = dismissOnPageTransition
+                currentInappPageTransitionCount = requestPageTransitionCount
 
                 topController.present(
                     webviewController, animated: false, completion: nil
