@@ -16,8 +16,7 @@ final class InappServiceTests: XCTestCase {
             notificationId: "n",
             htmlString: "<html></html>",
             inappId: "i",
-            baseUrl: "https://cdn.blux.ai",
-            dismissOnPageTransition: nil
+            baseUrl: "https://cdn.blux.ai"
         )
 
         let exp = expectation(description: "no crash from background dispatch")
@@ -41,8 +40,7 @@ final class InappServiceTests: XCTestCase {
             notificationId: "n",
             htmlString: "<html></html>",
             inappId: "i",
-            baseUrl: "",
-            dismissOnPageTransition: nil
+            baseUrl: ""
         )
         InappService.handleInappResponse(response, pageTransitionCount: 0)
     }

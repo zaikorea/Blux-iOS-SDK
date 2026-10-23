@@ -480,7 +480,7 @@ struct UpdatePropertiesBody: Codable {
 
     /// 호스트 앱의 네이티브 화면 이동을 알립니다.
     ///
-    /// 페이지 이동 시 닫기가 적용된 인앱 메시지가 이 호출로 닫힙니다.
+    /// 이전 페이지에서 띄운 배너가 이 호출로 닫힙니다. 모달·바텀시트는 닫지 않습니다.
     /// 웹뷰 안의 페이지 이동은 Web SDK가 알리므로 앱이 따로 부르지 않습니다.
     public static func notifyPageTransition() {
         InappService.notifyPageTransition()
