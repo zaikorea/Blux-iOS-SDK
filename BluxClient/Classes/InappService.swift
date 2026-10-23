@@ -18,8 +18,7 @@ class InappService {
     private static var pageTransitionCount = 0
     private static let pageTransitionLock = NSLock()
 
-    // 표시 중인 인앱 메시지의 설정값과 그 인앱 메시지를 요청할 때의 페이지 번호
-    private static var currentInappDismissOnPageTransition = false
+    // 표시 중인 인앱 메시지를 요청할 때의 페이지 번호
     private static var currentInappPageTransitionCount = 0
 
     static var currentPageTransitionCount: Int {
@@ -39,12 +38,10 @@ class InappService {
         }
     }
 
-    /// 표시 중인 인앱 메시지가 설정을 켰고 이전 페이지에서 요청한 것이면 닫는다.
-    /// 이동 직후 새 페이지에서 뜬 인앱 메시지는 닫지 않도록 번호를 비교한다.
+    /// 표시 중인 배너가 이전 페이지에서 요청한 것이면 닫는다. 배너가 아니면 닫아야만 페이지를 옮길 수 있으므로
+    /// 건드리지 않는다. 이동 직후 새 페이지에서 뜬 배너는 닫지 않도록 번호를 비교한다.
     private static func handlePageTransition() {
-        let isPresenting = currentBannerWindow != nil || currentWebViewController != nil
-        guard isPresenting,
-              currentInappDismissOnPageTransition,
+        guard currentBannerWindow != nil,
               currentInappPageTransitionCount != currentPageTransitionCount
         else { return }
 
@@ -137,7 +134,6 @@ class InappService {
         }
         queueInappWebview(
             response.notificationId, response.htmlString, response.inappId, baseURL,
-            dismissOnPageTransition: response.dismissOnPageTransition ?? false,
             pageTransitionCount: pageTransitionCount
         )
     }
@@ -147,7 +143,6 @@ class InappService {
         _ htmlString: String,
         _ inappId: String,
         _ baseURL: URL,
-        dismissOnPageTransition: Bool,
         pageTransitionCount: Int
     ) {
         // ⚠️ 스레드 안전성: 큐 조작은 반드시 메인 스레드에서 수행
@@ -156,7 +151,6 @@ class InappService {
             let presentWebView = {
                 presentInappWebview(
                     notificationId, htmlString, inappId, baseURL,
-                    dismissOnPageTransition: dismissOnPageTransition,
                     pageTransitionCount: pageTransitionCount
                 )
             }
@@ -237,20 +231,9 @@ class InappService {
         _ htmlString: String,
         _ inappId: String,
         _ baseURL: URL,
-        dismissOnPageTransition: Bool,
         pageTransitionCount requestPageTransitionCount: Int
     ) {
         DispatchQueue.main.async {
-            // 이전 페이지에서 요청한 인앱 메시지면 띄우지 않고 다음 것으로 넘어간다.
-            // 검사와 표시를 한 블록에서 해야 그 사이에 페이지 이동이 끼지 않는다.
-            if dismissOnPageTransition, requestPageTransitionCount != currentPageTransitionCount {
-                Logger.verbose(
-                    "INAPP: Inapp \(inappId) was requested before a page transition. Dropping.")
-                isWebViewPresented = false
-                processWebViewQueue()
-                return
-            }
-
             if let dateToHide = UserDefaults.standard.string(forKey: inappId) {
                 let dateToHideDate = ISO8601DateFormatter().date(from: dateToHide)
                 if let dateToHideDate = dateToHideDate {
@@ -291,6 +274,17 @@ class InappService {
                                 guard currentWebViewController === webviewController else { return }
                                 // 이제부터는 배너만 표시 중인 인앱 메시지로 본다.
                                 currentWebViewController = nil
+
+                                // 이전 페이지에서 요청한 배너면 만들지 않고 다음 인앱 메시지로 넘어간다.
+                                // 배너인지는 resize를 받아야 알 수 있어서, 늦게 도착한 배너도 여기까지는 화면에 올라온다.
+                                // 검사와 배너 생성을 한 블록에서 해야 그 사이에 페이지 이동이 끼지 않는다.
+                                if requestPageTransitionCount != currentPageTransitionCount {
+                                    Logger.verbose(
+                                        "INAPP: Banner \(inappId) was requested before a page transition. Dropping.")
+                                    isWebViewPresented = false
+                                    processWebViewQueue()
+                                    return
+                                }
 
                                 // BannerWindow 생성 (HTML 로드 후 자체적으로 resize 처리)
                                 let bannerWindow = BannerWindow(htmlString: htmlString, baseURL: baseURL)
@@ -521,7 +515,6 @@ class InappService {
 
                 // 현재 WebViewController 추적 (dismissCurrentInApp에서 사용)
                 currentWebViewController = webviewController
-                currentInappDismissOnPageTransition = dismissOnPageTransition
                 currentInappPageTransitionCount = requestPageTransitionCount
 
                 topController.present(
