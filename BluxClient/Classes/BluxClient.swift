@@ -133,6 +133,7 @@ struct UpdatePropertiesBody: Codable {
         SdkConfig.apiKeyInUserDefaults = bluxAPIKey
 
         if credentialsChanged {
+            InappService.notifyPageTransition()
             isActivated = false
             ColdStartNotificationManager.reset()
             // 이전 credential 세션에서 대기 중이던 클릭이 새 credential로 재전달되지 않도록 초기화한다.
@@ -243,7 +244,7 @@ struct UpdatePropertiesBody: Codable {
             }
 
             if let bluxDeviceResponse = response {
-                SdkConfig.bluxIdInUserDefaults = bluxDeviceResponse.bluxId
+                DeviceService.replaceBluxId(bluxDeviceResponse.bluxId)
                 SdkConfig.userIdInUserDefaults = userId
                 Logger.verbose("Signin request success.")
                 Logger.verbose("Blux ID: \(bluxDeviceResponse.bluxId).")
@@ -254,6 +255,7 @@ struct UpdatePropertiesBody: Codable {
 
     /// Signout from the device
     @objc public static func signOut() {
+        InappService.notifyPageTransition()
         // 이전 유저 세션에서 대기 중이던 클릭이 다음 유저로 재전달되지 않도록 초기화한다.
         EventHandlers.unhandledNotification = nil
         // 이전 유저의 배칭된 이벤트가 signOut 이후 재발급되는 bluxId로 전송되는 것을 막는다.
@@ -283,7 +285,7 @@ struct UpdatePropertiesBody: Codable {
             }
 
             if let bluxDeviceResponse = response {
-                SdkConfig.bluxIdInUserDefaults = bluxDeviceResponse.bluxId
+                DeviceService.replaceBluxId(bluxDeviceResponse.bluxId)
                 SdkConfig.userIdInUserDefaults = nil
                 Logger.verbose("Signout request success.")
                 Logger.verbose("Blux ID: \(bluxDeviceResponse.bluxId).")

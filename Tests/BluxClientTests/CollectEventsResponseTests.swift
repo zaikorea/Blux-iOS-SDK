@@ -4,6 +4,13 @@ import XCTest
 final class CollectEventsResponseTests: XCTestCase {
     private let decoder = JSONDecoder()
 
+    func testDecodeDisplayDelayAndLegacyPayload() throws {
+        let legacy = "{\"notificationId\":\"n\",\"htmlString\":\"h\",\"inappId\":\"i\",\"baseUrl\":\"b\"}"
+        XCTAssertNil(try decoder.decode(InappDispatchResponse.self, from: Data(legacy.utf8)).displayDelaySeconds)
+        let delayed = legacy.dropLast() + ",\"displayDelaySeconds\":15}"
+        XCTAssertEqual(try decoder.decode(InappDispatchResponse.self, from: Data(delayed.utf8)).displayDelaySeconds, 15)
+    }
+
     func testDecodeMinimalResponse() throws {
         let json = "{}".data(using: .utf8)!
         let response = try decoder.decode(CollectEventsResponse.self, from: json)

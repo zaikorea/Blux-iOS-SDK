@@ -6,12 +6,14 @@ struct InappDispatchResponse: Codable {
     let htmlString: String
     let inappId: String
     let baseUrl: String
+    var displayDelaySeconds: Int? = nil
 
     enum CodingKeys: String, CodingKey {
         case notificationId
         case htmlString
         case inappId
         case baseUrl
+        case displayDelaySeconds
     }
 }
 

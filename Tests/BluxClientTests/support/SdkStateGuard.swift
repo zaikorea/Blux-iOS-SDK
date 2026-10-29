@@ -29,6 +29,7 @@ final class SdkStateGuard {
     }
 
     func clear() {
+        InappService.notifyPageTransition()
         SdkConfig.clientIdInUserDefaults = nil
         SdkConfig.apiKeyInUserDefaults = nil
         SdkConfig.bluxIdInUserDefaults = nil
@@ -48,6 +49,7 @@ final class SdkStateGuard {
     }
 
     func restore() {
+        InappService.notifyPageTransition()
         SdkConfig.clientIdInUserDefaults = savedClientId
         SdkConfig.apiKeyInUserDefaults = savedApiKey
         SdkConfig.bluxIdInUserDefaults = savedBluxId
