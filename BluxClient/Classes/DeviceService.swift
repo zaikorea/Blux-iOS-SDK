@@ -31,6 +31,7 @@ enum DeviceService {
         )
     }
 
+    @available(iOSApplicationExtension, unavailable)
     static func initializeDevice(
         deviceId: String?,
         customDeviceId: String? = nil,
@@ -57,7 +58,7 @@ enum DeviceService {
             }
 
             if let bluxDeviceResponse = response {
-                SdkConfig.bluxIdInUserDefaults = bluxDeviceResponse.bluxId
+                replaceBluxId(bluxDeviceResponse.bluxId)
                 SdkConfig.deviceIdInUserDefaults = bluxDeviceResponse.deviceId
                 SdkConfig.userIdInUserDefaults = nil
 
@@ -70,6 +71,15 @@ enum DeviceService {
             } else {
                 completion(.failure(NSError(domain: "DeviceService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unexpected response"])))
             }
+        }
+    }
+
+    @available(iOSApplicationExtension, unavailable)
+    static func replaceBluxId(_ bluxId: String) {
+        let previousId = SdkConfig.bluxIdInUserDefaults
+        SdkConfig.bluxIdInUserDefaults = bluxId
+        if let previousId = previousId, previousId != bluxId {
+            InappService.notifyPageTransition()
         }
     }
 

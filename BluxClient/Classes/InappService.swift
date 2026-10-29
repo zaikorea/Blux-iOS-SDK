@@ -17,6 +17,7 @@ class InappService {
     // 페이지 번호. 페이지가 바뀔 때마다 1씩 올라간다.
     private static var pageTransitionCount = 0
     private static let pageTransitionLock = NSLock()
+    private static var pendingDelayedInapps: [String: Int] = [:]
 
     // 표시 중인 인앱 메시지를 요청할 때의 페이지 번호
     private static var currentInappPageTransitionCount = 0
@@ -31,6 +32,7 @@ class InappService {
     static func notifyPageTransition() {
         pageTransitionLock.lock()
         pageTransitionCount += 1
+        pendingDelayedInapps.removeAll()
         pageTransitionLock.unlock()
 
         DispatchQueue.main.async {
@@ -121,27 +123,57 @@ class InappService {
     /// collect-events 응답에서 전달된 인앱 페이로드 처리
     /// inapp 객체가 있으면 표시 (shouldDisplay 필드 없이 객체 유무로 판단)
     static func handleInappResponse(_ response: InappDispatchResponse, pageTransitionCount: Int) {
+        let delaySeconds = response.displayDelaySeconds ?? 0
+        if delaySeconds > 0 {
+            guard beginDelayedInapp(response.inappId, pageTransitionCount: pageTransitionCount) else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(delaySeconds)) {
+                enqueueInapp(response, pageTransitionCount: pageTransitionCount)
+            }
+        } else {
+            enqueueInapp(response, pageTransitionCount: pageTransitionCount)
+        }
+    }
+
+    static func beginDelayedInapp(_ inappId: String, pageTransitionCount requestPage: Int) -> Bool {
+        pageTransitionLock.lock()
+        defer { pageTransitionLock.unlock() }
+        guard requestPage == pageTransitionCount,
+              pendingDelayedInapps[inappId] != requestPage else { return false }
+        pendingDelayedInapps[inappId] = requestPage
+        return true
+    }
+
+    static func finishDelayedInapp(_ response: InappDispatchResponse, pageTransitionCount: Int) {
+        guard (response.displayDelaySeconds ?? 0) > 0 else { return }
+        pageTransitionLock.lock()
+        defer { pageTransitionLock.unlock() }
+        if pendingDelayedInapps[response.inappId] == pageTransitionCount {
+            pendingDelayedInapps.removeValue(forKey: response.inappId)
+        }
+    }
+
+    private static func enqueueInapp(_ response: InappDispatchResponse, pageTransitionCount: Int) {
         // 화면/네트워크 상태 체크
         guard canDispatch else {
             Logger.verbose("INAPP: Cannot display inapp (app inactive or offline)")
+            finishDelayedInapp(response, pageTransitionCount: pageTransitionCount)
             return
         }
 
         Logger.verbose("INAPP: Dispatch response received. \(response.inappId) \(response.baseUrl)")
         guard let baseURL = URL(string: response.baseUrl) else {
             Logger.error("INAPP: Invalid baseUrl \(response.baseUrl)")
+            finishDelayedInapp(response, pageTransitionCount: pageTransitionCount)
             return
         }
         queueInappWebview(
-            response.notificationId, response.htmlString, response.inappId, baseURL,
+            response, baseURL,
             pageTransitionCount: pageTransitionCount
         )
     }
 
     private static func queueInappWebview(
-        _ notificationId: String,
-        _ htmlString: String,
-        _ inappId: String,
+        _ response: InappDispatchResponse,
         _ baseURL: URL,
         pageTransitionCount: Int
     ) {
@@ -150,7 +182,7 @@ class InappService {
         DispatchQueue.main.async {
             let presentWebView = {
                 presentInappWebview(
-                    notificationId, htmlString, inappId, baseURL,
+                    response, baseURL,
                     pageTransitionCount: pageTransitionCount
                 )
             }
@@ -227,13 +259,21 @@ class InappService {
     }
 
     private static func presentInappWebview(
-        _ notificationId: String,
-        _ htmlString: String,
-        _ inappId: String,
+        _ response: InappDispatchResponse,
         _ baseURL: URL,
         pageTransitionCount requestPageTransitionCount: Int
     ) {
         DispatchQueue.main.async {
+            defer { finishDelayedInapp(response, pageTransitionCount: requestPageTransitionCount) }
+            if (response.displayDelaySeconds ?? 0) > 0,
+                requestPageTransitionCount != currentPageTransitionCount {
+                isWebViewPresented = false
+                processWebViewQueue()
+                return
+            }
+            let notificationId = response.notificationId
+            let htmlString = response.htmlString
+            let inappId = response.inappId
             if let dateToHide = UserDefaults.standard.string(forKey: inappId) {
                 let dateToHideDate = ISO8601DateFormatter().date(from: dateToHide)
                 if let dateToHideDate = dateToHideDate {
