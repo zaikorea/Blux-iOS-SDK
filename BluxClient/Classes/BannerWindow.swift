@@ -72,7 +72,14 @@ final class BannerWindow: UIWindow {
         webView.scrollView.backgroundColor = .clear
         webView.scrollView.isScrollEnabled = false
         webView.scrollView.contentInsetAdjustmentBehavior = .never
-        
+
+        #if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            // iOS 27 SDK로 빌드한 앱이 iOS 27에서 실행되면 상단 효과가 배너와 닫기 버튼을 흐리게 한다.
+            webView.scrollView.topEdgeEffect.isHidden = true
+        }
+        #endif
+
         rootViewController?.view.addSubview(webView)
         webView.translatesAutoresizingMaskIntoConstraints = false
         
