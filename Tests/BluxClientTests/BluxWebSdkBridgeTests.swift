@@ -207,6 +207,33 @@ final class BluxWebSdkBridgeTests: XCTestCase {
         XCTAssertNotNil(EventHandlers.unhandledNotification)
     }
 
+    // MARK: - getBluxUser
+    //
+    // Web SDK의 bluxUserPayloadSchema가 읽는 응답. attach가 iOS 14 이상에서 응답 가능한 핸들러로
+    // 등록하면 이 반환값이 replyHandler로 웹에 돌아간다.
+
+    func testGetBluxUserReturnsStoredIds() {
+        SdkConfig.bluxIdInUserDefaults = "blux-id"
+        SdkConfig.deviceIdInUserDefaults = "device-id"
+
+        let response = bridge.handle(scriptMessageBody: "{\"action\":\"getBluxUser\"}")
+
+        XCTAssertEqual(response as? [String: String], ["bluxUserId": "blux-id", "deviceId": "device-id"])
+    }
+
+    func testGetBluxUserReturnsNilUntilBothIdsAreStored() {
+        SdkConfig.bluxIdInUserDefaults = "blux-id"
+
+        XCTAssertNil(bridge.handle(scriptMessageBody: "{\"action\":\"getBluxUser\"}"))
+    }
+
+    func testOtherActionsReturnNil() {
+        SdkConfig.bluxIdInUserDefaults = "blux-id"
+        SdkConfig.deviceIdInUserDefaults = "device-id"
+
+        XCTAssertNil(bridge.handle(scriptMessageBody: "{\"action\":\"pageTransition\"}"))
+    }
+
     // MARK: - initialize
     //
     // valid credentials는 BluxClient.initialize → DeviceService → URLSession.shared로 실제
