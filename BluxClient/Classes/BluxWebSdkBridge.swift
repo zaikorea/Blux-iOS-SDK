@@ -34,7 +34,13 @@ public final class BluxWebSdkBridge: NSObject {
     @discardableResult
     public static func attach(to webView: WKWebView) -> BluxWebSdkBridge {
         let bridge = BluxWebSdkBridge()
-        webView.configuration.userContentController.add(bridge, name: handlerName)
+        let controller = webView.configuration.userContentController
+        if #available(iOS 14.0, *) {
+            // 응답 가능한 핸들러로 등록해야 Web SDK의 getBluxUser가 값을 받는다.
+            controller.addScriptMessageHandler(bridge, contentWorld: .page, name: handlerName)
+        } else {
+            controller.add(bridge, name: handlerName)
+        }
         Logger.verbose("BluxWebSdkBridge attached")
         return bridge
     }
@@ -54,7 +60,9 @@ extension BluxWebSdkBridge: WKScriptMessageHandler {
         handle(scriptMessageBody: message.body)
     }
 
-    func handle(scriptMessageBody body: Any) {
+    /// 메시지를 처리하고 Web SDK에 돌려줄 응답을 반환한다. `getBluxUser` action에만 값이 있다.
+    @discardableResult
+    func handle(scriptMessageBody body: Any) -> Any? {
         let json: [String: Any]?
         if let str = body as? String,
            let data = str.data(using: .utf8),
@@ -65,17 +73,36 @@ extension BluxWebSdkBridge: WKScriptMessageHandler {
             json = obj
         } else {
             Logger.error("BluxWebSdkBridge: invalid message format")
-            return
+            return nil
         }
 
         guard let json,
               let action = json["action"] as? String, !action.isEmpty
         else {
             Logger.error("BluxWebSdkBridge: missing action")
-            return
+            return nil
         }
 
-        handleAction(action, payload: json["payload"])
+        return handleAction(action, payload: json["payload"])
+    }
+}
+
+// MARK: - WKScriptMessageHandlerWithReply
+
+@available(iOS 14.0, *)
+@available(iOSApplicationExtension, unavailable)
+extension BluxWebSdkBridge: WKScriptMessageHandlerWithReply {
+    /// 웹의 `postMessage`가 반환한 Promise는 `replyHandler`를 불러야 끝나므로, 모든 메시지에 한 번씩 응답한다.
+    public func userContentController(
+        _: WKUserContentController,
+        didReceive message: WKScriptMessage,
+        replyHandler: @escaping (Any?, String?) -> Void
+    ) {
+        guard message.name == BluxWebSdkBridge.handlerName else {
+            replyHandler(nil, nil)
+            return
+        }
+        replyHandler(handle(scriptMessageBody: message.body), nil)
     }
 }
 
@@ -83,7 +110,7 @@ extension BluxWebSdkBridge: WKScriptMessageHandler {
 
 @available(iOSApplicationExtension, unavailable)
 private extension BluxWebSdkBridge {
-    func handleAction(_ action: String, payload: Any?) {
+    func handleAction(_ action: String, payload: Any?) -> Any? {
         switch action {
         case "initialize":
             handleInitialize(payload)
@@ -99,9 +126,18 @@ private extension BluxWebSdkBridge {
             handleSendEvent(payload)
         case "pageTransition":
             BluxClient.notifyPageTransition()
+        case "getBluxUser":
+            return bluxUserPayload()
         default:
             Logger.error("BluxWebSdkBridge: unknown action=\(action)")
         }
+        return nil
+    }
+
+    /// Web SDK의 `bluxUserPayloadSchema`와 같은 모양이다. 둘 중 하나라도 없으면 `nil`이다.
+    func bluxUserPayload() -> [String: String]? {
+        guard let id = BluxUser.getId(), let deviceId = BluxUser.getDeviceId() else { return nil }
+        return ["bluxUserId": id, "deviceId": deviceId]
     }
 
     func handleInitialize(_ payload: Any?) {
