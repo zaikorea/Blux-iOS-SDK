@@ -16,6 +16,15 @@ final class WebViewController: UIViewController, WKNavigationDelegate,
     private var webView: WKWebView!
     private var content: Content
     private let messageHandler = WebViewMessageHandler()
+
+    // 페이지 이동은 진행 중인 닫기(배너 전환 포함)의 완료 처리를 중복 실행하지 않는다.
+    var hasStartedDismissal = false
+
+    // 자식 화면이 있으면 UIKit dismiss는 이 컨트롤러 대신 그 위 화면을 닫는다.
+    var canDismissOnPageTransition: Bool {
+        !hasStartedDismissal && presentedViewController == nil
+    }
+
     private var hasLoadedContent = false
     private var hasAppliedInitialChrome = false
 
