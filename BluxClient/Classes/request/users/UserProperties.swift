@@ -11,6 +11,8 @@ public class UserProperties: Codable {
     var phoneNumber: String?
     var emailAddress: String?
     var nighttimeNotificationConsent: Bool?
+    var nighttimeNotificationSmsConsent: Bool?
+    var nighttimeNotificationPushConsent: Bool?
     var marketingNotificationConsent: Bool?
     var marketingNotificationSmsConsent: Bool?
     var marketingNotificationEmailConsent: Bool?
@@ -29,6 +31,8 @@ public class UserProperties: Codable {
         marketingNotificationPushConsent: Bool? = nil,
         marketingNotificationKakaoConsent: Bool? = nil,
         nighttimeNotificationConsent: Bool? = nil,
+        nighttimeNotificationSmsConsent: Bool? = nil,
+        nighttimeNotificationPushConsent: Bool? = nil,
         isAllNotificationBlocked: Bool? = nil,
         age: Int? = nil,
         gender: Gender? = nil
@@ -41,6 +45,8 @@ public class UserProperties: Codable {
         self.marketingNotificationPushConsent = marketingNotificationPushConsent
         self.marketingNotificationKakaoConsent = marketingNotificationKakaoConsent
         self.nighttimeNotificationConsent = nighttimeNotificationConsent
+        self.nighttimeNotificationSmsConsent = nighttimeNotificationSmsConsent
+        self.nighttimeNotificationPushConsent = nighttimeNotificationPushConsent
         self.isAllNotificationBlocked = isAllNotificationBlocked
         self.age = age
         self.gender = gender
@@ -55,6 +61,8 @@ public class UserProperties: Codable {
         case marketingNotificationPushConsent = "marketing_notification_push_consent"
         case marketingNotificationKakaoConsent = "marketing_notification_kakao_consent"
         case nighttimeNotificationConsent = "nighttime_notification_consent"
+        case nighttimeNotificationSmsConsent = "nighttime_notification_sms_consent"
+        case nighttimeNotificationPushConsent = "nighttime_notification_push_consent"
         case isAllNotificationBlocked = "is_all_notification_blocked"
         case age
         case gender
