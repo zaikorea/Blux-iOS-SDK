@@ -84,6 +84,7 @@ final class PublicAPISurfaceTests: XCTestCase {
         let _ = UserProperties(phoneNumber: "x")
         let _ = UserProperties(age: 1)
         let _ = UserProperties(gender: .male)
+        let _ = UserProperties(nighttimeNotificationSmsConsent: true, nighttimeNotificationPushConsent: false)
 
         // CustomEventValue.fromAny public
         let _: CustomEventValue? = CustomEventValue.fromAny("x")

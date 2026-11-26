@@ -327,8 +327,12 @@ struct UpdatePropertiesBody: Codable {
     }
 
     public static func setUserProperties(userProperties: UserProperties) {
-        // 기존 UserProperties 객체를 감싸던 부분 제거 → Dictionary 형태로 변환해서 넘김
-        let userPropertiesDict: [String: Any?] = [
+        setUserPropertiesData(userProperties: userPropertiesData(from: userProperties))
+    }
+
+    /// 서버 `update-properties`가 받는 필드명으로 바꾼다. nil 값은 `setUserPropertiesData`에서 빠진다.
+    static func userPropertiesData(from userProperties: UserProperties) -> [String: Any?] {
+        return [
             "phone_number": userProperties.phoneNumber,
             "email_address": userProperties.emailAddress,
             "marketing_notification_consent": userProperties.marketingNotificationConsent,
@@ -337,12 +341,12 @@ struct UpdatePropertiesBody: Codable {
             "marketing_notification_push_consent": userProperties.marketingNotificationPushConsent,
             "marketing_notification_kakao_consent": userProperties.marketingNotificationKakaoConsent,
             "nighttime_notification_consent": userProperties.nighttimeNotificationConsent,
+            "nighttime_notification_sms_consent": userProperties.nighttimeNotificationSmsConsent,
+            "nighttime_notification_push_consent": userProperties.nighttimeNotificationPushConsent,
             "is_all_notification_blocked": userProperties.isAllNotificationBlocked,
             "age": userProperties.age,
             "gender": userProperties.gender?.rawValue,
         ]
-
-        setUserPropertiesData(userProperties: userPropertiesDict)
     }
 
     public static func setCustomUserProperties(

@@ -46,6 +46,8 @@ final class UserPropertiesTests: XCTestCase {
             marketingNotificationPushConsent: false,
             marketingNotificationKakaoConsent: true,
             nighttimeNotificationConsent: false,
+            nighttimeNotificationSmsConsent: true,
+            nighttimeNotificationPushConsent: false,
             isAllNotificationBlocked: true,
             age: 30,
             gender: .male
@@ -60,9 +62,46 @@ final class UserPropertiesTests: XCTestCase {
         XCTAssertEqual(dict["marketing_notification_push_consent"] as? Bool, false)
         XCTAssertEqual(dict["marketing_notification_kakao_consent"] as? Bool, true)
         XCTAssertEqual(dict["nighttime_notification_consent"] as? Bool, false)
+        XCTAssertEqual(dict["nighttime_notification_sms_consent"] as? Bool, true)
+        XCTAssertEqual(dict["nighttime_notification_push_consent"] as? Bool, false)
         XCTAssertEqual(dict["is_all_notification_blocked"] as? Bool, true)
         XCTAssertEqual(dict["age"] as? Int, 30)
         XCTAssertEqual(dict["gender"] as? String, "male")
+    }
+
+    /// setUserProperties가 서버로 보내는 값이다. 키가 서버 필드명과 다르면 서버가 그 값을 버린다.
+    func testUserPropertiesDataUsesServerFieldNames() {
+        let props = UserProperties(
+            phoneNumber: "010",
+            emailAddress: "x@y",
+            marketingNotificationConsent: true,
+            marketingNotificationSmsConsent: false,
+            marketingNotificationEmailConsent: true,
+            marketingNotificationPushConsent: false,
+            marketingNotificationKakaoConsent: true,
+            nighttimeNotificationConsent: false,
+            nighttimeNotificationSmsConsent: true,
+            nighttimeNotificationPushConsent: false,
+            isAllNotificationBlocked: true,
+            age: 30,
+            gender: .male
+        )
+        let data = BluxClient.userPropertiesData(from: props)
+
+        XCTAssertEqual(data.count, 13)
+        XCTAssertEqual(data["phone_number"] as? String, "010")
+        XCTAssertEqual(data["email_address"] as? String, "x@y")
+        XCTAssertEqual(data["marketing_notification_consent"] as? Bool, true)
+        XCTAssertEqual(data["marketing_notification_sms_consent"] as? Bool, false)
+        XCTAssertEqual(data["marketing_notification_email_consent"] as? Bool, true)
+        XCTAssertEqual(data["marketing_notification_push_consent"] as? Bool, false)
+        XCTAssertEqual(data["marketing_notification_kakao_consent"] as? Bool, true)
+        XCTAssertEqual(data["nighttime_notification_consent"] as? Bool, false)
+        XCTAssertEqual(data["nighttime_notification_sms_consent"] as? Bool, true)
+        XCTAssertEqual(data["nighttime_notification_push_consent"] as? Bool, false)
+        XCTAssertEqual(data["is_all_notification_blocked"] as? Bool, true)
+        XCTAssertEqual(data["age"] as? Int, 30)
+        XCTAssertEqual(data["gender"] as? String, "male")
     }
 
     func testEncodingOmitsNilFields() throws {
