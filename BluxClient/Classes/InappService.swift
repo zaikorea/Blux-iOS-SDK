@@ -40,15 +40,18 @@ class InappService {
         }
     }
 
-    /// 표시 중인 배너가 이전 페이지에서 요청한 것이면 닫는다. 배너가 아니면 닫아야만 페이지를 옮길 수 있으므로
-    /// 건드리지 않는다. 이동 직후 새 페이지에서 뜬 배너는 닫지 않도록 번호를 비교한다.
+    /// 이동 직후 새 페이지에서 뜬 인앱 메시지는 닫지 않도록 번호를 비교한다.
     private static func handlePageTransition() {
-        guard currentBannerWindow != nil,
+        guard currentBannerWindow != nil || currentWebViewController != nil,
               currentInappPageTransitionCount != currentPageTransitionCount
         else { return }
 
+        if let controller = currentWebViewController,
+           !controller.canDismissOnPageTransition {
+            return
+        }
         Logger.verbose("INAPP: Dismissing inapp on page transition.")
-        dismissCurrentInApp()
+        dismissCurrentInAppOnMain()
     }
 
     private static var isAppActive: Bool = true
@@ -212,6 +215,7 @@ class InappService {
     ) {
         // Note: dismiss(animated:completion:)의 completion은 UIKit에서 메인 스레드 호출 보장
         // processWebViewQueue()도 메인 스레드 가드가 있으므로 안전함
+        webviewController.hasStartedDismissal = true
         webviewController.dismiss(animated: false) {
             currentWebViewController = nil
             isWebViewPresented = false
@@ -235,17 +239,20 @@ class InappService {
     /// Custom HTML 인앱에서 async 핸들러 완료 후 수동으로 닫을 때 사용합니다.
     static func dismissCurrentInApp() {
         DispatchQueue.main.async {
-            // 배너 윈도우가 있으면 닫기
-            if currentBannerWindow != nil {
-                dismissBannerWindow()
-                return
-            }
+            dismissCurrentInAppOnMain()
+        }
+    }
 
-            // WebViewController가 있으면 닫기
-            if let webViewController = currentWebViewController {
-                dismissWebView(webViewController)
-                currentWebViewController = nil
-            }
+    private static func dismissCurrentInAppOnMain() {
+        dispatchPrecondition(condition: .onQueue(.main))
+        if currentBannerWindow != nil {
+            dismissBannerWindow()
+            return
+        }
+
+        if let webViewController = currentWebViewController {
+            dismissWebView(webViewController)
+            currentWebViewController = nil
         }
     }
 
@@ -265,8 +272,7 @@ class InappService {
     ) {
         DispatchQueue.main.async {
             defer { finishDelayedInapp(response, pageTransitionCount: requestPageTransitionCount) }
-            if (response.displayDelaySeconds ?? 0) > 0,
-                requestPageTransitionCount != currentPageTransitionCount {
+            if requestPageTransitionCount != currentPageTransitionCount {
                 isWebViewPresented = false
                 processWebViewQueue()
                 return
@@ -296,16 +302,12 @@ class InappService {
                 )
 
                 // resize 핸들러 (배너용) - BannerWindow로 전환
-                var didSwitchToBanner = false  // 중복 실행 방지 플래그
-                
                 webviewController.addMessageHandler(
                     for: "resize",
                     handler: { data in
-                        // 이미 BannerWindow로 전환했으면 무시
-                        guard !didSwitchToBanner else { return }
-
-                        // 플래그 설정 (중복 실행 방지)
-                        didSwitchToBanner = true
+                        // 닫기나 배너 전환이 시작됐으면 완료 콜백에 정리를 맡긴다.
+                        guard !webviewController.hasStartedDismissal else { return }
+                        webviewController.hasStartedDismissal = true
 
                         DispatchQueue.main.async {
                             // 기존 모달 dismiss (애니메이션 없이)
@@ -316,7 +318,7 @@ class InappService {
                                 currentWebViewController = nil
 
                                 // 이전 페이지에서 요청한 배너면 만들지 않고 다음 인앱 메시지로 넘어간다.
-                                // 배너인지는 resize를 받아야 알 수 있어서, 늦게 도착한 배너도 여기까지는 화면에 올라온다.
+                                // 표시를 시작한 뒤 resize를 받기 전에 페이지가 바뀔 수 있다.
                                 // 검사와 배너 생성을 한 블록에서 해야 그 사이에 페이지 이동이 끼지 않는다.
                                 if requestPageTransitionCount != currentPageTransitionCount {
                                     Logger.verbose(
